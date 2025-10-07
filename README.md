@@ -6,8 +6,8 @@
 - Deadline F2b (Etap 3) - 1.02
 - Deadline F3 (Koniec) - 8.02
 
-Legenda:
-F1 - Artefakty modelowania biznesowego i specyfikacja wymagań
-F2a - Definicja
-F2b - Ocena architektury
-F3 - Implementacja i testy
+**Legenda:**  
+  F1 - Artefakty modelowania biznesowego i specyfikacja wymagań  
+  F2a - Definicja  
+  F2b - Ocena architektury  
+  F3 - Implementacja i testy  
