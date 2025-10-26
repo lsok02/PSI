@@ -22,3 +22,21 @@
 18. Jako pracownik gate’u chcę mieć dostęp do aktualnej listy pasażerów, aby zweryfikować obecność i reagować na braki.
 19. Jako pracownik gate’u chcę oznaczać pasażerów, którzy weszli na pokład, aby obsługa lotu mogła potwierdzić kompletność.
 20. Jako pracownik gate’u chcę mieć możliwość oznaczenia zakończenia boardingu, aby przekazać gotowość do wykonania operacji lotniczej.
+
+## Zarządzanie bezpieczeństwem i incydentami
+
+21. Jako dyspozytor centrum bezpieczeństwa chcę móc ręcznie zarejestrować nowy incydent, podając jego lokalizację, typ i opis, aby natychmiast rozpocząć oficjalną procedurę jego obsługi.
+22. Jako dyspozytor centrum bezpieczeństwa chcę widzieć na pulpicie alarmy przychodzące automatycznie z zintegrowanych systemów (np. czujnik dymu, alarm z kontroli dostępu), aby móc bezzwłocznie na nie zareagować.
+24. Jako dyspozytor centrum bezpieczeństwa chcę mieć możliwość kategoryzacji i priorytetyzacji incydentów (np. medyczny, zagrożenie bezpieczeństwa, techniczny), aby przypisać do nich odpowiednie zasoby i procedury.
+25. Jako dyspozytor centrum bezpieczeństwa chcę widzieć wszystkie aktywne incydenty na interaktywnej mapie lotniska, aby mieć pełen obraz sytuacji operacyjnej w czasie rzeczywistym.
+26. Jako dyspozytor centrum bezpieczeństwa chcę móc przydzielić incydent do najbliższego dostępnego zespołu interwencyjnego, uwzględniając jego kwalifikacje, aby zoptymalizować czas reakcji.
+27. Jako dyspozytor centrum bezpieczeństwa chcę na bieżąco monitorować status każdego incydentu (nowy, przydzielony, w toku, rozwiązany), aby śledzić postępy i w razie potrzeby eskalować problem.
+28. Jako dyspozytor centrum bezpieczeństwa chcę móc uruchomić procedurę alarmową i wysłać powiadomienia do zdefiniowanych grup pracowników (np. obsługa naziemna, personel terminala), aby zapewnić szybką i skoordynowaną komunikację kryzysową.
+29. Jako dyspozytor centrum bezpieczeństwa chcę mieć dostęp do zarchiwizowanych incydentów wraz z pełną historią podjętych działań, aby móc analizować przeszłe zdarzenia i tworzyć raporty.
+30. Jako członek zespołu interwencyjnego chcę otrzymywać na urządzenie mobilne powiadomienia o przydzielonym zadaniu wraz ze wszystkimi szczegółami (lokalizacja, typ incydentu, priorytet), aby móc szybko podjąć działania.
+31. Jako członek zespołu interwencyjnego chcę mieć możliwość aktualizacji statusu mojego zadania w systemie (np. "przyjęte", "w drodze", "zakończone"), aby dyspozytor miał wgląd w postęp moich działań w czasie rzeczywistym.
+32. Jako członek zespołu interwencyjnego chcę móc zaraportować rozwiązanie incydentu, dodając notatki lub załączając zdjęcia, aby udokumentować wykonane czynności.
+33. Jako manager ds. bezpieczeństwa lotniska chcę mieć dostęp do pulpitu analitycznego z kluczowymi wskaźnikami, takimi jak liczba incydentów, średni czas reakcji czy najczęstsze typy zdarzeń, aby oceniać skuteczność procedur bezpieczeństwa.
+34. Jako manager ds. bezpieczeństwa lotniska chcę móc generować szczegółowe raporty z incydentów za wybrany okres, aby analizować trendy i identyfikować obszary podwyższonego ryzyka.
+35. Jako administrator systemu chcę mieć możliwość konfigurowania integracji z zewnętrznymi systemami bezpieczeństwa (CCTV, kontrola dostępu, system ppoż.), aby zapewnić automatyczny przepływ danych do systemu ERP.
+36. Jako administrator systemu chcę móc definiować i zarządzać typami incydentów, priorytetami oraz standardowymi procedurami operacyjnymi (SOP), aby dostosować system do specyficznych potrzeb lotniska.
