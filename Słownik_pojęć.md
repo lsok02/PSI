@@ -1,4 +1,4 @@
-**Słownik pojęć**
+## Słownik pojęć
 
 
 | Termin                  | Synonimy | Definicja terminu                                                                                                                             |
