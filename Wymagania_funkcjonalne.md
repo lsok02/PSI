@@ -40,3 +40,24 @@
 34. Jako manager ds. bezpieczeństwa lotniska chcę móc generować szczegółowe raporty z incydentów za wybrany okres, aby analizować trendy i identyfikować obszary podwyższonego ryzyka.
 35. Jako administrator systemu chcę mieć możliwość konfigurowania integracji z zewnętrznymi systemami bezpieczeństwa (CCTV, kontrola dostępu, system ppoż.), aby zapewnić automatyczny przepływ danych do systemu ERP.
 36. Jako administrator systemu chcę móc definiować i zarządzać typami incydentów, priorytetami oraz standardowymi procedurami operacyjnymi (SOP), aby dostosować system do specyficznych potrzeb lotniska.
+
+## Loty i harmonogramy
+
+37. Jako planista lotów chcę móc tworzyć nowe loty w systemie, definiując ich numer, trasę, planowane czasy i typ samolotu, aby utworzyć podstawowy harmonogram.
+38. Jako planista lotów chcę móc przeglądać i zarządzać slotami czasowymi przyznanymi przez organy kontroli ruchu lotniczego, aby zapewnić zgodność z regulacjami.
+39. Jako planista lotów chcę, aby system automatycznie przypisywał lotom dostępne pasy startowe i bramki na podstawie harmonogramu, aby zoptymalizować wykorzystanie infrastruktury.
+40. Jako koordynator lotów chcę widzieć na pulpicie aktualny status wszystkich lotów w czasie rzeczywistym, aby mieć pełny obraz sytuacji operacyjnej.
+41. Jako koordynator lotów chcę, aby system automatycznie aktualizował status lotu na "wystartował" i "wylądował" po otrzymaniu informacji z systemu ATC.
+42. Jako koordynator lotów chcę móc ręcznie zmienić status lotu na "opóźniony" lub "odwołany" w przypadku błędów automatycznej aktualizacji.
+43. Jako koordynator lotów chcę widzieć szacowany czas opóźnienia dla danego lotu oraz jego przyczynę, aby podejmować świadome decyzje.
+44. Jako koordynator lotów chcę móc wprowadzić zmianę bramki dla odlotu lub przylotu, aby system automatycznie powiadomił zespoły obsługi naziemnej i FIDS.
+45. Jako koordynator lotów chcę móc wprowadzić zmianę pasa startowego dla danego lotu, aby system powiadomił wieżę kontroli i załogę.
+46. Jako koordynator lotów chcę móc zarządzać łańcuchem przesiadkowym, śledząc postęp przygotowania samolotu do kolejnego lotu.
+47. Jako system chcę automatycznie publikować aktualny status lotu na tablicach informacyjnych FIDS w terminalu.
+48. Jako system chcę automatycznie wysyłać powiadomienia do pasażerów o istotnych zmianach (opóźnienie, zmiana bramki).
+49. Jako koordynator lotów chcę móc wysłać wiadomość do załogi konkretnego lotu o zmianach w harmonogramie.
+50. Jako system chcę automatycznie przekazywać harmonogram obsługi naziemnej do systemu zarządzania obsługą naziemną.
+51. Jako system chcę automatycznie powiadamiać zespoły obsługi naziemnej o zmianie stanowiska postojowego lub czasie przybycia samolotu.
+52. Jako koordynator lotów chcę móc filtrować i sortować listę lotów według statusu, linii lotniczej lub bramki.
+53. Jako koordynator lotów chcę, aby system wyświetlał alerty o krytycznych sytuacjach na głównym pulpicie.
+54. Jako planista lotów chcę, aby system weryfikował konflikty w harmonogramie i alertował o nich.
