@@ -17,3 +17,17 @@
 | Dyspozytor Centrum Bezpieczeństwa       | 	Operator  | Pracownik odpowiedzialny za monitorowanie systemów bezpieczeństwa, rejestrację incydentów, koordynację i przydzielanie zadań zespołom interwencyjnym. |
 | Manager ds. Bezpieczeństwa              |            | Osoba odpowiedzialna za nadzór nad całością procesów bezpieczeństwa, analizę danych, raportowanie i doskonalenie procedur.                |
 | Standardowa Procedura Operacyjna (SOP)  | 	          |Zdefiniowany zestaw kroków i działań, które muszą zostać podjęte w odpowiedzi na określony typ incydentu.|
+| Lot | Rejs, Przelot | Zaplanowana podróż powietrzna pomiędzy portem startowym a docelowym, posiadająca unikalny numer, trasę i harmonogram. |
+| Harmonogram lotów | Rozkład lotów | Kompleksowy plan wszystkich lotów uwzględniający czasy, trasy, przydzielone zasoby i sloty czasowe. |
+| Slot czasowy | Okno czasowe | Przydzielony przez organy kontroli ruchu lotniczego przedział czasu, w którym samolot może wystartować lub wylądować. |
+| Status lotu | Stan lotu | Bieżący stan operacyjny lotu: planowany, opóźniony, odwołany, wystartował, wylądował. |
+| Koordynator lotów | Dyspozytor lotów | Pracownik odpowiedzialny za monitorowanie i zarządzanie operacjami lotniczymi w czasie rzeczywistym, wprowadzanie zmian w harmonogramie. |
+| Turn-around | Łańcuch przesiadkowy | Proces przygotowania samolotu do kolejnego lotu, obejmujący obsługę naziemną, tankowanie, czyszczenie i załadunek. |
+| Planista lotów | | Pracownik odpowiedzialny za tworzenie i utrzymywanie harmonogramów lotów, uwzględniając sloty i dostępność zasobów. |
+| Bramka | Gate | Stanowisko, przez które pasażerowie wchodzą na pokład samolotu, posiadające określoną lokalizację i infrastrukturę. |
+| Pas startowy | Droga startowa | Infrastruktura lotniskowa przeznaczona do startów i lądowań samolotów. |
+| Stanowisko postojowe | Parking samolotu | Wyznaczone miejsce na płycie lotniska do postoju i obsługi naziemnej samolotu. |
+| Opóźnienie | | Różnica pomiędzy planowanym a rzeczywistym czasem operacji lotniczej, wymagająca zarządzania zmianami. |
+| Załoga | Personel pokładowy | Piloci i personel pokładowy odpowiedzialni za bezpieczne przeprowadzenie lotu. |
+| Obsługa naziemna | | Zespoły odpowiedzialne za obsługę samolotu na ziemi: catering, tankowanie, bagaż, czyszczenie. |
+| System śledzenia floty | | Technologia umożliwiająca monitorowanie pozycji i statusu samolotów w czasie rzeczywistym. |
