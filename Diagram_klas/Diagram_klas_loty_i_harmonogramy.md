@@ -1,0 +1,136 @@
+@startuml
+hide methods
+skinparam classAttributeIconSize 0
+
+enum StatusLotu {
++ ZAPLANOWANY
++ OPÓŹNIONY
++ ODWOŁANY
++ WYSTARTOWAŁ
++ WYLĄDOWAŁ
+}
+
+enum StatusŁańcuchaPrzesiadkowego {
++ PLANOWANY
++ W_TRAKCIE
++ ZAKOŃCZONY
++ OPÓŹNIONY
+}
+
+class Lot {
+- id: Integer <<PK>>
+--
++ numerLotu: String
++ czasOdlotuPlanowany: DateTime
++ czasOdlotuRzeczywisty: DateTime
++ czasPrzylotuPlanowany: DateTime
++ czasPrzylotuRzeczywisty: DateTime
++ statusLotu: StatusLotu
++ szacowaneOpóźnienie: Integer
++ przyczynaOpóźnienia: String
+}
+
+class HarmonogramLotów {
+- id: Integer <<PK>>
+--
++ dataObowiązywania: Date
++ wersja: String
+}
+
+class SlotCzasowy {
+- id: Integer <<PK>>
+--
++ czasStartu: DateTime
++ czasLądowania: DateTime
++ potwierdzony: Boolean
+}
+
+class PasStartowy {
+- id: Integer <<PK>>
+--
++ numerPasa: String
++ długość: Integer
++ dostępny: Boolean
+}
+
+class Bramka {
+- id: Integer <<PK>>
+--
++ numerBramki: String
++ terminal: String
++ dostępna: Boolean
+}
+
+class StanowiskoPostojowe {
+- id: Integer <<PK>>
+--
++ numerStanowiska: String
++ typ: String
++ dostępne: Boolean
+}
+
+class Samolot {
+- id: Integer <<PK>>
+--
++ numerRejestracyjny: String
++ model: String
++ liczbaMiejsc: Integer
+}
+
+class LiniaLotnicza {
+- id: Integer <<PK>>
+--
++ nazwa: String
++ kod: String
+}
+
+class Trasa {
+- id: Integer <<PK>>
+--
++ lotniskoStartowe: String
++ lotniskoDocelowe: String
++ kodTrasy: String
++ typ: String
+}
+
+class ŁańcuchPrzesiadkowy {
+- id: Integer <<PK>>
+--
++ czasRozpoczęcia: DateTime
++ czasZakończenia: DateTime
++ status: StatusŁańcuchaPrzesiadkowego
+}
+
+class Załoga {
+- id: Integer <<PK>>
+--
++ imię: String
++ nazwisko: String
++ stanowisko: String
+}
+
+class ObsługaNaziemna {
+- id: Integer <<PK>>
+--
++ nazwaZespołu: String
++ typUsługi: String
+}
+
+
+' Relacje
+HarmonogramLotów "1" -- "1..*" Lot : zawiera
+Lot "1" -- "1" Trasa : posiada
+Lot "1" -- "1" SlotCzasowy : wykorzystuje
+Lot "1" -- "1" Samolot : przypisany do
+Samolot "1" -- "1" LiniaLotnicza : należy do
+Lot "1" -- "0..1" PasStartowy : przydzielony pas
+Lot "1" -- "0..1" Bramka : przydzielona bramka
+Lot "1" -- "0..1" StanowiskoPostojowe : przydzielone stanowisko
+
+Lot "1" -- "0..1" ŁańcuchPrzesiadkowy : poprzedza
+ŁańcuchPrzesiadkowy "1" -- "1" Lot : przygotowuje
+ŁańcuchPrzesiadkowy "1" -- "1..*" ObsługaNaziemna : wymaga
+
+Lot "1" -- "1..*" Załoga : przypisana
+Załoga "1" -- "0..*" Lot : pracuje na
+@enduml
