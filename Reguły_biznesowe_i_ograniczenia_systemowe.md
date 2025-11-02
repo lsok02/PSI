@@ -37,6 +37,8 @@ Opis: Odprawa i boarding są blokowane dla lotów o statusie "ODWOŁANY", "W_POW
 **OS008: Limit czasowy modyfikacji**
 Opis: Zmiany w rezerwacji mogą być dokonywane tylko do 4 godzin przed odlotem.
 
+---
+
 ## Loty i harmonogramy
 
 ### RB001: Walidacja numeru lotu
@@ -95,3 +97,43 @@ Opis: Zmiany w rezerwacji mogą być dokonywane tylko do 4 godzin przed odlotem.
 
 ### OS012: Sekwencja operacji lotu
 **Opis:** Status lotu może zmieniać się tylko zgodnie z sekwencją: ZAPLANOWANY → OPÓŹNIONY/WYSTARTOWAŁ → WYLĄDOWAŁ.
+
+## Bezpieczeństwo i incydenty
+
+#### RB001: Obowiązkowa kategoryzacja i priorytetyzacja incydentu
+Każdy incydent musi mieć przypisaną kategorię (np. medyczny, techniczny) oraz priorytet (np. Krytyczny, Wysoki).
+
+#### RB002: Przypisanie incydentu do zespołu
+Dyspozytor musi przypisać incydent o statusie "Nowy" do zespołu o kwalifikacjach zgodnych z kategorią zdarzenia.
+
+#### RB003: Wymóg raportu zamknięcia
+Incydent może zostać zamknięty dopiero po wypełnieniu przez zespół interwencyjny raportu z podjętych działań.
+
+#### RB004: Eskalacja incydentu
+Incydent o priorytecie "Wysokim" lub "Krytycznym" musi zostać eskalowany do Managera ds. Bezpieczeństwa, jeśli jego status nie zmieni się na "W toku" w ciągu 10 minut od przydzielenia.
+
+#### RB005: Aktywacja procedury komunikacji kryzysowej
+Incydent o priorytecie "Krytycznym" (np. pożar, zagrożenie bombowe) wymaga od Dyspozytora natychmiastowego uruchomienia procedury komunikacji kryzysowej.
+
+#### OS001: Automatyczne generowanie incydentów krytycznych
+Alarm z zintegrowanego systemu bezpieczeństwa (np. PPOŻ, KD) musi automatycznie wygenerować w systemie incydent o priorytecie "Krytyczny".
+
+#### OS002: Walidacja cyklu życia incydentu
+System musi wymuszać zmianę statusu incydentu zgodnie z sekwencją:  
+**Nowy → Przydzielony → W toku → Rozwiązany → Zamknięty**.
+
+#### OS003: Wymagalność kluczowych pól
+Zapisanie nowego incydentu wymaga podania jego **typu**, **lokalizacji** oraz **źródła zgłoszenia**.
+
+#### OS004: Niezmienność zarchiwizowanych danych
+Dane incydentu o statusie "Zamknięty" stają się niezmienialne (**read-only**).
+
+#### OS005: Automatyczne powiadomienia o przydzieleniu zadania
+Przypisanie incydentu do zespołu musi automatycznie wyzwolić wysłanie powiadomienia do jego członków, zawierającego **ID incydentu**, **lokalizację** i **priorytet**.
+
+#### OS006: Ograniczenia uprawnień do modyfikacji
+Tylko role **Dyspozytor centrum bezpieczeństwa** lub **Administrator systemu** mogą tworzyć i przydzielać incydenty.  
+Rola **Członek zespołu interwencyjnego** może jedynie aktualizować status własnych zadań.
+
+#### OS007: Automatyczna integracja z innymi domenami
+Incydent dotyczący zasobu lotniskowego (np. bramka, pas startowy) musi automatycznie generować powiadomienie do powiązanych domen (np. **Loty i harmonogramy**).
