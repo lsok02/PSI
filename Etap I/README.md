@@ -15,6 +15,8 @@
 
 ---
 
+**Link do repozytorium z artefaktami:** [https://github.com/lsok02/PSI](https://github.com/lsok02/PSI/tree/main/Etap%20I)
+
 ## Model biznesowy
 
 ### Cel i zakres projektu
