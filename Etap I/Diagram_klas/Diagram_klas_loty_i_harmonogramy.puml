@@ -1,4 +1,4 @@
-@startuml
+@startuml Loty i harmonogramy
 hide methods
 skinparam classAttributeIconSize 0
 

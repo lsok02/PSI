@@ -1,4 +1,4 @@
-@startuml
+@startuml Obsluga naziemna i zasoby
 hide methods
 skinparam classAttributeIconSize 0
 
