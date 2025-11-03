@@ -2,6 +2,12 @@
 hide methods
 skinparam classAttributeIconSize 0
 
+enum StanowiskoPracownika {
++ ODPRAWA
++ KONTROLA_BEZPIECZEŃSTWA
++ BOARDING
+}
+
 enum RodzajDokumentu {
 
 + PASZPORT
@@ -149,7 +155,7 @@ class Pracownik {
 + numerIdentyfikacyjny: String
 + imie: String
 + nazwisko: String
-+ stanowisko: String
++ stanowisko: StanowiskoPracownika
   }
 
 class Lotnisko {
