@@ -10,4 +10,8 @@
   F1 - Artefakty modelowania biznesowego i specyfikacja wymagań  
   F2a - Definicja  
   F2b - Ocena architektury  
-  F3 - Implementacja i testy  
+  F3 - Implementacja i testy 
+
+---
+
+-> [**Etap 1**](Etap%20I/README.md)
