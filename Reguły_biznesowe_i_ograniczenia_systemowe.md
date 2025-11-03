@@ -137,3 +137,56 @@ Rola **Członek zespołu interwencyjnego** może jedynie aktualizować status w�
 
 #### OS007: Automatyczna integracja z innymi domenami
 Incydent dotyczący zasobu lotniskowego (np. bramka, pas startowy) musi automatycznie generować powiadomienie do powiązanych domen (np. **Loty i harmonogramy**).
+
+## Obsługa naziemna i zasoby
+
+#### RB001: Przydział personelu do zadań
+Opis: Pracownik może zostać przypisany do zadania tylko, jeśli posiada wymagane kwalifikacje i uprawnienia oraz jest dostępny w danej zmianie.
+
+#### RB002: Przydział sprzętu i pojazdów 
+Opis: Sprzęt lub pojazd mogą zostać przypisane do zadania tylko, jeśli mają status „SPRAWNY” i nie są obecnie zarezerwowane ani w przeglądzie.
+
+#### RB003: Zakończenie zadania
+Opis: Zadanie może zostać oznaczone jako zakończone dopiero po potwierdzeniu wykonania przez przypisanego pracownika i weryfikacji przez koordynatora.
+
+#### RB004: Raportowanie incydentów
+Opis: Każdy incydent lub awaria musi zawierać identyfikator zadania lub zasobu, opis zdarzenia, datę, godzinę i dane osoby zgłaszającej.
+
+#### RB005: Zarządzanie zmianami
+Opis: Harmonogram zmian personelu musi być zdefiniowany z co najmniej 24-godzinnym wyprzedzeniem. Modyfikacje wymagają zatwierdzenia przez kierownika zmiany.
+
+#### RB006: Raportowanie stanu zasobów
+Opis: Stan techniczny sprzętu i pojazdów musi być aktualizowany minimum raz na 24 godziny. Brak aktualizacji zmienia status zasobu na „DO WERYFIKACJI”.
+
+#### RB007: Powiązanie z lotem
+Opis: Zadania operacyjne (np. tankowanie, sprzątanie, załadunek) muszą być powiązane z konkretnym lotem. Wyjątek stanowią testy sprzętu lub szkolenia.
+
+#### RB008: Uprawnienia do modyfikacji zasobów
+Opis: Zmiana statusu sprzętu lub pojazdu (np. z „SPRAWNY” na „NIEDOSTĘPNY”) może być wykonana tylko przez technika utrzymania lub kierownika zasobów.
+
+#### RB009: Raporty operacyjne
+Opis: System generuje dzienne raporty dotyczące wykorzystania personelu, sprzętu i pojazdów. Raporty są archiwizowane przez minimum 12 miesięcy.
+
+#### RB010: Zgłaszanie awarii krytycznych
+Opis: Awaria sprzętu kluczowego (np. cysterny paliwowej, pojazdu transportowego) automatycznie generuje komunikat do domeny „Zarządzanie bezpieczeństwem i incydentami”.
+
+#### OS001: Weryfikacja dostępności personelu
+Opis: System nie pozwala przypisać pracownika do więcej niż jednego zadania w tym samym przedziale czasowym.
+
+#### OS002: Weryfikacja dostępności sprzętu
+Opis: System blokuje przypisanie zasobu technicznego, który jest w trakcie konserwacji, rezerwacji lub oznaczony jako „NIEDOSTĘPNY”.
+
+#### OS003: Kolejność statusów zadania
+Opis: Status zadania może zmieniać się tylko w kolejności: „ZAPLANOWANE” → „W TOKU” → „ZAKOŃCZONE”.
+
+#### OS004: Blokada usuwania aktywnych zasobów
+Opis: System nie pozwala usunąć pracownika, pojazdu lub sprzętu przypisanego do aktywnych lub niezakończonych zadań.
+
+#### OS005: Integracja z lotami i harmonogramami
+Opis: Zadania powiązane z lotem nie mogą rozpocząć się, dopóki lot nie ma statusu „PRZYGOTOWANY DO OBSŁUGI” w domenie „Loty i harmonogramy”.
+
+#### OS006: Integracja z bezpieczeństwem
+Opis: W przypadku aktywnego incydentu lub ograniczenia strefy, system blokuje przydzielanie zadań do lokalizacji objętych ryzykiem.
+
+#### OS007: Walidacja kwalifikacji personelu
+Opis: System automatycznie sprawdza zgodność uprawnień pracownika z wymaganiami zadania (np. uprawnienie do obsługi pojazdu paliwowego).
