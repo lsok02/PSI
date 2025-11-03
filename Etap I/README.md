@@ -34,7 +34,7 @@ Projekt obejmuje implementację i integrację czterech kluczowych, wzajemnie pow
 + Zarządzanie Bagażem: Rejestracja, etykietowanie i przekazywanie danych o bagażu do obsługi naziemnej.
 + Kontrola i Boarding: Obsługa bramek kontroli bezpieczeństwa i bramek wejściowych (boarding), weryfikacja kart pokładowych.
 + Rezerwacja i Sprzedaż: Obsługa interfejsu do rezerwacji i zakupu biletów przez pasażerów.
-+ 
+
 **3. Obsługa Naziemna i Zasoby**
 + Zarządzanie Zasobami: Ewidencja, monitorowanie stanu technicznego i dostępności sprzętu, pojazdów oraz personelu.
 + Przydzielanie Zadań: Algorytmiczne i manualne przydzielanie personelu i sprzętu do operacji naziemnych (tankowanie, catering, załadunek bagażu).
