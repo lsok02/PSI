@@ -61,3 +61,26 @@
 52. Jako koordynator lotów chcę móc filtrować i sortować listę lotów według statusu, linii lotniczej lub bramki.
 53. Jako koordynator lotów chcę, aby system wyświetlał alerty o krytycznych sytuacjach na głównym pulpicie.
 54. Jako planista lotów chcę, aby system weryfikował konflikty w harmonogramie i alertował o nich.
+
+## Obsługa naziemna i zasoby
+55.	Jako kierownik obsługi naziemnej chcę móc rejestrować nowych pracowników w systemie wraz z ich kwalifikacjami i uprawnieniami, aby móc ich później przypisywać do odpowiednich zadań.
+56.	Jako kierownik obsługi naziemnej chcę móc przeglądać listę pracowników wraz z ich dostępnością i przypisaniem do zmian, aby efektywnie planować obsadę.
+57.	Jako planista zadań chcę móc tworzyć i planować zadania związane z obsługą samolotu (np. tankowanie, sprzątanie, załadunek bagażu), aby zapewnić ciągłość operacji naziemnych.
+58.	Jako planista zadań chcę, aby system automatycznie sugerował dostępny personel i sprzęt na podstawie kwalifikacji i dostępności, aby przyspieszyć proces planowania.
+59.	Jako koordynator obsługi naziemnej chcę mieć możliwość przypisania konkretnych zasobów (pojazdy, sprzęt, personel) do danego zadania, aby zapewnić jego realizację.
+60.	Jako koordynator obsługi naziemnej chcę móc w czasie rzeczywistym monitorować status realizowanych zadań (w toku, zakończone, opóźnione), aby reagować na problemy.
+61.	Jako operator sprzętu chcę móc aktualizować status zadania (rozpoczęte, zakończone, awaria) z poziomu urządzenia mobilnego, aby dane w systemie były aktualne.
+62.	Jako kierownik obsługi naziemnej chcę, aby system umożliwiał planowanie zmian i harmonogramów pracy, aby zapewnić ciągłość operacyjną.
+63.	Jako technik utrzymania chcę móc rejestrować sprzęt i pojazdy w systemie wraz z ich parametrami i stanem technicznym, aby prowadzić pełną ewidencję zasobów.
+64.	Jako technik utrzymania chcę otrzymywać powiadomienia o zbliżających się przeglądach i konserwacjach sprzętu, aby utrzymać jego gotowość operacyjną.
+65.	Jako kierownik zasobów chcę móc sprawdzić dostępność sprzętu i pojazdów w danym momencie, aby uniknąć konfliktów w ich przydziale.
+66.	Jako koordynator załadunku chcę planować i nadzorować proces załadunku i rozładunku bagażu, aby zapewnić zgodność z planem lotu.
+67.	Jako koordynator załadunku chcę, aby system automatycznie uwzględniał dane o liczbie pasażerów i bagaży z domeny odpraw, aby zoptymalizować załadunek.
+68.	Jako członek obsługi bagażowej chcę móc raportować problemy z załadunkiem (np. brak wózka, uszkodzony taśmociąg), aby kierownik mógł szybko reagować.
+69.	Jako kierownik obsługi naziemnej chcę generować raporty o wykonanych zadaniach, wykorzystaniu personelu i sprzętu, aby analizować efektywność operacyjną.
+70.	Jako kierownik obsługi naziemnej chcę, aby system umożliwiał raportowanie awarii sprzętu i incydentów operacyjnych, aby dane były przekazywane do systemu bezpieczeństwa.
+71.	Jako system chcę automatycznie przekazywać dane o dostępności personelu i sprzętu do domeny „Loty i harmonogramy”, aby umożliwić planowanie obsługi lotów.
+72.	Jako system chcę odbierać informacje o planowanych lotach i ich statusach z domeny „Loty i harmonogramy”, aby przygotować odpowiednie zadania obsługi naziemnej.
+73.	Jako system chcę przekazywać zgłoszenia o awariach i incydentach do domeny „Zarządzanie bezpieczeństwem i incydentami”, aby umożliwić odpowiednią reakcję.
+74.	Jako system chcę odbierać komunikaty o ograniczeniach dostępu i zagrożeniach z domeny bezpieczeństwa, aby wykluczyć określone strefy z planowania zadań.
+75.	Jako kierownik obsługi naziemnej chcę móc przeglądać historię zadań i incydentów związanych z konkretnym personelem lub sprzętem, aby ocenić niezawodność i wydajność.

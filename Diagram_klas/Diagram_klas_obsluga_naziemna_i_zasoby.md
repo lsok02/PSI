@@ -1,0 +1,141 @@
+@startuml
+hide methods
+skinparam classAttributeIconSize 0
+
+class PracownikNaziemny {
+  +id: UUID
+  +imieNazwisko: string
+  +rola: string
+  +kwalifikacje: string[]
+  +statusDostepnosci: StatusDostepnosci
+  +idZmiany: UUID
+}
+
+class Zmiana {
+  +id: UUID
+  +czasRozpoczecia: datetime
+  +czasZakonczenia: datetime
+  +przypisaniPracownicy: PracownikNaziemny[]
+}
+
+class Zadanie {
+  +id: UUID
+  +typ: TypZadania
+  +status: StatusZadania
+  +planowanyStart: datetime
+  +planowanyKoniec: datetime
+  +rzeczywistyStart: datetime
+  +rzeczywistyKoniec: datetime
+  +przypisaniPracownicy: PracownikNaziemny[]
+  +przypisaneZasoby: ZasobTechniczny[]
+  +idLotu: UUID
+  +zgloszoneIncydenty: Incydent[]
+}
+
+abstract class ZasobTechniczny {
+  +id: UUID
+  +nazwa: string
+  +status: StatusZasobu
+  +dataNastepnegoPrzegladu: datetime
+  +typZasobu: TypZasobu
+}
+
+class Pojazd extends ZasobTechniczny {
+  +numerRejestracyjny: string
+  +typPojazdu: string
+}
+
+class SprzetSpecjalistyczny extends ZasobTechniczny {
+  +kategoria: string
+}
+
+class Incydent {
+  +id: UUID
+  +typ: string
+  +opis: string
+  +zgloszonyPrzez: PracownikNaziemny
+  +idZadania: UUID
+  +dataZgloszenia: datetime
+}
+
+class ZaladunekBagazu {
+  +id: UUID
+  +idLotu: UUID
+  +status: StatusZaladunku
+  +planowanaLiczbaBagazy: int
+  +rzeczywistaLiczbaBagazy: int
+  +przypisaniPracownicy: PracownikNaziemny[]
+  +powiazaneZadania: Zadanie[]
+}
+
+PracownikNaziemny "1" --> "0..*" Zadanie : realizuje
+Zadanie "0..*" --> "0..*" ZasobTechniczny : wykorzystuje
+Zmiana "1" --> "0..*" PracownikNaziemny : < przypisani
+ZaladunekBagazu "1" --> "0..*" Zadanie : < obejmuje
+Zadanie "0..*" --> "0..*" Incydent : < zgłasza
+ZasobTechniczny "1" --> "0..*" Incydent : < powiązany z
+
+class PasazerowieIOdprawy <<zewnętrzna>> {
+  +liczbaPasazerow
+  +liczbaBagazy
+  +statusOdprawy
+}
+
+class LotyIHarmonogramy <<zewnętrzna>> {
+  +idLotu
+  +czasOdlotu
+  +czasPrzylotu
+  +status
+}
+
+class BezpieczenstwoIIncydenty <<zewnętrzna>> {
+  +raportyIncydentow
+  +ograniczeniaDostepu
+}
+
+PasazerowieIOdprawy --> ZaladunekBagazu : dane o bagażu i pasażerach
+LotyIHarmonogramy --> Zadanie : planowanie obsługi lotów
+Zadanie --> LotyIHarmonogramy : raportowanie gotowości
+Zadanie --> BezpieczenstwoIIncydenty : zgłaszanie incydentów
+BezpieczenstwoIIncydenty --> Zadanie : ograniczenia dostępu
+
+enum StatusDostepnosci {
+  DOSTEPNY
+  W_TRAKCIE_ZMIANY
+  NIEDOSTEPNY
+}
+
+enum TypZadania {
+  TANKOWANIE
+  SPRZATANIE
+  ZALADUNEK_BAGAZU
+  KONSERWACJA
+  INNE
+}
+
+enum StatusZadania {
+  ZAPLANOWANE
+  W_TOKU
+  ZAKONCZONE
+  OPOZNIONE
+  ANULOWANE
+}
+
+enum StatusZasobu {
+  DOSTEPNY
+  W_UZYCIU
+  W_SERWISIE
+  NIESPRAWNY
+}
+
+enum TypZasobu {
+  POJAZD
+  SPRZET_SPECJALISTYCZNY
+}
+
+enum StatusZaladunku {
+  ZAPLANOWANY
+  W_TOKU
+  ZAKONCZONY
+}
+@enduml

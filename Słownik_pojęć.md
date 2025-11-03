@@ -30,3 +30,15 @@
 | Załoga | Personel pokładowy | Piloci i personel pokładowy odpowiedzialni za bezpieczne przeprowadzenie lotu. |
 | Obsługa naziemna | | Zespoły odpowiedzialne za obsługę samolotu na ziemi: catering, tankowanie, bagaż, czyszczenie. |
 | System śledzenia floty | | Technologia umożliwiająca monitorowanie pozycji i statusu samolotów w czasie rzeczywistym. |
+| Pracownik naziemny | | Osoba odpowiedzialna za realizację operacji naziemnych, takich jak tankowanie, załadunek bagaży, sprzątanie lub obsługa sprzętu technicznego. |
+| Zmiana | dyżur | Określony przedział czasu, w którym pracownicy naziemni pełnią swoje obowiązki operacyjne. |
+| Zadanie | operacja | Jednostka pracy wykonywana w ramach obsługi naziemnej, np. tankowanie, sprzątanie, załadunek bagaży; posiada status i przypisane zasoby. |
+| Zasób techniczny | | Ogólne pojęcie obejmujące pojazdy i sprzęt specjalistyczny wykorzystywany w obsłudze naziemnej. |
+| Pojazd | autobus, ciągnik, cysterna | Typ zasobu technicznego wykorzystywany do transportu ludzi, sprzętu lub materiałów po płycie lotniska. |
+| Sprzęt specjalistyczny | narzędzie techniczne, urządzenie obsługowe | Zasób techniczny niebędący pojazdem, np. agregat, schody pasażerskie, podnośnik, wózek bagażowy. |
+| Status zasobu | stan zasobu | Aktualny stan dostępności zasobu: *dostępny*, *w użyciu*, *w serwisie*, *niesprawny*. |
+| Status zadania  | etap realizacji | Aktualny etap realizacji zadania: *zaplanowane*, *w toku*, *zakończone*, *opóźnione*, *anulowane*. |
+| Incydent operacyjny | awaria | Niezaplanowane zdarzenie wpływające na realizację zadań, np. awaria sprzętu lub błąd personelu. |
+| Kwalifikacje | uprawnienia, certyfikaty | Zestaw umiejętności i licencji uprawniających pracownika do wykonywania określonych zadań lub obsługi sprzętu. |
+| Przegląd techniczny | kontrola techniczna | Zaplanowana czynność konserwacyjna wykonywana w celu utrzymania sprawności i bezpieczeństwa zasobu. |
+| Raport operacyjny | | Dokument zawierający dane o wykonanych zadaniach, użytych zasobach i wystąpionych incydentach. |
