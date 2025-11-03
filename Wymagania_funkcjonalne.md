@@ -23,7 +23,7 @@
 19. Jako pracownik gate’u chcę oznaczać pasażerów, którzy weszli na pokład, aby obsługa lotu mogła potwierdzić kompletność.
 20. Jako pracownik gate’u chcę mieć możliwość oznaczenia zakończenia boardingu, aby przekazać gotowość do wykonania operacji lotniczej.
 
-## Zarządzanie bezpieczeństwem i incydentami
+## Bezpieczeństwo i incydenty
 
 21. Jako dyspozytor centrum bezpieczeństwa chcę móc ręcznie zarejestrować nowy incydent, podając jego lokalizację, typ i opis, aby natychmiast rozpocząć oficjalną procedurę jego obsługi.
 22. Jako dyspozytor centrum bezpieczeństwa chcę widzieć na pulpicie alarmy przychodzące automatycznie z zintegrowanych systemów (np. czujnik dymu, alarm z kontroli dostępu), aby móc bezzwłocznie na nie zareagować.
