@@ -215,13 +215,31 @@ Projekt obejmuje implementację i integrację czterech kluczowych, wzajemnie pow
 
 ### 3. Model informacyjny
 
+---
+
 #### Pasażerowie i odprawy
+
+![Diagram - Pasażerowie i odprawy](/Etap%20I/Diagram_klas/Diagram_klas_pasażerowie_i_odprawy.png)
+
+---
 
 #### Loty i harmonogramy
 
+![Diagram - Loty i harmonogramy](/Etap%20I/Diagram_klas/Diagram_klas_loty_i_harmonogramy.png)
+
+---
+
 #### Bezpieczeństwo i incydenty
 
+![Diagram - Bezpieczeństwo i incydenty](/Etap%20I/Diagram_klas/Diagram_klas_bezpieczenstwo_i_incydenty.png)
+
+---
+
 #### Obsługa naziemna i zasoby
+
+![Diagram - Obsługa naziemna i zasoby](/Etap%20I/Diagram_klas/Diagram_klas_obsluga_naziemna_i_zasoby.png)
+
+---
 
 ### 4. Reguły biznesowe i ograniczenia systemowe
 
@@ -263,7 +281,7 @@ Opis: Odprawa i boarding są blokowane dla lotów o statusie "ODWOŁANY", "W_POW
 Opis: Zmiany w rezerwacji mogą być dokonywane tylko do 4 godzin przed odlotem.
 
 
-### Loty i harmonogramy
+#### Loty i harmonogramy
 
 * **RB-LIH001: Walidacja numeru lotu**
 Opis: Numer lotu musi być unikalny w systemie i składać się z kodu linii lotniczej (2 znaki) oraz numeru (1-4 cyfry).
@@ -322,7 +340,7 @@ Opis: Koordynator lotów może ręcznie zmienić status lotu na "OPÓŹNIONY" lu
 * **OS-LIH012: Sekwencja operacji lotu**
 Opis: Status lotu może zmieniać się tylko zgodnie z sekwencją: ZAPLANOWANY → OPÓŹNIONY/WYSTARTOWAŁ → WYLĄDOWAŁ.
 
-### Bezpieczeństwo i incydenty
+#### Bezpieczeństwo i incydenty
 
 * **RB-BII001: Obowiązkowa kategoryzacja i priorytetyzacja incydentu**
 Każdy incydent musi mieć przypisaną kategorię (np. medyczny, techniczny) oraz priorytet (np. Krytyczny, Wysoki).
@@ -362,7 +380,7 @@ Rola **Członek zespołu interwencyjnego** może jedynie aktualizować status w�
 * **OS-BII007: Automatyczna integracja z innymi domenami**
 Incydent dotyczący zasobu lotniskowego (np. bramka, pas startowy) musi automatycznie generować powiadomienie do powiązanych domen (np. **Loty i harmonogramy**).
 
-### Obsługa naziemna i zasoby
+#### Obsługa naziemna i zasoby
 
 * **RB-ONZ001: Przydział personelu do zadań**
 Opis: Pracownik może zostać przypisany do zadania tylko, jeśli posiada wymagane kwalifikacje i uprawnienia oraz jest dostępny w danej zmianie.
@@ -414,3 +432,338 @@ Opis: W przypadku aktywnego incydentu lub ograniczenia strefy, system blokuje pr
 
 * **OS-ONZ007: Walidacja kwalifikacji personelu**
 Opis: System automatycznie sprawdza zgodność uprawnień pracownika z wymaganiami zadania (np. uprawnienie do obsługi pojazdu paliwowego).
+
+### 5. Prototypy interfejsu
+
+---
+
+#### Pasażerowie i odprawy - Boarding
+
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Boarding/Boarding_Strona_główna.png" 
+    width="60%">
+<br>
+<em>Strona główna po zalogowaniu pracownika lotniska.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Boarding/Boarding_lista_pasażerów.png" 
+    width="60%">
+<br>
+<em>Po naciśnięciu przycisku "Rozpocznij boarding" pracownik widzi listę pasażerów, ich status oraz szczegóły lotu.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Boarding/Boarding_szczegóły_pasażera.png" 
+    width="60%">
+<br>
+<em>Po zeskanowaniu karty pokładowej pasażera, pracownik widzi jego dane, które może zatwierdzić po zweryfikowaniu.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Boarding/Boarding_nieprawidłowy_lot.png" 
+    width="60%">
+<br>
+<em>Jeżeli zeskanowana karta pokładowa dotyczy innego lotu, to w szczegółach pasażera wyświetlony zostanie odpowiedni komunikat.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Boarding/Boarding_wprowadzenie_karty_pokładowej.png" 
+    width="60%">
+<br>
+<em>W przypadku niedziałającego skanera, pracownik po naciśnięciu "Wyszukaj kartę pokładową" może wprowadzić numer karty pokładowej, której nie udało się zeskanować.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Boarding/Boarding_ostrzeżenie.png" 
+    width="60%">
+<br>
+<em>Po naciśnięciu "Zakończ boarding" w przypadku jeżeli nie wszyscy pasażerowie przeszli boarding, zostanie wyświetlony odpowiedni komunikat.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Boarding/Boarding_pomyślnie_zakończono.png" 
+    width="60%">
+<br>
+<em>Na koniec zostanie wyświetlony komunikat o pomyślnym zakończeniu boardingu.</em>
+</p>
+
+---
+
+#### Pasażerowie i odprawy - Odprawa pasażera
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Odprawa_pasażera/Odprawa_Strona_główna.png" 
+    width="60%">
+<br>
+<em>Strona główna po zalogowaniu pasażera</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Odprawa_pasażera/Odprawa_Rezerwacje_pasażera.png" 
+    width="60%">
+<br>
+<em>Po naciśnięciu przycisku "Moje rezerwacje" pasażer widzi wszystkie jego rezerwacje: zarówno poprzednie, jak i nadchodzące.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Odprawa_pasażera/Odprawa_wybór_pasażerów.png" 
+    width="60%">
+<br>
+<em>Po naciśnięciu linku "check-in" przy danej rezerwacji pasażer zostaje przekierowany do widoku, gdzie wybiera, których pasażerów chce odprawić.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Odprawa_pasażera/Odprawa_dodanie_dokumentu_tożsamości.png" 
+    width="60%">
+<br>
+<em>Po wybraniu pasażerów do odprawy i naciśnięciu przycisku "Przejdź dalej" pasażer zostaje przekierowany do strony, na której zostaje poproszony o uzupełnienie informacji dotyczących dowodu tożsamości każdego z odprawianych pasażerów.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Odprawa_pasażera/Odprawa_dodanie_dokumentu_tożsamości-niepoprawne_dane.png" 
+    width="60%">
+<br>
+<em>Jeżeli pasażer nie uzupełni wszystkich danych to zostanie wyświetlony komunikat o niepoprawnych danych.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Odprawa_pasażera/Odprawa_wybór_bagażu.png" 
+    width="60%">
+<br>
+<em>Po poprawnym uzupełnieniu danych i naciśnięciu "Przejdź dalej" pasażer zostaje przekierowany do widoku, gdzie może wybrać rodzaj bagażu, jaki ze sobą zabiera każdy z pasażerów.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Odprawa_pasażera/Odprawa_wybór_miejsca.png" 
+    width="60%">
+<br>
+<em>Po wybraniu bagażu, pasażer może wybrać miejsca w samolocie.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Odprawa_pasażera/Odprawa_wybór_metody_płatności.png" 
+    width="60%">
+<br>
+<em>Jeżeli pasażer wybrał miejsca i zrezygnował z losowego przydziału to wybiera metodę płatności.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Pasażerowie_i_odprawy/Odprawa_pasażera/Odprawa_pobranie_kart_pokładowych.png" 
+    width="60%">
+<br>
+<em>Na koniec pasażer otrzymuje karty pokładowe z opcją pobrania i wydruku.</em>
+</p>
+
+---
+
+#### Loty i harmonogramy - Dodanie lotu
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Loty_i_harmonogramy/Dodawanie_lotu/1.png" 
+    width="60%">
+<br>
+<em>Formularz do dodania lotu.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Loty_i_harmonogramy/Dodawanie_lotu/2.png" 
+    width="60%">
+<br>
+<em>Formularz w przypadku gdy podane dane się nie zgadzają.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Loty_i_harmonogramy/Dodawanie_lotu/3.png" 
+    width="60%">
+<br>
+<em>Formularz w przypadku poprawnych danych.</em>
+</p>
+
+---
+
+#### Loty i harmonogramy - Zmiana statusu
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Loty_i_harmonogramy/Zmiana_statusu/1.png" 
+    width="60%">
+<br>
+<em>Zmiana statusu na odwołany.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Loty_i_harmonogramy/Zmiana_statusu/2.png" 
+    width="60%">
+<br>
+<em>Zmiana statusu na odwołany z podaniem przyczyny.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Loty_i_harmonogramy/Zmiana_statusu/3.png" 
+    width="60%">
+<br>
+<em>Formularz w przypadku normalnej sytuacji lotu.</em>
+</p>
+
+---
+
+#### Bezpieczeństwo i incydenty - Raportowanie incydentu
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Bezpieczenstwo_i_incydenty/Raportowanie_incydentu/1.png" 
+    width="20%">
+<br>
+<em>Na urządzeniu mobilnym pojawia się powiadomienie o przypisaniu do incydentu, wysyłane co 5 sekund.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Bezpieczenstwo_i_incydenty/Raportowanie_incydentu/2.png" 
+    width="20%">
+<br>
+<em>Po kliknięciu w powiadomienie, Członek zespołu interwencyjnego widzi incydent, jego szczegóły oraz pola do aktualizacji.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Bezpieczenstwo_i_incydenty/Raportowanie_incydentu/3.png" 
+    width="20%">
+<br>
+<em>Po zmianie statusu incydentu, użytkownik otrzymuje informację o pomyślnym działaniu.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Bezpieczenstwo_i_incydenty/Raportowanie_incydentu/4.png" 
+    width="20%">
+<br>
+<em>Członek zespołu interwencyjnego aktualizuje dziennik akcji poprzez wypełnienie pola tekstowego.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Bezpieczenstwo_i_incydenty/Raportowanie_incydentu/5.png" 
+    width="20%">
+<br>
+<em>Po dodaniu akcji w dzienniku, Członek zespołu interwencyjnego otrzymuje potwierdzenie.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Bezpieczenstwo_i_incydenty/Raportowanie_incydentu/6.png" 
+    width="20%">
+<br>
+<em>Po kliknięciu przycisku 'Zgłoś zakończenie incydentu', wyświetla się modal z potwierdzeniem działania.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Bezpieczenstwo_i_incydenty/Raportowanie_incydentu/7.png" 
+    width="20%">
+<br>
+<em>Po zatwierdzeniu zakończenia incydentu, Członek zespołu interwencyjnego otrzymuje komunikat i jest przenoszony do panelu głównego aplikacji.</em>
+</p>
+
+---
+
+#### Bezpieczeństwo i incydenty - Zarządzanie incydentami
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Bezpieczenstwo_i_incydenty/Panel_incydentow/1.png" 
+    width="60%">
+<br>
+<em>Centrum zarządzania incydentami lotniskowymi, po lewej stronie znajdują się aktywne incydenty zawierające najważniejsze informacje wraz z statusem. Pośrodku mapa lotniska wraz z pinezkami na mapie wskazującymi na incydenty. Po prawej alerty pochodzące z czujników/ innych źródeł, potencjalne źródło incydentów. Niżej szczegóły wybranego incydentu.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Bezpieczenstwo_i_incydenty/Panel_incydentow/2.png" 
+    width="60%">
+<br>
+<em>Gdy alert wskazuje na ryzyko, po kliknięciu przycisku 'Stwórz incydent', pojawia się modal tworzenia incydentu, należy wypełnić pola wszystkie pola formularza.</em>
+</p>
+
+<br>
+
+<p align="center">
+<img 
+    src="/Etap%20I/Prototypy_interfejsu/Bezpieczenstwo_i_incydenty/Panel_incydentow/3.png" 
+    width="60%">
+<br>
+<em>Po stworzeniu incydentu, pojawia się on w panelu aktywnych incydentów i mapie, znika z pola 'Nowe alerty', pokazuje się również potwierdzenie dodania incydentu.</em>
+</p>
