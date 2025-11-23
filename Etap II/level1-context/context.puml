@@ -1,0 +1,27 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title [Kontekst] System ERP do zarządzania operacjami i zasobami komercyjnego portu lotniczego
+
+Person(passenger, "Pasażer", "Osoba korzystająca z usług lotniska: rezerwacja biletów, odprawa, boarding.")
+Person(staff, "Pracownik Lotniska", "Pracownik obsługi, ochrony, koordynator lotów, technik zasobów, dyspozytor bezpieczeństwa.")
+Person(team, "Zespół Interwencyjny", "Zespół reagujący na incydenty (ratownicy, ochrona, technicy).")
+Person(airline, "Linie Lotnicze", "Zewnętrzne systemy rezerwacji i potwierdzania lotów.")
+System_Ext(atc, "System ATC", "Kontrola ruchu lotniczego – źródło informacji o slotach, startach i lądowaniach.")
+System_Ext(fids, "System FIDS", "Tablice informacyjne lotniska – statusy lotów.")
+System_Ext(security, "Systemy bezpieczeństwa", "Czujniki PPOŻ, kontrola dostępu, monitoring – automatyczne alerty.")
+
+System_Boundary(erp, "ERP Lotniska") {
+    System(erp_system, "System ERP", "Zintegrowany system zarządzania operacjami portu lotniczego.")
+}
+
+Rel(passenger, erp_system, "Rezerwuje bilety, odprawia się, sprawdza status lotu")
+Rel(staff, erp_system, "Zarządza lotami, odprawą, boardingiem, zadaniami, zasobami")
+Rel(team, erp_system, "Otrzymuje zgłoszenia incydentów i aktualizuje status działań")
+
+Rel(airline, erp_system, "Przesyła dane o rezerwacjach i lotach", "API/Integracja")
+Rel(atc, erp_system, "Dostarczanie statusów, slotów i informacji operacyjnych", "Integracja ATC")
+Rel(erp_system, fids, "Publikuje aktualne statusy lotów", "Push")
+Rel(security, erp_system, "Przesyła alerty o incydentach", "Automatyczne powiadomienia")
+
+@enduml
