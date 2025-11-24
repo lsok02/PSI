@@ -1,0 +1,57 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title [Komponenty] Security API (Bezpieczeństwo i Incydenty)
+
+Container(web_app, "Aplikacja Webowa", "Angular/React", "Interfejs dla Dyspozytora i Managera")
+Container(mobile_app, "Aplikacja Mobilna", "React Native", "Interfejs dla Zespołów Interwencyjnych")
+Container(notification_service, "Serwis Powiadomień", "Java Spring Boot", "Wysyłanie SMS/Push/Email")
+ContainerDb(postgresql, "Baza Danych", "PostgreSQL", "Przechowuje incydenty, logi, konfiguracje SOP")
+System_Ext(security_systems, "Systemy Fizyczne", "PPOŻ, CCTV, Kontrola Dostępu")
+
+Container_Boundary(security_api, "API Bezpieczeństwo") {
+
+    Component(incident_controller, "Incident Controller", "Spring MVC Rest Controller", "Obsługuje żądania HTTP dotyczące incydentów (CRUD, zmiana statusu).")
+    Component(team_controller, "Team Controller", "Spring MVC Rest Controller", "Zarządza dostępnością i lokalizacją zespołów.")
+    Component(report_controller, "Report Controller", "Spring MVC Rest Controller", "Generuje dane do raportów analitycznych.")
+    Component(integration_adapter, "Integration Adapter", "MQTT/HTTP Listener", "Odbiera sygnały z fizycznych systemów bezpieczeństwa.")
+
+    Component(incident_service, "Incident Service", "Spring Service", "Realizuje logikę cyklu życia incydentu, walidacje statusów.")
+    Component(escalation_service, "Escalation Service", "Spring Scheduled Task", "Monitoruje czasy reakcji i automatycznie eskaluje opóźnione incydenty.")
+    Component(sop_engine, "SOP Service", "Spring Service", "Dopasowuje odpowiednie procedury (SOP) do typu incydentu.")
+    Component(audit_service, "Audit Log Service", "Spring Service", "Rejestruje każdy krok w Audit lodu.")
+
+    Component(incident_repo, "Incident Repository", "Spring Data JPA", "Zapewnia dostęp do tabel Incydentów i Dzienników.")
+    Component(team_repo, "Team Repository", "Spring Data JPA", "Zapewnia dostęp do danych Zespołów i Pracowników.")
+    Component(sop_repo, "SOP Repository", "Spring Data JPA", "Zapewnia dostęp do definicji procedur.")
+
+}
+
+
+Rel(web_app, incident_controller, "Tworzy incydenty, przegląda mapę, eskaluje", "JSON/HTTPS")
+Rel(web_app, team_controller, "Zarządza dyżurami", "JSON/HTTPS")
+Rel(web_app, report_controller, "Pobiera statystyki", "JSON/HTTPS")
+Rel(mobile_app, incident_controller, "Aktualizuje status zadania, dodaje notatki", "JSON/HTTPS")
+
+Rel(security_systems, integration_adapter, "Wysyła alerty (np. dym)", "MQTT/Webhooks")
+
+Rel(incident_controller, incident_service, "Deleguje obsługę")
+Rel(integration_adapter, incident_service, "Zleca utworzenie auto-incydentu")
+
+Rel(incident_service, sop_engine, "Pobiera procedury dla typu zdarzenia")
+Rel(incident_service, audit_service, "Loguje każdą zmianę")
+Rel(incident_service, escalation_service, "Jest monitorowany przez")
+
+Rel(incident_service, incident_repo, "Zapis/Odczyt")
+Rel(audit_service, incident_repo, "Zapis wpisów dziennika")
+Rel(team_controller, team_repo, "Zapis/Odczyt")
+Rel(sop_engine, sop_repo, "Odczyt procedur")
+
+Rel(incident_service, notification_service, "Zleca wysłanie powiadomienia (np. do zespołu)", "REST")
+Rel(escalation_service, notification_service, "Wysyła alert o eskalacji do Managera", "REST")
+
+Rel(incident_repo, postgresql, "SQL", "JDBC")
+Rel(team_repo, postgresql, "SQL", "JDBC")
+Rel(sop_repo, postgresql, "SQL", "JDBC")
+
+@enduml
