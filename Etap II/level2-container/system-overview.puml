@@ -1,0 +1,67 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title [Kontenery] System ERP do zarządzania operacjami i zasobami komercyjnego portu lotniczego
+
+Person(passenger, "Pasażer", "Osoba korzystająca z usług lotniska")
+Person(staff, "Pracownik Lotniska", "Pracownik obsługi, ochrony, koordynator")
+Person(team, "Zespół Interwencyjny", "Zespół reagujący na incydenty")
+Person(airline, "Linie Lotnicze", "Zewnętrzne systemy rezerwacji")
+
+System_Ext(atc, "System ATC", "Kontrola ruchu lotniczego")
+System_Ext(fids, "System FIDS", "Tablice informacyjne lotniska")
+System_Ext(security, "Systemy bezpieczeństwa", "Czujniki PPOŻ, monitoring")
+
+System_Boundary(erp, "ERP Lotniska") {
+    Container(web_app, "Aplikacja Webowa", "Angular/React", "Single Page Application dla personelu i pasażerów")
+    Container(mobile_app, "Aplikacja Mobilna", "React Native", "Aplikacja dla obsługi naziemnej i zespołów interwencyjnych")
+    
+    Container(passenger_api, "API Pasażerowie", "Java Spring Boot", "Microservice: rezerwacje, odprawy, bilety")
+    Container(flights_api, "API Loty", "Java Spring Boot", "Microservice: harmonogramy, statusy, sloty")
+    Container(security_api, "API Bezpieczeństwo", "Java Spring Boot", "Microservice: incydenty, zespoły, alerty")
+    Container(ground_api, "API Obsługa Naziemna", "Java Spring Boot", "Microservice: zadania, zasoby, personel")
+    
+    Container(notification_service, "Serwis Powiadomień", "Java Spring Boot", "Wysyłanie powiadomień i alertów")
+    Container(scheduling_engine, "Silnik Harmonogramów", "Java", "Automatyczne planowanie zasobów i zadań")
+    
+    ContainerDb(postgresql, "Baza Danych", "PostgreSQL", "Główna baza danych systemu ERP")
+    ContainerDb(redis, "Pamięć Podręczna", "Redis", "Cache i komunikacja czasu rzeczywistego")
+}
+
+' Relacje użytkowników
+Rel(passenger, web_app, "Korzysta przez przeglądarkę", "HTTPS")
+Rel(staff, web_app, "Korzysta przez przeglądarkę", "HTTPS")
+Rel(team, mobile_app, "Korzysta na urządzeniu mobilnym", "HTTPS")
+
+' Relacje frontend -> backend
+Rel(web_app, passenger_api, "Wykonuje zapytania HTTP", "REST/HTTPS")
+Rel(web_app, flights_api, "Wykonuje zapytania HTTP", "REST/HTTPS")
+Rel(web_app, security_api, "Wykonuje zapytania HTTP", "REST/HTTPS")
+
+Rel(mobile_app, ground_api, "Wykonuje zapytania HTTP", "REST/HTTPS")
+Rel(mobile_app, security_api, "Wykonuje zapytania HTTP", "REST/HTTPS")
+Rel(mobile_app, notification_service, "Subskrybuje powiadomienia", "WebSocket")
+
+' Relacje między mikroserwisami
+Rel(passenger_api, postgresql, "Odczyt/zapis danych", "JDBC")
+Rel(flights_api, postgresql, "Odczyt/zapis danych", "JDBC")
+Rel(security_api, postgresql, "Odczyt/zapis danych", "JDBC")
+Rel(ground_api, postgresql, "Odczyt/zapis danych", "JDBC")
+
+Rel(passenger_api, redis, "Odczyt/zapis cache", "Redis Protocol")
+Rel(notification_service, redis, "Zarządza subskrypcjami", "Redis Protocol")
+
+Rel(flights_api, scheduling_engine, "Wykorzystuje do planowania", "REST")
+Rel(ground_api, scheduling_engine, "Wykorzystuje do przydziału zadań", "REST")
+Rel(scheduling_engine, postgresql, "Odczyt danych", "JDBC")
+
+Rel(security_api, notification_service, "Wysyła żądania powiadomień", "REST")
+Rel(ground_api, notification_service, "Wysyła żądania powiadomień", "REST")
+
+' Integracje z systemami zewnętrznymi
+Rel(airline, passenger_api, "Przesyła dane rezerwacji", "API/HTTPS")
+Rel(atc, flights_api, "Dostarcza statusy i sloty", "API/HTTPS")
+Rel(flights_api, fids, "Publikuje statusy lotów", "Push/API")
+Rel(security, security_api, "Przesyła alerty o incydentach", "Automatyczne powiadomienia")
+
+@enduml
