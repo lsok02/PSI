@@ -94,6 +94,9 @@ class Lot {
 + statusLotu: StatusLotu
 + poczatekOdprawy: Date
 + koniecOdprawy: Date
++ lotniskoOdlotuId: Integer <<FK>>
++ lotniskoPrzylotuId: Integer <<FK>>
++ liniaLotniczaId: Integer <<FK>>
   }
 
 class Rezerwacja {
@@ -104,6 +107,8 @@ class Rezerwacja {
 + dataZakupu: Date
 + cenaCałkowita: double
 + statusRezerwacji: StatusRezerwacji
++ pasazerId: Integer <<FK>>
++ lotId: Integer <<FK>>
   }
 
 class KartaPokładowa {
@@ -114,6 +119,10 @@ class KartaPokładowa {
 + numerKarty: String
 + numerMiejsca: String
 + czasBoardingu: Date
++ pasazerId: Integer <<FK>>
++ rezerwacjaId: Integer <<FK>>
++ pracownikId: Integer <<FK>>
++ boardingId: Integer <<FK>>
   }
 
 class Bagaż {
@@ -125,6 +134,7 @@ class Bagaż {
 + waga: double
 + typBagażu: TypBagażu
 + statusBagażu: StatusBagażu
++ kartaPokładowaId: Integer <<FK>>
   }
 
 class Boarding {
@@ -137,6 +147,8 @@ class Boarding {
 + koniecBoardingu: Date
 + status: StatusBoardingu
 + liczbaOdprawionych: Integer
++ lotId: Integer <<FK>>
++ pracownikId: Integer <<FK>>
   }
 
 class SkanBezpieczeństwa {
@@ -146,6 +158,8 @@ class SkanBezpieczeństwa {
 
 + wynikSkanu: WynikSkanu
 + uwagi: String
++ bagazId: Integer <<FK>>
++ pracownikId: Integer <<FK>>
   }
 
 class Pracownik {
@@ -175,8 +189,8 @@ Rezerwacja "0..*" -- "1..*" Pasażer : obejmuje
 
 Pracownik "0..1" -- "0..*" KartaPokładowa : generuje
 
-Lot "1" - "1" Lotnisko : odlatuje z
-Lot "1" - "1" Lotnisko : przylatuje do
+Lot "0..*" - "1" Lotnisko : odlatuje z
+Lot "0..*" - "1" Lotnisko : przylatuje do
 Lot "1" -- "0..*" Rezerwacja : dotyczy
 Bagaż "1" -- "0..1" SkanBezpieczeństwa : przechodzi
 Lot "1" -- "1" Boarding : posiada

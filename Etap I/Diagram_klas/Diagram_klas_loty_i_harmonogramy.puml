@@ -28,6 +28,14 @@ class Lot {
 + statusLotu: StatusLotu
 + szacowaneOpóźnienie: Integer
 + przyczynaOpóźnienia: String
++ harmonogramId: Integer <<FK>>
++ trasaId: Integer <<FK>>
++ slotCzasowyId: Integer <<FK>>
++ samolotId: Integer <<FK>>
++ pasStartowyId: Integer <<FK>>
++ bramkaId: Integer <<FK>>
++ stanowiskoPostojoweId: Integer <<FK>>
++ lancuchPrzesiadkowyId: Integer <<FK>>
 }
 
 class HarmonogramLotów {
@@ -75,6 +83,7 @@ class Samolot {
 + numerRejestracyjny: String
 + model: String
 + liczbaMiejsc: Integer
++ liniaLotniczaId: Integer <<FK>>
 }
 
 class LiniaLotnicza {
@@ -114,6 +123,7 @@ class ObsługaNaziemna {
 --
 + nazwaZespołu: String
 + typUsługi: String
++ lancuchPrzesiadkowyId: Integer <<FK>>
 }
 
 

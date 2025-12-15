@@ -46,3 +46,98 @@ W poniższej tabeli przedstawiono zastosowane taktyki architektoniczne.
 | **4. Integralność i Audytowalność** | **A. Dedykowany Serwis Audytowy:** Asynchroniczny zapis wszystkich operacji modyfikujących do bazy.                                                                                                                                                                                                        |
 | **5. Dostępność Mobilna** | **A. API First:** Wszystkie funkcjonalności wystawione przez REST API, konsumowane przez aplikacje Web i Mobile.                                                                                                                                                                                           |
 
+
+## 8. Widok informacyjny
+
+**8.1 Model informacyjny**
+
+![Diagram - Pasażerowie i odprawy](../Etap%20I/Diagram_klas/Diagram_klas_pasażerowie_i_odprawy.png)
+
+
+**8.2 Projekt bazy danych**
+
+| Ogólne informacje nt. bazy danych |  |
+|---|--|
+| SID/Service Name | Pasazerowie-i-odprawy |
+| Nazwa serwera | pasazerowie-odprawy-db |
+| Port | 5432 |
+| Type | Relacyjna – Postgres 16 |
+| Kodowanie znaków | UTF-8 |
+| Opis | Baza danych do zarządzania pasażerami, rezerwacjami, odprawami, bagażami, kartami pokładowymi oraz procesami boardingu i kontroli bezpieczeństwa. |
+
+| Backup |
+|-------|
+|       |
+
+| Informacje o schemacie    | |
+|---|--|
+| Nazwa                     | public |
+| Początkowa pojemność      | ≈10MB |
+| Przyrost pojemności (rok) | ≈80GB |
+
+
+![Diagram - Loty i harmonogramy](/Etap%20I/Diagram_klas/Diagram_klas_loty_i_harmonogramy.png)
+
+| Ogólne informacje nt. bazy danych |                                                                                                                                           |
+|---|-------------------------------------------------------------------------------------------------------------------------------------------|
+| SID/Service Name | Loty-i-harmonogramy                                                                                                                       |
+| Nazwa serwera | loty-harmonogramy-db                                                                                                                      |
+| Port | 5432                                                                                                                                      |
+| Type | Relacyjna – Postgres 16                                                                                                                   |
+| Kodowanie znaków | UTF-8                                                                                                                                     |
+| Opis | Baza danych do zarządzania harmonogramami lotów, slotami czasowymi, przydziałem zasobów, statusami lotów, danymi samolotów oraz załogami. |
+
+| Backup |
+|-------|
+|       |
+
+| Informacje o schemacie    |        |
+|---|--------|
+| Nazwa                     | public |
+| Początkowa pojemność      | ≈20MB  |
+| Przyrost pojemności (rok) | ≈30GB  |
+
+
+![Diagram - Bezpieczeństwo i incydenty](/Etap%20I/Diagram_klas/Diagram_klas_bezpieczenstwo_i_incydenty.png)
+
+| Ogólne informacje nt. bazy danych |                                                                                                                                                                                                     |
+|---|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SID/Service Name | Bezpieczenstwo-i-incydenty                                                                                                                                                                          |
+| Nazwa serwera | bezpieczenstwo-incydenty-db                                                                                                                                                                         |
+| Port | 5432                                                                                                                                                                                                |
+| Type | Relacyjna – Postgres 16                                                                                                                                                                             |
+| Kodowanie znaków | UTF-8                                                                                                                                                                                               |
+| Opis | Baza danych do rejestracji, kategoryzacji, priorytetyzacji i zarządzania incydentami, koordynacji zespołów interwencyjnych, logowania działań, powiadomień oraz integracji z systemami monitoringu. |
+
+| Backup |
+|-------|
+|       |
+
+| Informacje o schemacie    |        |
+|---|--------|
+| Nazwa                     | public |
+| Początkowa pojemność      | ≈20MB  |
+| Przyrost pojemności (rok) | ≈20GB  |
+
+
+
+![Diagram - Obsługa naziemna i zasoby](/Etap%20I/Diagram_klas/Diagram_klas_obsluga_naziemna_i_zasoby.png)
+
+| Ogólne informacje nt. bazy danych |                                                                                                                                           |
+|---|-------------------------------------------------------------------------------------------------------------------------------------------|
+| SID/Service Name | Obsluga-naziemna-i-zasoby                                                                                                                 |
+| Nazwa serwera | osluga-naziemna-zasoby-db                                                                                                                 |
+| Port | 5432                                                                                                                                      |
+| Type | Relacyjna – Postgres 16                                                                                                                   |
+| Kodowanie znaków | UTF-8                                                                                                                                     |
+| Opis | Baza danych do zarządzania zasobami naziemnymi, przydziałem zadań, planowaniem zmian, kwalifikacjami, logowaniem statusów oraz integracją z systemami lotów, bezpieczeństwa i logistyki.|
+
+| Backup |
+|-------|
+|       |
+
+| Informacje o schemacie    |        |
+|---|--------|
+| Nazwa                     | public |
+| Początkowa pojemność      | ≈30MB  |
+| Przyrost pojemności (rok) | ≈40GB  |
