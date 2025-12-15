@@ -67,7 +67,8 @@ W poniższej tabeli przedstawiono zastosowane taktyki architektoniczne.
 
 | Backup |
 |-------|
-|       |
+| Dane krytyczne biznesowo. Pełna kopia zapasowa wykonywana codziennie w godzinach nocnych (03:00). Kopie przyrostowe archiwizowane co 15 minut. Retencja kopii pełnych: 30 dni.
+|
 
 | Informacje o schemacie    | |
 |---|--|
@@ -89,7 +90,8 @@ W poniższej tabeli przedstawiono zastosowane taktyki architektoniczne.
 
 | Backup |
 |-------|
-|       |
+|Dane o statusie Mission Critical. Replikacja synchroniczna do instancji zapasowej. Pełny backup codziennie. Kopie przyrostowe w czasie rzeczywistym. Możliwość odtworzenia stanu z dowolnego momentu z ostatnich 7 dni.
+|
 
 | Informacje o schemacie    |        |
 |---|--------|
@@ -111,7 +113,7 @@ W poniższej tabeli przedstawiono zastosowane taktyki architektoniczne.
 
 | Backup |
 |-------|
-|       |
+| Backup pełny co 24h. Logi transakcyjne archiwizowane w trybie ciągłym. Dane historyczne (starsze niż 1 rok) przenoszone do taniego magazynu danych w celu archiwizacji długoterminowej (5 lat).     |
 
 | Informacje o schemacie    |        |
 |---|--------|
@@ -134,7 +136,8 @@ W poniższej tabeli przedstawiono zastosowane taktyki architektoniczne.
 
 | Backup |
 |-------|
-|       |
+|  Backup pełny raz dziennie. Kopie przyrostowe co 1 godzinę. Retencja danych operacyjnych w głównej bazie: 6 miesięcy, starsze dane archiwizowane.
+|
 
 | Informacje o schemacie    |        |
 |---|--------|
