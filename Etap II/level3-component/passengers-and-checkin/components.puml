@@ -1,0 +1,62 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title [Komponenty] Passenger & Check-in API - System Lotniskowy ERP
+
+Container(web_app, "Aplikacja Webowa / Kiosk", "Angular/React", "Interfejs dla pasażerów (odprawa online) i personelu (check-in, gate, ochrona)")
+Container(mobile_app, "Aplikacja Mobilna", "React Native", "Rezerwacje, karty pokładowe, powiadomienia push dla pasażerów")
+
+ContainerDb(postgresql, "Baza Danych", "PostgreSQL", "Przechowuje dane pasażerów, rezerwacje, statusy odpraw, mapy miejsc i informacje o bagażach")
+
+System_Ext(flights_service, "Serwis Lotów i Harmonogramów", "Dane o lotach, slotach, bramkach i statusach")
+System_Ext(payment_gateway, "Brama Płatności", "PayPal", "Procesowanie płatności za bilety i zwrotów")
+System_Ext(notification_service, "Serwis Powiadomień", "Java/Spring", "")
+
+Container_Boundary(passenger_api, "API Pasażerowie i Odprawy") {
+
+    Component(booking_controller, "Booking Controller", "Spring MVC Rest", "Obsługuje wyszukiwanie, zakup biletów, edycję i anulowanie rezerwacji")
+    Component(checkin_controller, "Check-in Controller", "Spring MVC Rest", "Zarządza procesem odprawy online i stacjonarnej oraz nadawaniem bagażu")
+    Component(security_boarding_controller, "Verification Controller", "Spring MVC Rest", "Endpointy dla pracowników ochrony i gate'u do skanowania kart pokładowych")
+
+    Component(booking_service, "Booking Service", "Spring Service", "Realizuje logikę rezerwacji, walidację taryf i terminów zmian")
+    Component(payment_service, "Payment Service", "Spring Service", "Integracja z bramką płatności, obsługa zwrotów")
+    Component(checkin_service, "Check-in Service", "Spring Service", "Weryfikacja dokumentów, walidacja okna czasowego odprawy")
+    Component(seat_service, "Seat Management Service", "Spring Service", "Zarządzanie mapą miejsc i walidacja unikalności przypisania")
+    Component(baggage_service, "Baggage Service", "Spring Service", "Ewidencja bagażu, walidacja wag i generowanie danych do etykiet")
+    Component(boarding_service, "Boarding Service", "Spring Service", "Zarządzanie listą obecności, zamykanie lotu i weryfikacja statusów pasażera")
+
+    Component(boarding_pass_gen, "Document Generator", "PDF/QR Library", "Generuje cyfrowe i papierowe karty pokładowe oraz etykiety bagażowe")
+
+    Component(passenger_repo, "Passenger & Booking Repo", "Spring Data JPA", "Dostęp do tabel pasażerów, biletów i rezerwacji")
+    Component(baggage_repo, "Baggage Repo", "Spring Data JPA", "Dostęp do danych o zarejestrowanym bagażu")
+    Component(seat_repo, "Seat Repo", "Spring Data JPA", "Dostęp do mapy miejsc dla poszczególnych lotów")
+}
+
+Rel(mobile_app, booking_controller, "Wyszukiwanie i rezerwacja lotów", "JSON/HTTPS")
+Rel(mobile_app, checkin_controller, "Odprawa online i pobranie karty", "JSON/HTTPS")
+Rel(web_app, checkin_controller, "Odprawa na lotnisku (stanowisko/kiosk)", "JSON/HTTPS")
+Rel(web_app, security_boarding_controller, "Skanowanie kart w punktach kontroli i bramkach", "JSON/HTTPS")
+
+Rel(booking_controller, booking_service, "Deleguje operacje biletowe")
+Rel(booking_service, payment_service, "Inicjuje płatność/zwrot")
+Rel(payment_service, payment_gateway, "Procesuje transakcję", "HTTPS/TLS")
+
+Rel(checkin_controller, checkin_service, "Procesuje odprawę")
+Rel(checkin_service, seat_service, "Rezerwuje/zmienia miejsce")
+Rel(checkin_service, baggage_service, "Rejestruje bagaż")
+Rel(checkin_service, boarding_pass_gen, "Zleca wygenerowanie karty i etykiet")
+
+Rel(security_boarding_controller, boarding_service, "Weryfikuje uprawnienia do przejścia/wejścia")
+Rel(boarding_service, flights_service, "Pobiera status lotu (czy nie odwołany) i zamyka boarding", "REST/Events")
+Rel(boarding_service, notification_service, "Zleca powiadomienia o boarding'u", "REST")
+
+Rel(booking_service, passenger_repo, "Odczyt/Zapis")
+Rel(checkin_service, passenger_repo, "Aktualizacja statusu odprawy")
+Rel(seat_service, seat_repo, "Odczyt/Zapis")
+Rel(baggage_service, baggage_repo, "Zapis danych bagażu")
+
+Rel(passenger_repo, postgresql, "SQL/JDBC")
+Rel(baggage_repo, postgresql, "SQL/JDBC")
+Rel(seat_repo, postgresql, "SQL/JDBC")
+
+@enduml

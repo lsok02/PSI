@@ -46,6 +46,54 @@ W poniższej tabeli przedstawiono zastosowane taktyki architektoniczne.
 | **4. Integralność i Audytowalność** | **A. Dedykowany Serwis Audytowy:** Asynchroniczny zapis wszystkich operacji modyfikujących do bazy.                                                                                                                                                                                                        |
 | **5. Dostępność Mobilna** | **A. API First:** Wszystkie funkcjonalności wystawione przez REST API, konsumowane przez aplikacje Web i Mobile.                                                                                                                                                                                           |
 
+## 4. Mechanizmy architektoniczne
+
+Poniżej przedstawiono mechanizmy architektoniczne wspierające wyżej wymienione taktyki.
+
+**1A. Architektura Mikroserwisów**
+
+System zostanie zaimplementowany jako zestaw niezależnie wdrażalnych usług (np. Loty, Pasażerowie). Każdy mikroserwis posiada własną bazę danych, co zapewnia izolację uszkodzeń. Komunikacja między nimi będzie realizowana za pomocą lekkich protokołów (REST lub Message Broker).
+
+
+**1B. Klaster Kubernetes**
+
+Wykorzystane zostanie narzędzie Kubernetes do orkiestracji kontenerów. Mechanizm ReplicaSet pozwoli na utrzymywanie zadanej liczby instancji każdego serwisu, zapewniając ich automatyczne skalowanie w górę lub w dół w zależności od obciążenia oraz restart w przypadku awarii.
+
+
+**1C. Load Balancing** 
+
+Za kierowanie ruchem użytkowników pomiędzy wieloma kopiami serwisów odpowiadać będzie Load Balancer (np. zintegrowany z bramą API Gateway). Zapewni to optymalne wykorzystanie zasobów obliczeniowych i wysoką dostępność.
+
+
+**2A. Event-Driven Architecture (EDA)**
+
+Komunikacja asynchroniczna zostanie oparta o brokera wiadomości (np. RabbitMQ lub Kafka). W przypadku zmiany statusu lotu, serwis Loty publikuje zdarzenie, które jest konsumowane przez zainteresowane moduły (np. Obsługa naziemna) bez blokowania wątku głównego, co poprawia czas reakcji systemu.
+
+
+**2B. Caching** 
+
+Często odczytywane i rzadko zmieniane dane (np. standardowe procedury operacyjne SOP lub aktualne statusy lotów) będą przechowywane w pamięci podręcznej Redis. Dane te będą zorganizowane w strukturę mapy (klucz-wartość) dla zapewnienia natychmiastowego dostępu.
+
+
+**3A. Centralny Identity Provider (OAuth2/JWT)** 
+
+Proces uwierzytelniania i autoryzacji zostanie zrealizowany w oparciu o standard JWT oraz biblioteki bezpieczeństwa (np. Spring Security). Każde zapytanie do API (poza logowaniem) musi zawierać ważny token; w przeciwnym razie system zwróci status 401 Unauthorized.
+
+
+**3B. Segmentacja sieci i API Gateway** 
+
+Wszystkie zapytania z zewnątrz trafiają do punktu wejścia – API Gateway, który pełni rolę bramy bezpieczeństwa. Bazy danych oraz serwisy wewnętrzne zostaną umieszczone w sieci prywatnej (VPC), odizolowanej od bezpośredniego dostępu z Internetu.
+
+
+**4A. Dedykowany Serwis Audytowy** 
+
+Mechanizm ten będzie przechwytywał zdarzenia modyfikacji danych w systemie i asynchronicznie zapisywał szczegóły operacji (kto, kiedy, co zmienił) do dedykowanej bazy audytowej. Zapobiegnie to utracie wydajności przy operacjach zapisu, zapewniając jednocześnie pełną historię zmian.
+
+
+**5A. API First** 
+
+Infrastruktura backendowa zostanie zbudowana w architekturze REST, wysyłając dane w formacie JSON. Dzięki temu ten sam zestaw usług może być efektywnie konsumowany przez aplikacje mobilne oraz webowe (SPA), co minimalizuje ilość przesyłanych danych.
+
 
 ## 8. Widok informacyjny
 
