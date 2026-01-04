@@ -94,6 +94,98 @@ Mechanizm ten będzie przechwytywał zdarzenia modyfikacji danych w systemie i a
 
 Infrastruktura backendowa zostanie zbudowana w architekturze REST, wysyłając dane w formacie JSON. Dzięki temu ten sam zestaw usług może być efektywnie konsumowany przez aplikacje mobilne oraz webowe (SPA), co minimalizuje ilość przesyłanych danych.
 
+## 5. Widoki architektoniczne
+
+### 5.1 Widok kontekstowy
+
+#### 5.1.1 Diagram kontekstowy
+
+![1](level1-context/context.png)
+
+#### 5.1.2 Scenariusze interakcji
+
+System ERP Lotniska jest centralnym węzłem wymiany informacji. Główne scenariusze interakcji obejmują:
+1.  **Synchronizacja operacji lotniczych:** System ATC przesyła w czasie rzeczywistym informacje o slotach czasowych oraz statusach startów i lądowań. ERP Lotniska aktualizuje harmonogram i uruchamia procesy obsługi naziemnej.
+2.  **Publikacja informacji pasażerskiej:** ERP Lotniska wypycha każdą zmianę statusu lotu, bramki lub czasu do systemu FIDS w celu wyświetlenia na tablicach w terminalu.
+3.  **Monitoring bezpieczeństwa:** Systemy fizyczne (czujniki PPOŻ, kontrola dostępu) przesyłają sygnały alarmowe do ERP, który automatycznie tworzy incydenty i powiadamia personel.
+
+#### 5.1.3 Interfejsy integracyjne – poziom logiczny
+
+**Interfejs 1 - System ATC - ERP Lotniska**
+
+
+| Opis | Status         |
+| :--- |:---------------|
+| Zewnętrzna usługa dostarczająca dane o ruchu lotniczym, slotach czasowych i pozwoleniach na start/lądowanie. Krytyczne źródło danych dla harmonogramowania. | **Istniejący** |
+
+| | Aplikacja źródłowa | Aplikacja docelowa |
+| :--- | :--- | :--- |
+| **Nazwa aplikacji** | System ATC (Eurocontrol/PAŻP) | System ERP (Moduł Loty) |
+| **Technika integracji** | AMQP / REST | AMQP / REST |
+| **Mechanizm autentykacji** | mTLS (Mutual TLS) + API Key | mTLS (Mutual TLS) + API Key |
+
+| |                                                                                                                                                  |
+| :--- |:-------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Kontrakt danych** | Numer lotu, kod ICAO linii, czas planowany/rzeczywisty operacji, status operacji.                                                                |
+| **Czy interfejs manipuluje na danych wrażliwych (RODO)?** | Nie. Przesyłane są tylko dane operacyjne lotów.                                                                                                  |
+| **Strona inicjująca** | System ATC                                                                                                                                       |
+| **Model komunikacji** | Asynchroniczny dla statusów, Synchroniczny dla pobrania planu sezonowego.                                                                        |
+| **Wydajność** | Zależna od natężenia ruchu lotniczego. Szacowane piki:<br>- 50 komunikatów na minutę w godzinach szczytu.<br>- Łącznie ok. 3000 wywołań na dobę. |
+| **Wolumetria** | Waga pojedynczego komunikatu JSON to ok. 2 KB.<br>- 100 KB na minutę w szczycie.<br>- ok. 6-10 MB danych na dobę.                                |
+| **Wymagana dostępność** | **99,99%**. Jest to interfejs krytyczny. Brak danych z ATC paraliżuje planowanie obsługi naziemnej.                                              |
+
+<br>
+
+**Interfejs 2 - ERP Lotniska - System FIDS**
+
+| Opis | Status |
+| :--- | :--- |
+| Interfejs zasilający publiczne tablice informacyjne w terminalu (przyloty/odloty/bramki). Zapewnia pasażerom aktualną informację wizualną. | **Projektowany** |
+
+| | Aplikacja źródłowa | Aplikacja docelowa |
+| :--- | :--- | :--- |
+| **Nazwa aplikacji** | System ERP (Moduł Loty/Powiadomienia) | System FIDS (Kontrolery ekranów) |
+| **Technika integracji** | WebSocket | WebSocket |
+| **Mechanizm autentykacji** | Token JWT (Service-to-Service) | Token JWT (Service-to-Service) |
+
+| |                                                                                                  |
+| :--- |:-------------------------------------------------------------------------------------------------|
+| **Kontrakt danych** | Numer lotu, kierunek, godzina, numer bramki, status (np. "Boarding", "Delayed"), uwagi.          |
+| **Czy interfejs manipuluje na danych wrażliwych (RODO)?** | Nie. Dane są publiczne.                                                                          |
+| **Strona inicjująca** | System ERP (przy każdej zmianie danych)                                                          |
+| **Model komunikacji** | Asynchroniczny                                                                                   |
+| **Wydajność** | Aktualizacje wysyłane są tylko przy zmianie stanu.<br>- Szacowane 5000 aktualizacji na dobę.     |
+| **Wolumetria** | Bardzo mała waga komunikatów (tekstowe).<br>- ok. 0.5 KB na komunikat.<br>- ok. 2.5 MB na dobę.  |
+| **Wymagana dostępność** | **99,9%**. Awaria FIDS powoduje dezorientację pasażerów, ale nie zatrzymuje operacji lotniczych. |
+
+<br>
+
+**Interfejs 3 - Systemy bezpieczeństwa (czujniki) - ERP Lotniska**
+
+| Opis | Status |
+| :--- | :--- |
+| Odbiór sygnałów z infrastruktury fizycznej: systemy przeciwpożarowe, kontrola dostępu. Pozwala na automatyczną detekcję incydentów. | **Istniejący** |
+
+| | Aplikacja źródłowa | Aplikacja docelowa |
+| :--- | :--- | :--- |
+| **Nazwa aplikacji** | Bramka IoT / Koncentrator czujników | System ERP (Moduł Bezpieczeństwa) |
+| **Technika integracji** | MQTT | MQTT |
+| **Mechanizm autentykacji** | Certyfikaty X.509 (dla urządzeń) | Certyfikaty X.509 (dla urządzeń) |
+
+| |                                                                                                                                                           |
+| :--- |:----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Kontrakt danych** | ID czujnika, kod strefy, typ alarmu (np. "SMOKE_DETECTED", "DOOR_FORCED"), timestamp.                                                                     |
+| **Czy interfejs manipuluje na danych wrażliwych (RODO)?** | Zależnie od typu alertu. <br>- PPOŻ: Nie.<br>- Kontrola dostępu: Tak (może zawierać ID pracownika naruszającego strefę).                                  |
+| **Strona inicjująca** | Systemy bezpieczeństwa                                                                                                                                    |
+| **Model komunikacji** | Asynchroniczny                                                                                                                                            |
+| **Wydajność** | W normalnych warunkach ruch minimalny ("heartbeat"). W sytuacji kryzysowej system musi obsłużyć nagły skok do 1000 zdarzeń/sekundę.                       |
+| **Wolumetria** | Payload binarny lub lekki JSON.<br>- Heartbeat: ciągły strumień danych o niskim wolumenie.<br>- Alerty: sporadyczne, niska waga danych, wysoki priorytet. |
+| **Wymagana dostępność** | **99,99%**. Interfejs krytyczny dla bezpieczeństwa życia i zdrowia.                                                                                       |
+
+
+## 6. Widok funkcjonalny
+
+## 7. Widok rozmieszczenia
 
 ## 8. Widok informacyjny
 
@@ -192,3 +284,8 @@ Infrastruktura backendowa zostanie zbudowana w architekturze REST, wysyłając d
 | Nazwa                     | public |
 | Początkowa pojemność      | ≈30MB  |
 | Przyrost pojemności (rok) | ≈40GB  |
+
+
+## 9. Widok wytwarzania
+
+## 10. Realizacja przypadków użycia
