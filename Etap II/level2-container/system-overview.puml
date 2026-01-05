@@ -3,65 +3,72 @@
 
 title [Kontenery] System ERP do zarządzania operacjami i zasobami komercyjnego portu lotniczego
 
+' --- AKTORZY ---
 Person(passenger, "Pasażer", "Osoba korzystająca z usług lotniska")
-Person(staff, "Pracownik Lotniska", "Pracownik obsługi, ochrony, koordynator")
-Person(team, "Zespół Interwencyjny", "Zespół reagujący na incydenty")
+Person(staff, "Pracownik Lotniska", "Pracownik obsługi biurowej, koordynator lotów")
+Person(team, "Zespół Interwencyjny", "Zespół reagujący na incydenty i obsługa naziemna")
 Person(airline, "Linie Lotnicze", "Zewnętrzne systemy rezerwacji")
 
+' --- SYSTEMY ZEWNĘTRZNE ---
 System_Ext(atc, "System ATC", "Kontrola ruchu lotniczego")
 System_Ext(fids, "System FIDS", "Tablice informacyjne lotniska")
 System_Ext(security, "Systemy bezpieczeństwa", "Czujniki PPOŻ, monitoring")
 
 System_Boundary(erp, "ERP Lotniska") {
-    Container(web_app, "Aplikacja Webowa", "Angular/React", "Single Page Application dla personelu i pasażerów")
-    Container(mobile_app, "Aplikacja Mobilna", "React Native", "Aplikacja dla obsługi naziemnej i zespołów interwencyjnych")
-    
-    Container(passenger_api, "API Pasażerowie", "Java Spring Boot", "Microservice: rezerwacje, odprawy, bilety")
-    Container(flights_api, "API Loty", "Java Spring Boot", "Microservice: harmonogramy, statusy, sloty")
-    Container(security_api, "API Bezpieczeństwo", "Java Spring Boot", "Microservice: incydenty, zespoły, alerty")
-    Container(ground_api, "API Obsługa Naziemna", "Java Spring Boot", "Microservice: zadania, zasoby, personel")
-    
+
+    ' --- APLIKACJE (FRONTEND) ---
+    Container(web_app, "Aplikacja Webowa", "Angular/React", "SPA dla Pasażerów (odprawa) i Personelu biurowego")
+    Container(mobile_app, "Aplikacja Mobilna", "React Native", "Tylko dla Zespołów Interwencyjnych i Obsługi Naziemnej")
+
+    ' --- BRAMA API ---
+    Container(api_gateway, "API Gateway", "Spring Cloud Gateway", "Routing i Autoryzacja")
+
+    ' --- MIKROSERWISY (BACKEND) ---
+    Container(passenger_api, "API Pasażerowie", "Java Spring Boot", "Rezerwacje, odprawy, bilety")
+    Container(flights_api, "API Loty", "Java Spring Boot", "Harmonogramy, statusy, sloty")
+    Container(security_api, "API Bezpieczeństwo", "Java Spring Boot", "Incydenty, zespoły, alerty")
+    Container(ground_api, "API Obsługa Naziemna", "Java Spring Boot", "Zadania, zasoby, personel")
+
     Container(notification_service, "Serwis Powiadomień", "Java Spring Boot", "Wysyłanie powiadomień i alertów")
-    Container(scheduling_engine, "Silnik Harmonogramów", "Java", "Automatyczne planowanie zasobów i zadań")
-    
-    ContainerDb(postgresql, "Baza Danych", "PostgreSQL", "Główna baza danych systemu ERP")
-    ContainerDb(redis, "Pamięć Podręczna", "Redis", "Cache i komunikacja czasu rzeczywistego")
+
+    ' --- KOMUNIKACJA ASYNCHRONICZNA ---
+    Container(msg_broker, "Message Broker", "Kafka/RabbitMQ", "Szyna zdarzeń")
 }
 
-' Relacje użytkowników
-Rel(passenger, web_app, "Korzysta przez przeglądarkę", "HTTPS")
-Rel(staff, web_app, "Korzysta przez przeglądarkę", "HTTPS")
-Rel(team, mobile_app, "Korzysta na urządzeniu mobilnym", "HTTPS")
+' --- RELACJE UŻYTKOWNIKÓW ---
+Rel(passenger, web_app, "Korzysta (Odprawa, Bilety)", "HTTPS")
+Rel(staff, web_app, "Korzysta (Zarządzanie)", "HTTPS")
+Rel(team, mobile_app, "Korzysta (Zadania, Raporty)", "HTTPS")
 
-' Relacje frontend -> backend
-Rel(web_app, passenger_api, "Wykonuje zapytania HTTP", "REST/HTTPS")
-Rel(web_app, flights_api, "Wykonuje zapytania HTTP", "REST/HTTPS")
-Rel(web_app, security_api, "Wykonuje zapytania HTTP", "REST/HTTPS")
+' --- RELACJE FRONTEND -> BACKEND ---
+Rel(web_app, api_gateway, "Wysyła żądania", "REST/HTTPS")
+Rel(mobile_app, api_gateway, "Wysyła żądania", "REST/HTTPS")
 
-Rel(mobile_app, ground_api, "Wykonuje zapytania HTTP", "REST/HTTPS")
-Rel(mobile_app, security_api, "Wykonuje zapytania HTTP", "REST/HTTPS")
-Rel(mobile_app, notification_service, "Subskrybuje powiadomienia", "WebSocket")
+Rel(api_gateway, passenger_api, "Kieruje ruch")
+Rel(api_gateway, flights_api, "Kieruje ruch")
+Rel(api_gateway, security_api, "Kieruje ruch")
+Rel(api_gateway, ground_api, "Kieruje ruch")
 
-' Relacje między mikroserwisami
-Rel(passenger_api, postgresql, "Odczyt/zapis danych", "JDBC")
-Rel(flights_api, postgresql, "Odczyt/zapis danych", "JDBC")
-Rel(security_api, postgresql, "Odczyt/zapis danych", "JDBC")
-Rel(ground_api, postgresql, "Odczyt/zapis danych", "JDBC")
+' --- BEZPOŚREDNIA KOMUNIKACJA MIĘDZY SERWISAMI (SYNCHRONICZNA - REST) ---
+' Pasażer pyta o lot
+Rel(passenger_api, flights_api, "Weryfikuje status lotu", "REST")
+' Obsługa naziemna pobiera dane o samolocie do zadań
+Rel(ground_api, flights_api, "Pobiera harmonogram", "REST")
+' Bezpieczeństwo blokuje loty przy zagrożeniu
+Rel(security_api, flights_api, "Blokuje operacje", "REST")
+' Obsługa naziemna zgłasza awarię sprzętu jako incydent
+Rel(ground_api, security_api, "Zgłasza awarie", "REST")
+' Bezpieczeństwo wysyła natychmiastowy alert do ludzi
+Rel(security_api, notification_service, "Zleca alerty krytyczne", "REST")
 
-Rel(passenger_api, redis, "Odczyt/zapis cache", "Redis Protocol")
-Rel(notification_service, redis, "Zarządza subskrypcjami", "Redis Protocol")
+' --- KOMUNIKACJA ASYNCHRONICZNA (BROKER) ---
+Rel(flights_api, msg_broker, "Publikuje zmiany statusu")
+Rel(msg_broker, fids, "Aktualizuje tablice")
+Rel(msg_broker, notification_service, "Triggeruje powiadomienia masowe")
 
-Rel(flights_api, scheduling_engine, "Wykorzystuje do planowania", "REST")
-Rel(ground_api, scheduling_engine, "Wykorzystuje do przydziału zadań", "REST")
-Rel(scheduling_engine, postgresql, "Odczyt danych", "JDBC")
-
-Rel(security_api, notification_service, "Wysyła żądania powiadomień", "REST")
-Rel(ground_api, notification_service, "Wysyła żądania powiadomień", "REST")
-
-' Integracje z systemami zewnętrznymi
+' --- INTEGRACJE ZEWNĘTRZNE ---
 Rel(airline, passenger_api, "Przesyła dane rezerwacji", "API/HTTPS")
 Rel(atc, flights_api, "Dostarcza statusy i sloty", "API/HTTPS")
-Rel(flights_api, fids, "Publikuje statusy lotów", "Push/API")
-Rel(security, security_api, "Przesyła alerty o incydentach", "Automatyczne powiadomienia")
+Rel(security, security_api, "Przesyła alerty (IoT)", "MQTT/API")
 
 @enduml

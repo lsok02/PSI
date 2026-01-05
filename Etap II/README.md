@@ -185,6 +185,39 @@ System ERP Lotniska jest centralnym węzłem wymiany informacji. Główne scenar
 
 ## 6. Widok funkcjonalny
 
+Poniżej przedstawiono diagram kontenerów systemu ERP. Obrazuje on podział systemu na aplikacje klienckie, bramę API oraz autonomiczne mikroserwisy realizujące logikę poszczególnych domen. Linie na diagramie reprezentują kanały komunikacji (synchronicznej REST oraz asynchronicznej poprzez Broker).
+
+![2](level2-container/container.png)
+
+### Przeznaczenie poszczególnych mikroserwisów
+
+**API Loty:**
+*   Jako planista chcę mieć możliwość tworzenia i edycji harmonogramów lotów, uwzględniając sloty czasowe.
+*   Jako koordynator chcę otrzymywać automatyczne aktualizacje statusów (start/lądowanie) z systemu ATC, aby zarządzać operacjami w czasie rzeczywistym.
+*   System umożliwia automatyczne publikowanie zmian statusów lotów na tablicach FIDS.
+
+**API Pasażerowie:**
+*   Jako pasażer chcę mieć możliwość odprawy online, wyboru miejsca i pobrania karty pokładowej.
+*   Jako pracownik gate'u chcę mieć możliwość zeskanowania karty pokładowej, aby zweryfikować uprawnienia pasażera do wejścia na pokład.
+*   System umożliwia weryfikację, czy dany lot istnieje i czy jest otwarty do odprawy (komunikacja z API Loty).
+
+**API Bezpieczeństwo:**
+*   Jako dyspozytor chcę widzieć automatyczne alerty z czujników PPOŻ i KD, aby natychmiast reagować na zagrożenia.
+*   Jako dyspozytor chcę mieć możliwość przydzielenia incydentu do zespołu interwencyjnego i monitorowania jego statusu.
+*   System zapewnia niezmienialny rejestr działań (Audit Log) dla wszystkich operacji krytycznych.
+*   System umożliwia automatyczne zablokowanie operacji lotniczych w przypadku incydentu krytycznego (komunikacja z API Loty).
+
+**API Obsługa Naziemna:**
+*   Jako kierownik zasobów chcę zarządzać dostępnością sprzętu i personelu naziemnego.
+*   Jako pracownik obsługi chcę otrzymywać na urządzenie mobilne listę zadań (np. tankowanie) powiązanych z konkretnym lotem.
+*   Jako pracownik chcę mieć możliwość zgłoszenia awarii sprzętu, co automatycznie utworzy incydent techniczny (komunikacja z API Bezpieczeństwo).
+
+
+**Infrastruktura (API Gateway & Broker):**
+Serwisy **API Gateway** oraz **Message Broker** nie realizują bezpośredniej logiki biznesowej widocznej dla użytkownika końcowego, jednak zostały wprowadzone jako kluczowe elementy infrastruktury:
+*   **API Gateway:** Odpowiada za routing, autoryzację (JWT) i bezpieczeństwo styku z siecią publiczną.
+*   **Message Broker:** Gwarantuje niezawodność komunikacji asynchronicznej i separację domen.
+
 ## 7. Widok rozmieszczenia
 
 ## 8. Widok informacyjny
