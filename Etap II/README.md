@@ -220,6 +220,70 @@ Serwisy **API Gateway** oraz **Message Broker** nie realizują bezpośredniej lo
 
 ## 7. Widok rozmieszczenia
 
+**7.1 Diagram rozmieszczenia**
+
+![3](deployment-diagram/image.png)
+
+## 7.2 Opis węzłów
+
+### Węzeł 1: Klaster Obliczeniowy (Worker Node)
+Węzeł ten służy do uruchamiania kontenerów z mikroserwisami (Loty, Pasażerowie, Bezpieczeństwo, Obsługa Naziemna) oraz API Gateway.
+
+| Ogólne informacje | |
+| :--- | :--- |
+| Nazwa | **k8s-worker-prod-01** |
+| Węzeł wirtualny? | Tak |
+| Centrum danych? | PDC (Primary Data Center) |
+| OS | Ubuntu Server 22.04 LTS |
+| Opis | Węzeł wykonawczy klastra Kubernetes odpowiedzialny za hosting mikroserwisów ERP. |
+
+| Konfiguracja sprzętowa | |
+| :--- | :--- |
+| Dostawca | HPE ProLiant DL380 Gen10 |
+| Procesor | 2 x Intel Xeon Gold 6248R (24 rdzenie każdy) |
+| RAM | 128 GB DDR4 ECC |
+| HDD | 2 x 960 GB SSD NVMe |
+| RAID i HDD Netto | RAID 1 (Mirroring), ok. 900 GB powierzchni użytkowej |
+| RAID? | Sprzętowy kontroler HPE Smart Array |
+| Net cards bonding | Tak (LACP dla interfejsów 10GbE) |
+
+| Konfiguracja oprogramowania | |
+| :--- | :--- |
+| Użytkownicy i grupy użytkowników | root, k8s-admin, containerd-svc |
+| Poziom pracy systemu, czy jest wymagane środowisko graficzne | Poziom 3 (Multi-user, brak środowiska graficznego) |
+| Dodatkowe pakiety z dystrybucji systemu | kubelet, kubeadm, kubectl, containerd, openssh-server |
+| Dodatkowe pakiety spoza dystrybucji systemu | Helm, Prometheus Node Exporter |
+
+---
+
+### Węzeł 2: Serwer Bazodanowy (DB Node)
+Dedykowany serwer dla relacyjnych baz danych PostgreSQL 16, zapewniający integralność i wysoką wydajność operacji.
+
+| Ogólne informacje | |
+| :--- | :--- |
+| Nazwa | **db-erp-prod-01** |
+| Węzeł wirtualny? | Nie (Bare Metal dla maksymalnej wydajności I/O) |
+| Centrum danych? | PDC (Primary Data Center) |
+| OS | Red Hat Enterprise Linux (RHEL) 9 |
+| Opis | Centralny serwer bazodanowy obsługujący bazy danych wszystkich domen ERP. |
+
+| Konfiguracja sprzętowa | |
+| :--- | :--- |
+| Dostawca | Dell PowerEdge R750 |
+| Procesor | 2 x Intel Xeon Silver 4314 (16 rdzeni każdy) |
+| RAM | 256 GB DDR4 ECC (zoptymalizowane pod cache bazy danych) |
+| HDD | 4 x 1.92 TB SSD SAS Mix Use |
+| RAID i HDD Netto | RAID 10 (Striped Mirror), ok. 3.5 TB powierzchni użytkowej |
+| RAID? | Sprzętowy kontroler PERC H755 |
+| Net cards bonding | Tak (Active-Backup dla redundancji sieciowej) |
+
+| Konfiguracja oprogramowania | |
+| :--- | :--- |
+| Użytkownicy i grupy użytkowników | root, postgres, db-backup-agent |
+| Poziom pracy systemu, czy jest wymagane środowisko graficzne | Poziom 3 (Brak środowiska graficznego) |
+| Dodatkowe pakiety z dystrybucji systemu | postgresql-16, pg_audit, openssl (TLS 1.2+) |
+| Dodatkowe pakiety spoza dystrybucji systemu | Patroni (HA), TimescaleDB, Barman (do backupów) |
+
 ## 8. Widok informacyjny
 
 **8.1 Model informacyjny**
