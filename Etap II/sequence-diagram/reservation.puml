@@ -1,0 +1,58 @@
+@startuml
+autonumber
+skinparam style strictuml
+
+actor "Pasażer" as P
+participant "Aplikacja Webowa" as Web
+participant "Brama API (Gateway)" as GW
+
+box "API Pasażerowie i Odprawy" #f9f9f9
+    participant "Kontroler Rezerwacji" as BC
+    participant "Serwis Rezerwacji" as BS
+    participant "Serwis Płatności" as PS
+    participant "Repozytorium Rezerwacji" as Repo
+end box
+
+participant "API Loty" as Flights
+participant "Bramka Płatnicza" as Pay
+database "Baza danych PostgreSQL" as DB
+
+P -> Web : wybierz lot i podaj dane
+Web -> GW : POST /bookings
+GW -> BC : przekaż żądanie rezerwacji
+
+BC -> BS : stwórz rezerwację
+activate BS
+
+BS -> Flights : sprawdź dostępność lotu
+Flights --> BS : 200 Status OK
+
+BS -> PS : zleć płatność
+activate PS
+PS -> Pay : prośba o autoryzację karty
+Pay --> PS : odpowiedź: TRANSAKCJA_OK lub TRANSAKCJA_ODRZUCONA
+deactivate PS
+
+alt #HoneyDew [status == TRANSAKCJA_OK]
+    BS -> Repo : zapisz nową rezerwację
+    activate Repo
+    Repo -> DB : INSERT (dane rezerwacji)
+    DB --> Repo : 200 Status OK
+    Repo --> BS : zwróć nową rezerwację
+    deactivate Repo
+
+    BS --> BC : 201 Status Created
+    BC --> GW : 201 Status Created
+    GW --> Web : 201 Status Created
+    Web --> P : wyświetl status: 200 OK
+
+else #MistyRose [status == TRANSAKCJA_ODRZUCONA]
+    BS -> BS : odnotuj nieudaną próbę
+    BS --> BC : 402 Status Payment Required
+    BC --> GW : 402 Status Payment Required
+    GW --> Web : 402 Status Payment Required
+    Web --> P : wyświetl status: 402 Error
+end
+
+deactivate BS
+@enduml
