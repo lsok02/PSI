@@ -386,3 +386,7 @@ Dedykowany serwer dla relacyjnych baz danych PostgreSQL 16, zapewniający integr
 ## 9. Widok wytwarzania
 
 ## 10. Realizacja przypadków użycia
+
+Rezerwacja biletu
+
+![1](sequence-diagram/sequence-reservation.png)
