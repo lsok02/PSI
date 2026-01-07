@@ -1,0 +1,58 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title [Komponenty] Flight & Schedule API (Loty i Harmonogramy)
+
+Container(web_app, "Aplikacja Webowa", "Angular/React", "Interfejs dla Planisty i Koordynatora lotów")
+ContainerDb(postgresql, "Baza Danych", "PostgreSQL", "Przechowuje harmonogramy, sloty, dane o samolotach i załogach")
+Container(broker, "Message Broker", "RabbitMQ/Kafka", "Rozgłaszanie zdarzeń o zmianach statusów lotów")
+
+System_Ext(atc_system, "System ATC (Eurocontrol/PAŻP)", "Zewnętrzne dane o ruchu lotniczym i slotach")
+System_Ext(fids_system, "System FIDS", "Tablice informacyjne w terminalu")
+System_Ext(ground_service, "Serwis Obsługi Naziemnej", "Zarządzanie tankowaniem i bagażem")
+
+Container_Boundary(flight_api, "API Loty i Harmonogramy") {
+
+    Component(schedule_controller, "Schedule Controller", "Spring MVC Rest", "Obsługuje tworzenie i modyfikację sezonowych planów lotów")
+    Component(ops_controller, "Operations Controller", "Spring MVC Rest", "Zarządzanie bieżącymi operacjami (zmiana bramki, statusu)")
+    Component(atc_adapter, "ATC Integration Adapter", "Java/mTLS", "Synchronizuje dane z Eurocontrol w czasie rzeczywistym")
+
+    Component(schedule_service, "Scheduling Service", "Spring Service", "Logika alokacji slotów i wykrywanie konfliktów harmonogramu")
+    Component(flight_status_service, "Flight Status Service", "Spring Service", "Zarządza cyklem życia lotu (Planowany -> Kołowanie -> Wystartował)")
+    Component(resource_allocation_service, "Resource Matcher Service", "Spring Service", "Przypisuje samoloty do stanowisk postojowych i bramek")
+    Component(fids_notifier, "FIDS Publisher", "WebSocket/REST", "Przesyła natychmiastowe aktualizacje do systemów wizualnych")
+    Component(event_publisher, "Domain Event Publisher", "Spring Component", "Publikuje zdarzenia o zmianach do Brokera dla innych domen")
+
+    Component(flight_repo, "Flight Repository", "Spring Data JPA", "Dostęp do danych lotów i stanów operacyjnych")
+    Component(fleet_repo, "Fleet Repository", "Spring Data JPA", "Dostęp do bazy technicznej samolotów")
+    Component(slot_repo, "Slot Repository", "Spring Data JPA", "Zarządzanie oknami czasowymi startów/lądowań")
+}
+
+' Relacje użytkownika
+Rel(web_app, schedule_controller, "Planowanie rozkładu", "JSON/HTTPS")
+Rel(web_app, ops_controller, "Monitorowanie i zmiany operacyjne", "JSON/HTTPS")
+
+' Relacje integracyjne zewnętrzne
+Rel(atc_system, atc_adapter, "Przesyła dane o slotach i ruchu", "AMQP/REST")
+Rel(atc_adapter, flight_status_service, "Aktualizuje rzeczywiste czasy operacji")
+Rel(fids_notifier, fids_system, "Aktualizuje tablice przylotów/odlotów", "WebSocket")
+
+' Logika wewnętrzna
+Rel(schedule_controller, schedule_service, "Zleca zmiany w planie")
+Rel(ops_controller, flight_status_service, "Zmienia statusy i bramki")
+Rel(flight_status_service, fids_notifier, "Wyzwalacz aktualizacji wizualnej")
+Rel(flight_status_service, event_publisher, "Inicjuje zdarzenie o locie")
+Rel(event_publisher, broker, "Publikuje zdarzenie (np. FlightDelayed)")
+Rel(broker, ground_service, "Informuje o potrzebie zmiany planu obsługi")
+
+Rel(schedule_service, resource_allocation_service, "Weryfikuje dostępność bramek")
+Rel(schedule_service, slot_repo, "Rezerwuje sloty")
+
+' Dostęp do danych
+Rel(flight_status_service, flight_repo, "Zapis/Odczyt")
+Rel(resource_allocation_service, fleet_repo, "Odczyt danych technicznych")
+Rel(flight_repo, postgresql, "SQL/JDBC")
+Rel(fleet_repo, postgresql, "SQL/JDBC")
+Rel(slot_repo, postgresql, "SQL/JDBC")
+
+@enduml
