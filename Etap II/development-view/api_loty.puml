@@ -1,0 +1,50 @@
+@startuml
+title Struktura wewnętrzna mikroserwisu - API Loty
+
+skinparam componentStyle rectangle
+
+package "API Loty" {
+
+  package "Controller" {
+    component "FlightController\n(REST)" as CTRL
+  }
+
+  package "Service" {
+    component "FlightService\n(Logika biznesowa)" as SERV
+  }
+
+  package "Domain" {
+    component "Flight"
+    component "Schedule"
+    component "Aircraft"
+  }
+
+  package "Repository" {
+    component "FlightRepository\n(JPA)" as REPO
+  }
+
+  package "Messaging" {
+    component "EventPublisher\n(FlightStatusChanged)" as PUB
+    component "EventListener\n(ExternalEvents)" as SUB
+  }
+
+  package "Security" {
+    component "JWT Filter"
+    component "RBAC Rules"
+  }
+
+  package "Configuration" {
+    component "AppConfig"
+  }
+}
+
+CTRL --> SERV
+SERV --> REPO
+SERV --> PUB
+SUB --> SERV
+
+SERV --> Flight
+SERV --> Schedule
+SERV --> Aircraft
+
+@enduml

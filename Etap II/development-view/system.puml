@@ -1,0 +1,59 @@
+@startuml
+title Perspektywa wytwarzania - ERP Lotniska (poziom systemu)
+
+skinparam componentStyle rectangle
+
+package "Frontend" {
+  component "Web App\n(SPA)" as WEB
+  component "Mobile App" as MOBILE
+}
+
+package "Backend - Mikroserwisy" {
+
+  component "API Gateway" as GATEWAY
+
+  component "API Loty" as LOTY
+  component "API Pasażerowie" as PAS
+  component "API Bezpieczeństwo" as BEZ
+  component "API Obsługa Naziemna" as OBN
+  component "Audit Service" as AUDIT
+}
+
+package "Wspólne biblioteki" {
+  component "Auth Library\n(JWT, RBAC)" as AUTH
+  component "Messaging SDK" as MSG
+  component "Common Utils" as UTIL
+}
+
+package "Infrastruktura dev/ops" {
+  component "Message Broker" as BROKER
+  component "CI/CD Pipeline" as CICD
+  component "Docker Registry" as REG
+}
+
+WEB --> GATEWAY
+MOBILE --> GATEWAY
+
+GATEWAY --> LOTY
+GATEWAY --> PAS
+GATEWAY --> BEZ
+GATEWAY --> OBN
+
+PAS ..> LOTY : REST
+BEZ ..> LOTY : Event
+OBN ..> LOTY : Event
+
+LOTY --> BROKER
+PAS --> BROKER
+BEZ --> BROKER
+OBN --> BROKER
+AUDIT --> BROKER
+
+CICD --> REG
+CICD --> LOTY
+CICD --> PAS
+CICD --> BEZ
+CICD --> OBN
+CICD --> GATEWAY
+
+@enduml

@@ -384,6 +384,17 @@ Dedykowany serwer dla relacyjnych baz danych PostgreSQL 16, zapewniający integr
 
 
 ## 9. Widok wytwarzania
+Widok wytwarzania przedstawia organizację systemu ERP Lotniska z perspektywy kodu źródłowego i procesu deweloperskiego. System został podzielony na niezależne mikroserwisy, rozwijane w osobnych repozytoriach, które komunikują się poprzez dobrze zdefiniowane kontrakty REST oraz zdarzenia domenowe.
+
+Każdy mikroserwis posiada spójną, warstwową strukturę wewnętrzną obejmującą kontrolery REST, warstwę logiki biznesowej, model domenowy, repozytoria danych oraz komponenty komunikacji asynchronicznej. 
+
+![system-dev-view](development-view/system.png)
+
+Przykladowy widok wewnętrznej struktury dla przykładowego mikroserwisu - API Loty:
+![api-loty-dev-view](development-view/api_loty.png)
+
+Uogólniona struktura dla mikroserwisów:
+![microservice-dev-view](development-view/microservice.png)
 
 ## 10. Realizacja przypadków użycia
 

@@ -1,0 +1,18 @@
+@startuml
+title API Loty - Diagram pakietów
+
+package controller
+package service
+package domain
+package repository
+package messaging
+package security
+package config
+
+controller --> service
+service --> domain
+service --> repository
+service --> messaging
+service --> security
+
+@enduml
