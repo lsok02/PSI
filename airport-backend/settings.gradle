@@ -1,0 +1,6 @@
+rootProject.name = 'airport-backend'
+
+include 'FlightService'
+include 'GroundOpsService'
+include 'PassengerService'
+include 'SecurityService'
