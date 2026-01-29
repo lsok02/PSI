@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  db-flights:
+    image: postgres:15
+    container_name: postgres_flights
+    environment:
+      POSTGRES_DB: flights_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5431:5432"
+
+  db-passengers:
+    image: postgres:15
+    container_name: postgres_passengers
+    environment:
+      POSTGRES_DB: passengers_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
+  db-resources:
+    image: postgres:15
+    container_name: postgres_resources
+    environment:
+      POSTGRES_DB: resources_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+
+  db-security:
+    image: postgres:15
+    container_name: postgres_security
+    environment:
+      POSTGRES_DB: security_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+
+volumes:
+  postgres_data_flights:
+  postgres_data_passengers:
+  postgres_data_resources:
+  postgres_data_security:
