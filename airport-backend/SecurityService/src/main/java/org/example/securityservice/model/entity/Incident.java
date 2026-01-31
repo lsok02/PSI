@@ -12,7 +12,10 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.example.securityservice.model.enumeration.IncidentPriority;
 import org.example.securityservice.model.enumeration.IncidentStatus;
 import org.example.securityservice.model.enumeration.IncidentType;
@@ -23,6 +26,9 @@ import java.util.List;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Incident {
 
     @Id
