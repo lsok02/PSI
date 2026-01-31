@@ -21,4 +21,6 @@ public interface DispatcherRepository extends JpaRepository<Dispatcher, Long> {
             "WHERE sa IS NULL OR (sa.shift.endTime < CURRENT_TIMESTAMP) " +
             "ORDER BY d.id")
     List<Dispatcher> findAvailableDispatchers();
+
+    Optional<Dispatcher> findFirstByOrderByIdAsc();
 }

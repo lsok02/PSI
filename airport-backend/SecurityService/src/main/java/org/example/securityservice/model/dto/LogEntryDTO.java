@@ -15,7 +15,6 @@ public class LogEntryDTO {
     private LocalDateTime actionTime;
     private String actionDescription;
 
-    // Zamiast pełnych obiektów, tylko ID lub podstawowe info
     private Long incidentId;
     private EmployeeDTO performedBy;
     private List<AttachmentDTO> attachments;

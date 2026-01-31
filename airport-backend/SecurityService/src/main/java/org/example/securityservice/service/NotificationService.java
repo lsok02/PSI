@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.securityservice.model.entity.AuditLog;
 import org.example.securityservice.model.entity.Incident;
 import org.example.securityservice.model.entity.IncidentTeam;
+import org.example.securityservice.repository.AuditLogRepository;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ public class NotificationService {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final EmailService emailService;
+
 
     public void sendTeamAssignmentNotification(IncidentTeam team, Incident incident) {
         // WebSocket notification
@@ -109,4 +112,5 @@ public class NotificationService {
             this.timestamp = LocalDateTime.now().toString();
         }
     }
+
 }

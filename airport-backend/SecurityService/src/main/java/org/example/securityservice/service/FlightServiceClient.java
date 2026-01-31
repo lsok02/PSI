@@ -27,8 +27,7 @@ public class FlightServiceClient {
 
     private final RestTemplate restTemplate;
 
-    @Value("${external.loty.service.url}")
-    private String flightServiceUrl;
+    private final String flightServiceUrl = "http://localhost:8081";
 
     public List<FlightDTO> getFlightsByLocation(String zoneCode, LocalDateTime time) {
         try {

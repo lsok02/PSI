@@ -34,17 +34,24 @@ public class Incident {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String reportNumber;
+
     private LocalDateTime reportTime;
+
     private LocalDateTime closeTime;
+
     private String description;
 
     @Enumerated(EnumType.STRING)
     private IncidentType type;
+
     @Enumerated(EnumType.STRING)
     private IncidentPriority priority;
+
     @Enumerated(EnumType.STRING)
     private IncidentStatus status;
+
     @Enumerated(EnumType.STRING)
     private ReportingSource source;
 

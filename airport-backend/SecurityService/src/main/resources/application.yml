@@ -20,9 +20,9 @@ spring:
           auth: true
           starttls:
             enable: true
-
-external:
-  loty:
-    service:
-      url: http://localhost:8081
+#
+#external:
+#  loty:
+#    service:
+#      url: http://localhost:8081
 

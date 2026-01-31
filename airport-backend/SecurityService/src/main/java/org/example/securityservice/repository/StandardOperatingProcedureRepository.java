@@ -17,24 +17,11 @@ public interface StandardOperatingProcedureRepository extends JpaRepository<Stan
     // Znajdź SOP po nazwie
     Optional<StandardOperatingProcedure> findByProcedureName(String procedureName);
 
-    // Znajdź wszystkie aktywne SOP
-    @Query("SELECT sop FROM StandardOperatingProcedure sop WHERE sop.isActive = true")
-    List<StandardOperatingProcedure> findAllActive();
 
     // Znajdź SOP dla danego typu incydentu
     @Query("SELECT sop FROM StandardOperatingProcedure sop " +
             "WHERE :incidentType MEMBER OF sop.applicableIncidentTypes")
     List<StandardOperatingProcedure> findByApplicableIncidentType(@Param("incidentType") IncidentType incidentType);
 
-    // Sprawdź czy istnieje SOP dla danego typu incydentu
-    @Query("SELECT COUNT(sop) > 0 FROM StandardOperatingProcedure sop " +
-            "WHERE :incidentType MEMBER OF sop.applicableIncidentTypes AND sop.isActive = true")
-    boolean existsForIncidentType(@Param("incidentType") IncidentType incidentType);
-
-    // Pobierz domyślny SOP dla typu incydentu
-    @Query("SELECT sop FROM StandardOperatingProcedure sop " +
-            "WHERE :incidentType MEMBER OF sop.applicableIncidentTypes " +
-            "AND sop.isDefault = true " +
-            "AND sop.isActive = true")
-    Optional<StandardOperatingProcedure> findDefaultForIncidentType(@Param("incidentType") IncidentType incidentType);
+    List<StandardOperatingProcedure> findByApplicableIncidentTypesContaining(IncidentType incidentType);
 }

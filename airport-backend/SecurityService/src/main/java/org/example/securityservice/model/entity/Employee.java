@@ -7,14 +7,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Data
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Employee {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

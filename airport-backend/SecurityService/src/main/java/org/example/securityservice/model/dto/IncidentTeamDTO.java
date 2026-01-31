@@ -17,6 +17,4 @@ public class IncidentTeamDTO {
     private TeamStatus status;
     private List<IncidentTeamMemberDTO> members;
 
-    // Możesz dodać pole z liczbą członków zamiast pełnej listy
-    // private int memberCount;
 }

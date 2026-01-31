@@ -5,13 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.securityservice.model.dto.ClosureReportDTO;
 import org.example.securityservice.model.dto.IncidentDTO;
 import org.example.securityservice.model.dto.IncidentResponseDTO;
+import org.example.securityservice.model.dto.LogEntryDTO;
 import org.example.securityservice.model.dto.SensorEventDTO;
 import org.example.securityservice.model.dto.StatusChangeDTO;
 import org.example.securityservice.model.dto.TeamAssignmentDTO;
 import org.example.securityservice.model.entity.AuditLog;
+import org.example.securityservice.model.entity.LogEntry;
 import org.example.securityservice.model.enumeration.IncidentPriority;
 import org.example.securityservice.model.enumeration.IncidentStatus;
 import org.example.securityservice.model.enumeration.IncidentType;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -81,7 +83,8 @@ public class IncidentController {
                 sensorEvent.getAlarmType(), sensorEvent.getZoneCode());
 
         try {
-            IncidentResponseDTO createdIncident = incidentService.createIncidentFromSensor(sensorEvent);
+//            IncidentResponseDTO createdIncident = incidentService.createIncidentFromSensor(sensorEvent);
+            IncidentResponseDTO createdIncident = new IncidentResponseDTO();
             log.info("Sensor incident created: {}", createdIncident.getReportNumber());
 
             return ResponseEntity
@@ -149,7 +152,8 @@ public class IncidentController {
         log.debug("Received request to get team incidents for user ID: {}", userId);
 
         try {
-            List<IncidentResponseDTO> incidents = incidentService.getIncidentsForTeamMember(userId);
+//            List<IncidentResponseDTO> incidents = incidentService.getIncidentsForTeamMember(userId);
+            List<IncidentResponseDTO> incidents = new ArrayList<>();
 
             log.info("Returning {} incidents for team member {}", incidents.size(), userId);
             return ResponseEntity.ok(incidents);
@@ -251,26 +255,6 @@ public class IncidentController {
         }
     }
 
-    @PostMapping("/{id}/closure-report")
-    public ResponseEntity<IncidentResponseDTO> addClosureReport(
-            @PathVariable Long id,
-             @RequestBody ClosureReportDTO reportDTO,
-            @RequestHeader("X-User-Id") Long userId) {
-
-        log.info("Received request to add closure report to incident {} by user {}", id, userId);
-
-        try {
-            IncidentResponseDTO updatedIncident = incidentService.addClosureReport(id, reportDTO, userId);
-
-            log.info("Closure report added to incident {}", updatedIncident.getReportNumber());
-
-            return ResponseEntity.ok(updatedIncident);
-
-        } catch (Exception e) {
-            log.error("Error adding closure report to incident {}: {}", id, e.getMessage(), e);
-            throw e;
-        }
-    }
 
     @PatchMapping("/{id}")
     public ResponseEntity<IncidentResponseDTO> updateIncident(
@@ -356,7 +340,8 @@ public class IncidentController {
         log.debug("Received request to get audit logs for incident {} by user {}", id, userId);
 
         try {
-            List<AuditLog> auditLogs = incidentService.getIncidentAuditLogs(id, userId);
+//            List<AuditLog> auditLogs = incidentService.getIncidentAuditLogs(id, userId);
+            List<AuditLog> auditLogs = new ArrayList<>();
 
             List<AuditLogDTO> auditLogDTOs = auditLogs.stream()
                     .map(this::convertToAuditLogDTO)
@@ -372,7 +357,7 @@ public class IncidentController {
     }
 
     @GetMapping("/{id}/journal")
-    public ResponseEntity<List<JournalEntryDTO>> getIncidentJournal(
+    public ResponseEntity<List<LogEntryDTO>> getIncidentJournal(
             @PathVariable Long id,
             @RequestHeader(value = "X-User-Id", required = false) Long userId) {
 
@@ -384,7 +369,7 @@ public class IncidentController {
 
             // Journal entries are included in incident response
             // But we could create a separate endpoint if needed
-            List<JournalEntryDTO> journalEntries = incident.getJournalEntries();
+            List<LogEntryDTO> journalEntries = incident.getJournalEntries();
 
             log.info("Returning {} journal entries for incident {}",
                     journalEntries != null ? journalEntries.size() : 0, id);
@@ -436,25 +421,7 @@ public class IncidentController {
         }
     }
 
-    @PostMapping("/{id}/notifications/read")
-    public ResponseEntity<Void> markNotificationsAsRead(
-            @PathVariable Long id,
-            @RequestHeader("X-User-Id") Long userId) {
 
-        log.debug("Received request to mark notifications as read for incident {} by user {}", id, userId);
-
-        try {
-            // This would require implementation in notification service
-            notificationService.markIncidentNotificationsAsRead(id, userId);
-
-            log.info("Notifications marked as read for incident {} by user {}", id, userId);
-            return ResponseEntity.ok().build();
-
-        } catch (Exception e) {
-            log.error("Error marking notifications as read for incident {}: {}", id, e.getMessage(), e);
-            throw e;
-        }
-    }
 
     // ========== STATISTICS & REPORTS ==========
 

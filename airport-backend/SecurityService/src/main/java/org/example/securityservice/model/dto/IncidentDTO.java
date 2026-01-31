@@ -37,13 +37,10 @@ public class IncidentDTO {
 
     private List<Long> affectedResourceIds;
 
-    // Read-only fields
     private IncidentStatus status;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime creationTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime closureTime;
 
     private ReportingSource reportSource;

@@ -23,24 +23,12 @@ public class IncidentResponseDTO {
     private LocalDateTime creationTime;
     private LocalDateTime closureTime;
 
-    // Relacje - używamy konkretnych typów DTO
     private LocationDTO location;
     private DispatcherDTO registeredBy; // Teraz mamy konkretny typ
     private IncidentTeamDTO assignedTeam;
     private List<AirportResourceDTO> affectedResources;
     private List<LogEntryDTO> journalEntries;
     private StandardOperatingProcedureDTO procedure;
-    private ClosureReportDTO closureReport;
 
-    // Business flags - zależne od roli użytkownika
-    private boolean canEdit;
-    private boolean canAssignTeam;
-    private boolean canChangeStatus;
-    private boolean canAddClosureReport;
-    private boolean canClose;
-    private List<IncidentStatus> allowedStatusTransitions;
 
-    // Info o użytkowniku (dla UI)
-    private String userRole; // "DISPATCHER", "SECURITY_MANAGER", "TEAM_MEMBER"
-    private boolean isAssignedTeamMember;
 }

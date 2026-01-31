@@ -9,8 +9,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class DispatcherDTO extends EmployeeDTO {
     private int incidentsRegisteredCount;
-    private List<Long> recentIncidentIds;
-    private String currentShift; // "DAY", "NIGHT", "OFF"
 
     public DispatcherDTO() {
         this.setEmployeeType("DISPATCHER");

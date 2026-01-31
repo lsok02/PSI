@@ -23,13 +23,7 @@ public class EmployeeDTO {
     private String firstName;
     private String lastName;
     private String serviceNumber;
-    private String email;
-    private String phoneNumber;
 
-    // Common fields
-    private LocalDateTime hireDate;
-    private String department;
-    private boolean active;
 
     private String employeeType;
 }

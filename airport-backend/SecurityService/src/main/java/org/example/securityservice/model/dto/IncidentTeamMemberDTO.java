@@ -2,6 +2,7 @@ package org.example.securityservice.model.dto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.example.securityservice.model.entity.IncidentTeam;
 
 import java.util.List;
 
@@ -10,8 +11,7 @@ import java.util.List;
 public class IncidentTeamMemberDTO extends EmployeeDTO {
     private String radioCallSign;
     private List<String> specializations;
-    private IncidentTeamDTO currentTeam;
-    private boolean available;
+    private IncidentTeam currentTeam;
 
     public IncidentTeamMemberDTO() {
         this.setEmployeeType("TEAM_MEMBER");
