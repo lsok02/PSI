@@ -11,7 +11,7 @@ import java.util.List;
 public class IncidentTeamMemberDTO extends EmployeeDTO {
     private String radioCallSign;
     private List<String> specializations;
-    private IncidentTeam currentTeam;
+//    private IncidentTeam currentTeam;
 
     public IncidentTeamMemberDTO() {
         this.setEmployeeType("TEAM_MEMBER");

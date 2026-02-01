@@ -25,6 +25,7 @@ public class IncidentResponseDTO {
 
     private LocationDTO location;
     private DispatcherDTO registeredBy; // Teraz mamy konkretny typ
+
     private IncidentTeamDTO assignedTeam;
     private List<AirportResourceDTO> affectedResources;
     private List<LogEntryDTO> journalEntries;

@@ -19,9 +19,9 @@ public class IncidentTeamMemberMapper implements BaseMapper<IncidentTeamMember, 
         dto.setServiceNumber(entity.getServiceNumber());
         dto.setRadioCallSign(entity.getRadioId());
 
-        if (entity.getTeam() != null) {
-            dto.setCurrentTeam(entity.getTeam());
-        }
+//        if (entity.getTeam() != null) {
+//            dto.setCurrentTeam(entity.getTeam());
+//        }
 
         return dto;
     }

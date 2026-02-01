@@ -2,6 +2,9 @@
 -- POPRAWIONE INSERTY DLA ENUMÓW
 -- ZGODNIE Z STRUKTURĄ WYGENEROWANĄ PRZEZ HIBERNATE
 -- ============================================
+CREATE SEQUENCE IF NOT EXISTS incidents_seq;
+CREATE SEQUENCE IF NOT EXISTS log_entries_seq;
+CREATE SEQUENCE IF NOT EXISTS audit_logs_seq;
 
 -- 1. Location
 INSERT INTO location (id, name, type, coordinates) VALUES
@@ -240,4 +243,8 @@ INSERT INTO airport_resource (id, resource_name, resource_type) VALUES
 INSERT INTO standard_operating_procedure_applicable_incident_types (standard_operating_procedure_id, applicable_incident_types) VALUES
                                                                                                                                     (1, 'TECHNICAL'),
                                                                                                                                     (3, 'OTHER'),
-                                                                                                                                    (4, 'FIRE');
+                                                                                                                 (4, 'FIRE');
+
+SELECT setval('incidents_seq', COALESCE((SELECT MAX(id) FROM incident), 0) + 1);
+SELECT setval('log_entries_seq', COALESCE((SELECT MAX(id) FROM log_entry), 0) + 1);
+SELECT setval('audit_logs_seq', COALESCE((SELECT MAX(id) FROM audit_logs), 0) + 1);
