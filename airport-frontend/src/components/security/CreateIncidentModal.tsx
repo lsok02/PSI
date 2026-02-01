@@ -1,10 +1,13 @@
+import { useState, useEffect } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
+import { useCreateIncident } from '@/hooks';
+import type { IncidentType, IncidentPriority } from '@/types';
 
 interface CreateIncidentModalProps {
     open: boolean;
@@ -16,23 +19,95 @@ interface CreateIncidentModalProps {
         suggestedType?: string;
         suggestedPriority?: string;
         suggestedLocation?: string;
+        sensorEventId?: number;
     };
 }
 
+// Map UI display values to backend enum values
+const typeToBackend: Record<string, IncidentType> = {
+    'Fire Alarm': 'FIRE_STRUCTURAL',
+    'Medical Emergency': 'MEDICAL_EMERGENCY',
+    'Security Breach': 'SECURITY_UNAUTHORIZED_ACCESS',
+    'Unauthorized Access': 'SECURITY_UNAUTHORIZED_ACCESS',
+    'Suspicious Package': 'SECURITY_SUSPICIOUS_PACKAGE',
+    'Technical Failure': 'TECHNICAL_EQUIPMENT_FAILURE',
+    'Other': 'OTHER_MISCELLANEOUS',
+};
+
+const priorityToBackend: Record<string, IncidentPriority> = {
+    'Critical': 'CRITICAL',
+    'High': 'HIGH',
+    'Medium': 'NORMAL',
+    'Low': 'LOW',
+};
+
 export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateIncidentModalProps) {
+    const createIncidentMutation = useCreateIncident();
+
+    // Form state
+    const [incidentType, setIncidentType] = useState('Fire Alarm');
+    const [priority, setPriority] = useState('Critical');
+    const [location, setLocation] = useState('');
+    const [description, setDescription] = useState('');
+    const [assignedTeam, setAssignedTeam] = useState('');
+    const [descriptionError, setDescriptionError] = useState<string | null>(null);
+
+    // Update form when alertData changes
+    useEffect(() => {
+        if (alertData) {
+            setIncidentType(alertData.suggestedType || 'Fire Alarm');
+            setPriority(alertData.suggestedPriority || 'Critical');
+            setLocation(alertData.suggestedLocation || '');
+            setDescription(`Alert from ${alertData.sourceSystem} (${alertData.sensorId}) detected at ${alertData.detectionTime}. Please verify the situation and update as needed.`);
+            setDescriptionError(null);
+        }
+    }, [alertData]);
+
+    const validateDescription = (): boolean => {
+        if (description.length < 20) {
+            setDescriptionError(`Description must be at least 20 characters (currently ${description.length})`);
+            return false;
+        }
+        setDescriptionError(null);
+        return true;
+    };
+
     const handleCreateIncident = () => {
-        console.log('Creating incident...');
-        onOpenChange(false);
+        if (!validateDescription()) {
+            return;
+        }
+
+        const requestData = {
+            type: typeToBackend[incidentType] || 'OTHER',
+            priority: priorityToBackend[priority] || 'NORMAL',
+            locationId: 1, // Default location - would need to resolve from location name
+            description,
+            status: 'NEW' as const,
+            assignedTeamId: assignedTeam ? parseInt(assignedTeam.split('-')[1]) : undefined,
+            sensorEventId: alertData?.sensorEventId,
+        };
+
+        console.log('Creating incident with data:', requestData);
+        console.log('alertData:', alertData);
+
+        createIncidentMutation.mutate(requestData, {
+            onSuccess: () => {
+                onOpenChange(false);
+            },
+        });
     };
 
     const handleCreateAndAssign = () => {
-        console.log('Creating incident and assigning team...');
-        onOpenChange(false);
+        if (!assignedTeam) {
+            alert('Please select a team to assign');
+            return;
+        }
+        handleCreateIncident();
     };
 
     const defaultAlertData = {
         sourceSystem: 'Fire Detection System (PPOŻ)',
-        detectionTime: '2025-11-02 14:45:10',
+        detectionTime: new Date().toLocaleString(),
         sensorId: 'SD-T1-C-112',
         suggestedType: 'Fire Alarm',
         suggestedPriority: 'Critical',
@@ -97,7 +172,7 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label className="text-slate-300">Incident Type</Label>
-                                    <Select defaultValue={data.suggestedType}>
+                                    <Select value={incidentType} onValueChange={setIncidentType}>
                                         <SelectTrigger className="bg-[#1C1C1E] border-[#0A84FF] text-white hover:bg-[#252527]">
                                             <SelectValue />
                                         </SelectTrigger>
@@ -114,7 +189,7 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
 
                                 <div className="space-y-2">
                                     <Label className="text-slate-300">Priority</Label>
-                                    <Select defaultValue={data.suggestedPriority}>
+                                    <Select value={priority} onValueChange={setPriority}>
                                         <SelectTrigger className="bg-[#1C1C1E] border-[#0A84FF] text-white hover:bg-[#252527]">
                                             <SelectValue />
                                         </SelectTrigger>
@@ -131,18 +206,29 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
                             <div className="space-y-2">
                                 <Label className="text-slate-300">Location</Label>
                                 <Input
-                                    defaultValue={data.suggestedLocation}
+                                    value={location}
+                                    onChange={(e) => setLocation(e.target.value)}
                                     className="bg-[#1C1C1E] border-[#0A84FF] text-white placeholder:text-slate-500 hover:bg-[#252527] focus-visible:ring-[#0A84FF]"
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-slate-300">Description</Label>
+                                <Label className="text-slate-300">Description <span className="text-slate-500">(min. 20 characters)</span></Label>
                                 <Textarea
                                     rows={4}
-                                    defaultValue="Automatically generated incident based on a fire alarm alert. Please verify the situation and update as necessary. Initial sensor reading indicates potential fire hazard in the specified zone."
-                                    className="bg-[#1C1C1E] border-[#0A84FF] text-white placeholder:text-slate-500 resize-none hover:bg-[#252527] focus-visible:ring-[#0A84FF]"
+                                    value={description}
+                                    onChange={(e) => {
+                                        setDescription(e.target.value);
+                                        if (descriptionError && e.target.value.length >= 20) {
+                                            setDescriptionError(null);
+                                        }
+                                    }}
+                                    className={`bg-[#1C1C1E] text-white placeholder:text-slate-500 resize-none hover:bg-[#252527] focus-visible:ring-[#0A84FF] ${descriptionError ? 'border-red-500' : 'border-[#0A84FF]'
+                                        }`}
                                 />
+                                {descriptionError && (
+                                    <p className="text-red-400 text-xs mt-1">{descriptionError}</p>
+                                )}
                             </div>
                         </div>
 
@@ -152,7 +238,7 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
 
                             <div className="space-y-2">
                                 <Label className="text-slate-300">Assign a Team</Label>
-                                <Select>
+                                <Select value={assignedTeam} onValueChange={setAssignedTeam}>
                                     <SelectTrigger className="bg-[#1C1C1E] border-slate-700 text-slate-400 hover:bg-[#252527]">
                                         <SelectValue placeholder="Select an available team..." />
                                     </SelectTrigger>
@@ -175,6 +261,7 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
                                 onClick={() => onOpenChange(false)}
                                 variant="outline"
                                 className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white"
+                                disabled={createIncidentMutation.isPending}
                             >
                                 Cancel
                             </Button>
@@ -182,14 +269,23 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
                                 onClick={handleCreateAndAssign}
                                 variant="outline"
                                 className="border-[#0A84FF] text-[#0A84FF] hover:bg-[#0A84FF]/10"
+                                disabled={createIncidentMutation.isPending}
                             >
                                 Create & Assign
                             </Button>
                             <Button
                                 onClick={handleCreateIncident}
                                 className="bg-[#FF3B30] text-white hover:bg-[#FF3B30]/90"
+                                disabled={createIncidentMutation.isPending}
                             >
-                                Create Incident
+                                {createIncidentMutation.isPending ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        Creating...
+                                    </>
+                                ) : (
+                                    'Create Incident'
+                                )}
                             </Button>
                         </div>
                     </div>

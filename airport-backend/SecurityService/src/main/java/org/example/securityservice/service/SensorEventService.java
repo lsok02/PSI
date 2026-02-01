@@ -99,7 +99,7 @@ public class SensorEventService {
         }
     }
 
-    @Scheduled(fixedDelay = 30 * 1000) // 5 minut
+//    @Scheduled(fixedDelay = 30 * 1000) // 5 minut
     public void scheduleRandomAlarms() {
         log.debug("Scheduled task: Creating random sensor alarm");
         try {

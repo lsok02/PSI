@@ -44,4 +44,6 @@ public class IncidentDTO {
     private LocalDateTime closureTime;
 
     private ReportingSource reportSource;
+
+    private Long sensorEventId; // ID of sensor event that triggered this incident
 }

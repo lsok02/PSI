@@ -44,25 +44,36 @@ public class IncidentService {
     private final IncidentNotificationService notificationService;
     private final TeamAssignmentService teamAssignmentService;
     private final FlightIntegrationService flightIntegrationService;
+    private final SensorEventService sensorEventService;
 
     @Transactional
     public IncidentResponseDTO createIncident(IncidentDTO incidentDTO, Long currentUserId) {
         log.info("Creating incident by user ID: {}", currentUserId);
 
-        Employee currentUser = validator.validateAndGetUser(currentUserId);
-        validator.validateUserCanCreateIncident(currentUser);
+        Employee currentUser = null;
+        Dispatcher dispatcher;
+
+        if (currentUserId != null) {
+            currentUser = validator.validateAndGetUser(currentUserId);
+            validator.validateUserCanCreateIncident(currentUser);
+            dispatcher = getDispatcherForIncident(currentUser);
+        } else {
+            // For API calls without user context, use first available dispatcher
+            dispatcher = dispatcherRepository.findFirstByOrderByIdAsc()
+                    .orElseThrow(() -> new BusinessRuleViolationException("No dispatcher available"));
+            currentUser = dispatcher;
+        }
+
         validator.validateIncidentCreation(incidentDTO);
 
         String reportNumber = generateReportNumber();
-        Dispatcher dispatcher = getDispatcherForIncident(currentUser);
 
         Incident incident = Incident.builder()
                 .reportNumber(reportNumber)
                 .type(incidentDTO.getType())
                 .priority(incidentDTO.getPriority())
                 .status(IncidentStatus.NEW)
-                .source(incidentDTO.getReportSource() != null ?
-                        incidentDTO.getReportSource() : ReportingSource.MANUAL)
+                .source(incidentDTO.getReportSource() != null ? incidentDTO.getReportSource() : ReportingSource.MANUAL)
                 .description(incidentDTO.getDescription())
                 .reportTime(LocalDateTime.now())
                 .registeredBy(dispatcher)
@@ -80,6 +91,13 @@ public class IncidentService {
 
         if (savedIncident.getPriority() == IncidentPriority.CRITICAL) {
             flightIntegrationService.checkAffectedFlights(savedIncident);
+        }
+
+        // Link sensor event to this incident if provided
+        log.info("SensorEventId from DTO: {}", incidentDTO.getSensorEventId());
+        if (incidentDTO.getSensorEventId() != null) {
+            sensorEventService.addIncidentForAlarm(incidentDTO.getSensorEventId(),
+                    permissionService.toResponseDtoWithPermissions(savedIncident));
         }
 
         log.info("Incident created successfully: {}", savedIncident.getReportNumber());
@@ -124,17 +142,15 @@ public class IncidentService {
         IncidentStatus oldStatus = incident.getStatus();
         incident.setStatus(statusChangeDTO.getNewStatus());
 
-
-
         Incident updatedIncident = incidentRepository.save(incident);
 
         notificationService.createStatusChangeLog(updatedIncident, currentUser, oldStatus, statusChangeDTO);
         notificationService.logStatusChange(updatedIncident, oldStatus, statusChangeDTO.getNewStatus(), currentUser);
 
-//        if (updatedIncident.getPriority() == IncidentPriority.CRITICAL ||
-//                updatedIncident.getPriority() == IncidentPriority.HIGH) {
-//            notificationService.sendStatusUpdateNotification(updatedIncident);
-//        }
+        // if (updatedIncident.getPriority() == IncidentPriority.CRITICAL ||
+        // updatedIncident.getPriority() == IncidentPriority.HIGH) {
+        // notificationService.sendStatusUpdateNotification(updatedIncident);
+        // }
 
         log.info("Incident {} status updated from {} to {}",
                 updatedIncident.getReportNumber(), oldStatus, statusChangeDTO.getNewStatus());
@@ -144,8 +160,8 @@ public class IncidentService {
 
     @Transactional
     public List<IncidentResponseDTO> getIncidents(IncidentStatus status, IncidentPriority priority,
-                                                  IncidentType type, LocalDateTime from, LocalDateTime to,
-                                                  Long userId) {
+            IncidentType type, LocalDateTime from, LocalDateTime to,
+            Long userId) {
         log.debug("Getting incidents with filters: status={}, priority={}, type={}", status, priority, type);
 
         Specification<Incident> spec = IncidentSpecifications.hasStatus(status)
@@ -155,7 +171,6 @@ public class IncidentService {
                 .and(IncidentSpecifications.reportedBefore(to));
 
         List<Incident> incidents = incidentRepository.findAll(spec);
-
 
         return incidents.stream()
                 .map(incident -> permissionService.toResponseDtoWithPermissions(incident))

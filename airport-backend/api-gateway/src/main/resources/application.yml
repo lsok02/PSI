@@ -31,6 +31,12 @@ spring:
           predicates:
             - Path=/api/security/**
 
+        # Sensor Events (Security Service)
+        - id: sensor-events
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/sensor-events/**
+
 jwt:
   secret: airport-gateway-super-secret-key-2024-with-32-chars!
 
