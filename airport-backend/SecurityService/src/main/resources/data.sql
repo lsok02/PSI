@@ -34,7 +34,7 @@ INSERT INTO security_manager (id) VALUES (3), (4);
 
 -- 5. IncidentTeam
 INSERT INTO incident_team (id, team_name, specialization, status) VALUES
-                                                                      (1, 'Alpha Team', 'FIRE_AND_HAZMAT', 'AVAILABLE'),
+                                                                      (1, 'Alpha Team', 'FIRE', 'AVAILABLE'),
                                                                       (2, 'Bravo Team', 'MEDICAL_RESPONSE', 'BUSY'),
                                                                       (3, 'Charlie Team', 'SECURITY_THREAT', 'UNAVAILABLE'),
                                                                       (4, 'Delta Team', 'TECHNICAL_SUPPORT', 'AVAILABLE'),

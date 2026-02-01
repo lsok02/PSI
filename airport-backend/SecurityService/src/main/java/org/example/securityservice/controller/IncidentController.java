@@ -213,19 +213,19 @@ public class IncidentController {
 
     // ========== INCIDENT MANAGEMENT ==========
 
-    @PostMapping("/{id}/assign")
+    @PostMapping("/{id}/assign/{teamId}")
     public ResponseEntity<IncidentResponseDTO> assignTeam(
             @PathVariable Long id,
-           @RequestBody TeamAssignmentDTO assignmentDTO,
+            @PathVariable Long teamId,
             @RequestHeader("X-User-Id") Long userId) {
 
         log.info("Received request to assign team to incident {} by user {}", id, userId);
 
         try {
-            IncidentResponseDTO updatedIncident = incidentService.assignTeam(id, assignmentDTO, userId);
+            IncidentResponseDTO updatedIncident = incidentService.assignTeam(id, teamId, userId);
 
             log.info("Team assigned to incident {}: team ID {}",
-                    updatedIncident.getReportNumber(), assignmentDTO.getTeamId());
+                    updatedIncident.getReportNumber(), teamId);
 
             return ResponseEntity.ok(updatedIncident);
 

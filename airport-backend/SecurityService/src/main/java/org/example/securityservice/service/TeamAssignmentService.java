@@ -33,7 +33,7 @@ public class TeamAssignmentService {
     }
 
     private void validateTeamQualification(IncidentTeam team, Incident incident) {
-        if (!team.getSpecialization().equals(incident.getType())) {
+        if (!team.getSpecialization().equals(incident.getType().toString())) {
             throw new BusinessRuleViolationException(
                     "Team specialization (" + team.getSpecialization() + ") " +
                             "does not match incident type (" + incident.getType() + ")");

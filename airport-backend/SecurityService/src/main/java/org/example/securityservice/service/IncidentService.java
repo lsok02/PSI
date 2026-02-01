@@ -87,7 +87,7 @@ public class IncidentService {
     }
 
     @Transactional
-    public IncidentResponseDTO assignTeam(Long incidentId, TeamAssignmentDTO assignmentDTO, Long currentUserId) {
+    public IncidentResponseDTO assignTeam(Long incidentId, Long teamId, Long currentUserId) {
         log.info("Assigning team to incident {} by user {}", incidentId, currentUserId);
 
         Incident incident = validator.validateAndGetIncident(incidentId);
@@ -96,13 +96,13 @@ public class IncidentService {
         validator.validateUserCanAssignTeam(currentUser);
         validator.validateIncidentCanBeAssigned(incident);
 
-        IncidentTeam team = teamAssignmentService.validateAndAssignTeam(incident, assignmentDTO.getTeamId());
+        IncidentTeam team = teamAssignmentService.validateAndAssignTeam(incident, teamId);
         incident.setAssignedTeam(team);
         incident.setStatus(IncidentStatus.ASSIGNED);
 
         Incident updatedIncident = incidentRepository.save(incident);
 
-        notificationService.createTeamAssignmentLog(updatedIncident, currentUser, team, assignmentDTO.getAssignmentNotes());
+        notificationService.createTeamAssignmentLog(updatedIncident, currentUser);
         notificationService.logTeamAssignment(updatedIncident, team, currentUser);
         notificationService.sendTeamAssignmentNotification(team, updatedIncident);
         notificationService.checkForEscalation(updatedIncident);
