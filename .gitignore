@@ -1,2 +1,38 @@
 .idea/
 Real-Time Security Dashboard/
+
+# Gradle
+.gradle/
+build/
+*/build/
+
+# Maven
+target/
+*/target/
+
+# Node/Frontend
+node_modules/
+*/node_modules/
+dist/
+*/dist/
+.vite/
+*/.vite/
+
+# Python (if any)
+__pycache__/
+*.py[cod]
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
