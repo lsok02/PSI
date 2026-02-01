@@ -39,7 +39,7 @@ public class IncidentNotificationService {
         logEntryRepository.save(logEntry);
     }
 
-    public void createTeamAssignmentLog(Incident incident, Employee user, IncidentTeam team, String assignmentNotes) {
+    public void createTeamAssignmentLog(Incident incident, Employee user) {
         LogEntry logEntry = LogEntry.builder()
                 .incident(incident)
                 .performedBy(user)

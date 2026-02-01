@@ -10,7 +10,7 @@ public class StatusChangeDTO {
     @NotNull
     private IncidentStatus newStatus;
 
-    private String changeReason;
+//    private String changeReason;
 
-    private String actionNotes;
+//    private String actionNotes;
 }

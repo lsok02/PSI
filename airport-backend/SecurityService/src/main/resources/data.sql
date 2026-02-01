@@ -34,7 +34,7 @@ INSERT INTO security_manager (id) VALUES (3), (4);
 
 -- 5. IncidentTeam
 INSERT INTO incident_team (id, team_name, specialization, status) VALUES
-                                                                      (1, 'Alpha Team', 'FIRE_AND_HAZMAT', 'AVAILABLE'),
+                                                                      (1, 'Alpha Team', 'FIRE', 'AVAILABLE'),
                                                                       (2, 'Bravo Team', 'MEDICAL_RESPONSE', 'BUSY'),
                                                                       (3, 'Charlie Team', 'SECURITY_THREAT', 'UNAVAILABLE'),
                                                                       (4, 'Delta Team', 'TECHNICAL_SUPPORT', 'AVAILABLE'),
@@ -163,13 +163,13 @@ INSERT INTO report_analyzed_incidents (report_id, analyzed_incidents_id) VALUES
                                                                              (4, 5);
 
 -- 19. SensorEvent
-INSERT INTO sensor_events (id, sensor_id, sensor_type, reading_value, unit, severity, location_details, timestamp, location_id, incident_id, is_processed, processed_at) VALUES
-                                                                                                                                                                             (1, 'SENSOR-F001', 'FIRE', 85.5, '°C', 0.8, 'Control panel room', '2024-01-15 08:28:30', 1, 1, true, '2024-01-15 08:30:00'),
-                                                                                                                                                                             (2, 'SENSOR-S045', 'SMOKE', 15.2, 'μg/m³', 0.6, 'Near electrical room', '2024-01-15 08:29:00', 1, 1, true, '2024-01-15 08:30:00'),
-                                                                                                                                                                             (3, 'SENSOR-M201', 'MOTION', 1.0, 'count', 0.3, 'Restricted corridor', '2024-01-16 03:18:45', 3, 3, true, '2024-01-16 03:20:00'),
-                                                                                                                                                                             (4, 'SENSOR-T301', 'TEMPERATURE', -5.0, '°C', 0.4, 'Outdoor sensor', '2024-01-17 19:40:00', 1, NULL, false, NULL),
-                                                                                                                                                                             (5, 'SENSOR-C101', 'CAMERA', NULL, NULL, 0.7, 'Gate 12 camera detected fall', '2024-01-15 14:44:30', 2, 2, true, '2024-01-15 14:45:00'),
-                                                                                                                                                                             (6, 'SENSOR-P401', 'PRESSURE', 0.0, 'bar', 0.9, 'Fuel pipeline pressure drop', '2024-01-16 11:08:20', 6, 4, true, '2024-01-16 11:10:00');
+INSERT INTO sensor_events (sensor_id, sensor_type, location_details, timestamp, location_id, incident_id, is_processed) VALUES
+                                                                                                                            ('SENSOR-F001', 'FIRE', 'Control panel room', '2024-01-15 08:28:30', 1, 1, true),
+                                                                                                                            ('SENSOR-S045', 'SMOKE', 'Near electrical room', '2024-01-15 08:29:00', 1, 1, true),
+                                                                                                                            ('SENSOR-M201', 'MOTION', 'Restricted corridor', '2024-01-16 03:18:45', 3, 3, true),
+                                                                                                                            ('SENSOR-T301', 'TEMPERATURE', 'Outdoor sensor', '2024-01-17 19:40:00', 1, NULL, false),
+                                                                                                                            ('SENSOR-C101', 'CAMERA', 'Gate 12 camera detected fall', '2024-01-15 14:44:30', 2, 2, true),
+                                                                                                                            ('SENSOR-P401', 'PRESSURE', 'Fuel pipeline pressure drop', '2024-01-16 11:08:20', 6, 4, true);
 
 -- 20. Shift
 INSERT INTO shift (id, name, start_time, end_time) VALUES
@@ -228,9 +228,9 @@ INSERT INTO certificate (id, certificate_name, expiry_date, member_id) VALUES
                                                                            (10, 'Explosive Detection', '2026-02-28 00:00:00', 12);
 
 -- Dodatkowe SensorEvents
-INSERT INTO sensor_events (id, sensor_id, sensor_type, reading_value, unit, severity, location_details, timestamp, location_id, incident_id, is_processed, processed_at) VALUES
-                                                                                                                                                                             (7, 'SENSOR-H001', 'HUMIDITY', 65.5, '%', 0.1, 'Normal operation', '2024-01-18 10:00:00', 2, NULL, true, '2024-01-18 10:00:05'),
-                                                                                                                                                                             (8, 'SENSOR-V001', 'VIBRATION', 2.1, 'm/s²', 0.05, 'Near runway', '2024-01-18 12:30:00', 2, NULL, true, '2024-01-18 12:30:10');
+-- INSERT INTO sensor_events (id, sensor_id, sensor_type, reading_value, unit, severity, location_details, timestamp, location_id, incident_id, is_processed, processed_at) VALUES
+--                                                                                                                                                                              (7, 'SENSOR-H001', 'HUMIDITY', 65.5, '%', 0.1, 'Normal operation', '2024-01-18 10:00:00', 2, NULL, true, '2024-01-18 10:00:05'),
+--                                                                                                                                                                              (8, 'SENSOR-V001', 'VIBRATION', 2.1, 'm/s²', 0.05, 'Near runway', '2024-01-18 12:30:00', 2, NULL, true, '2024-01-18 12:30:10');
 
 -- Dodatkowe AirportResources
 INSERT INTO airport_resource (id, resource_name, resource_type) VALUES

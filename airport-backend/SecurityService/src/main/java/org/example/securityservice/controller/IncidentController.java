@@ -19,6 +19,7 @@ import org.example.securityservice.model.enumeration.IncidentType;
 import org.example.securityservice.service.AuditLogService;
 import org.example.securityservice.service.IncidentService;
 import org.example.securityservice.service.NotificationService;
+import org.example.securityservice.service.SensorEventService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,7 @@ public class IncidentController {
     private final IncidentService incidentService;
     private final AuditLogService auditLogService;
     private final NotificationService notificationService;
+    private final SensorEventService sensorEventService;
 
     @GetMapping
     public ResponseEntity<List<IncidentResponseDTO>> getIncidents(
@@ -101,12 +103,6 @@ public class IncidentController {
         }
     }
 
-
-
-
-
-    // ========== INCIDENT CREATION ==========
-
     @PostMapping
     public ResponseEntity<IncidentResponseDTO> createIncident(
              @RequestBody IncidentDTO incidentDTO,
@@ -129,48 +125,139 @@ public class IncidentController {
         }
     }
 
-    @PostMapping("/sensor-events")
-    public ResponseEntity<IncidentResponseDTO> handleSensorEvent(
-             @RequestBody SensorEventDTO sensorEvent) {
+    @PostMapping("/{alarmId}")
+    public ResponseEntity<IncidentResponseDTO> createIncidentForAlarm(
+            @RequestBody IncidentDTO incidentDTO,
+            @PathVariable Long alarmId,
+            @RequestHeader("X-User-Id") Long userId) {
 
-        log.info("Received sensor event: {} in zone {}",
-                sensorEvent.getAlarmType(), sensorEvent.getZoneCode());
+        log.info("Received request to create incident by user ID: {}", userId);
 
         try {
-//            IncidentResponseDTO createdIncident = incidentService.createIncidentFromSensor(sensorEvent);
-            IncidentResponseDTO createdIncident = new IncidentResponseDTO();
-            log.info("Sensor incident created: {}", createdIncident.getReportNumber());
+            IncidentResponseDTO createdIncident = incidentService.createIncident(incidentDTO, userId);
 
+            log.info("Incident created successfully: {}", createdIncident.getReportNumber());
+            sensorEventService.addIncidentForAlarm(alarmId, createdIncident);
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .header("X-Incident-Id", createdIncident.getId().toString())
                     .body(createdIncident);
 
         } catch (Exception e) {
-            log.error("Error processing sensor event: {}", e.getMessage(), e);
-            throw e;
+            log.error("Error creating incident: {}", e.getMessage(), e);
+            throw e; // GlobalExceptionHandler will handle it
         }
     }
 
-    // ========== INCIDENT RETRIEVAL ==========
+    @PostMapping("/{id}/assign/{teamId}")
+    public ResponseEntity<IncidentResponseDTO> assignTeam(
+            @PathVariable Long id,
+            @PathVariable Long teamId,
+            @RequestHeader("X-User-Id") Long userId) {
 
-    @GetMapping("/active")
-    public ResponseEntity<List<IncidentResponseDTO>> getActiveIncidents(
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
-
-        log.debug("Received request to get active incidents for user ID: {}", userId);
+        log.info("Received request to assign team to incident {} by user {}", id, userId);
 
         try {
-            List<IncidentResponseDTO> incidents = incidentService.getActiveIncidents(userId);
+            IncidentResponseDTO updatedIncident = incidentService.assignTeam(id, teamId, userId);
 
-            log.info("Returning {} active incidents", incidents.size());
-            return ResponseEntity.ok(incidents);
+            log.info("Team assigned to incident {}: team ID {}",
+                    updatedIncident.getReportNumber(), teamId);
+
+            return ResponseEntity.ok(updatedIncident);
 
         } catch (Exception e) {
-            log.error("Error retrieving active incidents: {}", e.getMessage(), e);
+            log.error("Error assigning team to incident {}: {}", id, e.getMessage(), e);
             throw e;
         }
     }
+
+    @PostMapping("/{id}/status")
+    public ResponseEntity<IncidentResponseDTO> updateStatus(
+            @PathVariable Long id,
+            @RequestBody StatusChangeDTO statusChangeDTO,
+            @RequestHeader("X-User-Id") Long userId) {
+
+        log.info("Received request to update status of incident {} to {} by user {}",
+                id, statusChangeDTO.getNewStatus(), userId);
+
+        try {
+            IncidentResponseDTO updatedIncident = incidentService.updateStatus(id, statusChangeDTO, userId);
+
+            log.info("Status updated for incident {}: {} -> {}",
+                    updatedIncident.getReportNumber(),
+                    updatedIncident.getStatus(),
+                    statusChangeDTO.getNewStatus());
+
+            return ResponseEntity.ok(updatedIncident);
+
+        } catch (Exception e) {
+            log.error("Error updating status for incident {}: {}", id, e.getMessage(), e);
+            throw e;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//    @PostMapping("/sensor-events")
+//    public ResponseEntity<IncidentResponseDTO> handleSensorEvent(
+//             @RequestBody SensorEventDTO sensorEvent) {
+//
+//        log.info("Received sensor event: {} in zone {}",
+//                sensorEvent.getAlarmType(), sensorEvent.getZoneCode());
+//
+//        try {
+////            IncidentResponseDTO createdIncident = incidentService.createIncidentFromSensor(sensorEvent);
+//            IncidentResponseDTO createdIncident = new IncidentResponseDTO();
+//            log.info("Sensor incident created: {}", createdIncident.getReportNumber());
+//
+//            return ResponseEntity
+//                    .status(HttpStatus.CREATED)
+//                    .header("X-Incident-Id", createdIncident.getId().toString())
+//                    .body(createdIncident);
+//
+//        } catch (Exception e) {
+//            log.error("Error processing sensor event: {}", e.getMessage(), e);
+//            throw e;
+//        }
+//    }
+
+    // ========== INCIDENT RETRIEVAL ==========
 
     @GetMapping("/my-team")
     public ResponseEntity<List<IncidentResponseDTO>> getMyTeamIncidents(
@@ -212,53 +299,6 @@ public class IncidentController {
     }
 
     // ========== INCIDENT MANAGEMENT ==========
-
-    @PostMapping("/{id}/assign")
-    public ResponseEntity<IncidentResponseDTO> assignTeam(
-            @PathVariable Long id,
-           @RequestBody TeamAssignmentDTO assignmentDTO,
-            @RequestHeader("X-User-Id") Long userId) {
-
-        log.info("Received request to assign team to incident {} by user {}", id, userId);
-
-        try {
-            IncidentResponseDTO updatedIncident = incidentService.assignTeam(id, assignmentDTO, userId);
-
-            log.info("Team assigned to incident {}: team ID {}",
-                    updatedIncident.getReportNumber(), assignmentDTO.getTeamId());
-
-            return ResponseEntity.ok(updatedIncident);
-
-        } catch (Exception e) {
-            log.error("Error assigning team to incident {}: {}", id, e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    @PostMapping("/{id}/status")
-    public ResponseEntity<IncidentResponseDTO> updateStatus(
-            @PathVariable Long id,
-            @RequestBody StatusChangeDTO statusChangeDTO,
-            @RequestHeader("X-User-Id") Long userId) {
-
-        log.info("Received request to update status of incident {} to {} by user {}",
-                id, statusChangeDTO.getNewStatus(), userId);
-
-        try {
-            IncidentResponseDTO updatedIncident = incidentService.updateStatus(id, statusChangeDTO, userId);
-
-            log.info("Status updated for incident {}: {} -> {}",
-                    updatedIncident.getReportNumber(),
-                    updatedIncident.getStatus(),
-                    statusChangeDTO.getNewStatus());
-
-            return ResponseEntity.ok(updatedIncident);
-
-        } catch (Exception e) {
-            log.error("Error updating status for incident {}: {}", id, e.getMessage(), e);
-            throw e;
-        }
-    }
 
 
     @PatchMapping("/{id}")

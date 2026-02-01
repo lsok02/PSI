@@ -32,11 +32,6 @@ public class NotificationService {
         // Email notification (mock for demo)
         log.info("Sending team assignment email for incident: {}", incident.getReportNumber());
 
-        // For demo purposes, we'll just log
-        team.getMembers().forEach(member -> {
-            log.info("Notification sent to team member {}: {}",
-                    member.getId(), incident.getReportNumber());
-        });
     }
 
     public void sendCriticalAlert(Incident incident) {

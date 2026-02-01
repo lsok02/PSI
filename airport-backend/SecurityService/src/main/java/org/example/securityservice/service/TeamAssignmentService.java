@@ -33,7 +33,7 @@ public class TeamAssignmentService {
     }
 
     private void validateTeamQualification(IncidentTeam team, Incident incident) {
-        if (!team.getSpecialization().equals(incident.getType())) {
+        if (!team.getSpecialization().equals(incident.getType().toString())) {
             throw new BusinessRuleViolationException(
                     "Team specialization (" + team.getSpecialization() + ") " +
                             "does not match incident type (" + incident.getType() + ")");
@@ -50,11 +50,6 @@ public class TeamAssignmentService {
         incident.setAssignedTeam(team);
         incident.setStatus(IncidentStatus.ASSIGNED);
         team.setStatus(TeamStatus.BUSY);
-        teamRepository.save(team);
-    }
-
-    public void releaseTeam(IncidentTeam team) {
-        team.setStatus(TeamStatus.AVAILABLE);
         teamRepository.save(team);
     }
 

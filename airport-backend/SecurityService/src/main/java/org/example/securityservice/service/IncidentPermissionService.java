@@ -28,13 +28,4 @@ public class IncidentPermissionService {
         return dto;
     }
 
-
-    public List<Incident> filterIncidentsForTeamMember(List<Incident> incidents, IncidentTeamMember member) {
-        return incidents.stream()
-                .filter(incident -> incident.getAssignedTeam() != null &&
-                        incident.getAssignedTeam().getMembers().contains(member))
-                .collect(Collectors.toList());
-    }
-
-
 }

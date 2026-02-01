@@ -37,13 +37,6 @@ public interface IncidentRepository extends JpaRepository<Incident, Long>, JpaSp
 
     boolean existsByReportNumber(String reportNumber);
 
-    // Metoda do wyszukiwania incydentów przypisanych do członka zespołu
-    @Query("SELECT DISTINCT i FROM Incident i " +
-            "JOIN i.assignedTeam t " +
-            "JOIN t.members m " +
-            "WHERE m = :member")
-    List<Incident> findByAssignedTeamMembersContaining(@Param("member") IncidentTeamMember member);
-
     // Metoda do wyszukiwania incydentów z danym zasobem
     @Query("SELECT i FROM Incident i JOIN i.affectedResources r WHERE r.id = :resourceId")
     List<Incident> findByAffectedResourceId(@Param("resourceId") Long resourceId);
