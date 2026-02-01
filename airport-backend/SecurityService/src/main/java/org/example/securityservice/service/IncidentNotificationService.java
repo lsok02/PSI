@@ -39,12 +39,12 @@ public class IncidentNotificationService {
         logEntryRepository.save(logEntry);
     }
 
-    public void createTeamAssignmentLog(Incident incident, Employee user) {
+    public void createTeamAssignmentLog(Incident incident, Employee user, IncidentTeam team) {
         LogEntry logEntry = LogEntry.builder()
                 .incident(incident)
                 .performedBy(user)
                 .actionTime(LocalDateTime.now())
-                .actionDescription("Team assigned")
+                .actionDescription(String.format("Team %s assigned to incident", team.getTeamName()))
                 .build();
         logEntryRepository.save(logEntry);
     }
@@ -54,7 +54,7 @@ public class IncidentNotificationService {
                 .incident(incident)
                 .performedBy(user)
                 .actionTime(LocalDateTime.now())
-                .actionDescription("Status changed")
+                .actionDescription(String.format("Status changed from %s to %s", oldStatus, statusChangeDTO.getNewStatus()))
                 .build();
         logEntryRepository.save(logEntry);
     }

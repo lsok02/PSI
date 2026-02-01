@@ -76,7 +76,7 @@ public class IncidentService {
         updateDispatcherIncidents(dispatcher, savedIncident);
 
         notificationService.createInitialLog(savedIncident, currentUser, incidentDTO.getDescription());
-        notificationService.logIncidentCreation(savedIncident, currentUser);
+//        notificationService.logIncidentCreation(savedIncident, currentUser);
 
         if (savedIncident.getPriority() == IncidentPriority.CRITICAL) {
             flightIntegrationService.checkAffectedFlights(savedIncident);
@@ -102,8 +102,8 @@ public class IncidentService {
 
         Incident updatedIncident = incidentRepository.save(incident);
 
-        notificationService.createTeamAssignmentLog(updatedIncident, currentUser);
-        notificationService.logTeamAssignment(updatedIncident, team, currentUser);
+        notificationService.createTeamAssignmentLog(updatedIncident, currentUser, team);
+//        notificationService.logTeamAssignment(updatedIncident, team, currentUser);
         notificationService.sendTeamAssignmentNotification(team, updatedIncident);
         notificationService.checkForEscalation(updatedIncident);
 

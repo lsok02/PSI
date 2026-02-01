@@ -8,12 +8,74 @@ CREATE SEQUENCE IF NOT EXISTS audit_logs_seq;
 
 -- 1. Location
 INSERT INTO location (id, name, type, coordinates) VALUES
-                                                       (1, 'Terminal A - Security Checkpoint 1', 'SECURITY_CHECKPOINT', '51.4775, 0.4614'),
-                                                       (2, 'Runway 09R/27L', 'RUNWAY', '51.4780, 0.4620'),
-                                                       (3, 'Cargo Warehouse 4', 'CARGO_AREA', '51.4790, 0.4630'),
-                                                       (4, 'Main Control Tower', 'CONTROL_TOWER', '51.4765, 0.4605'),
-                                                       (5, 'Parking Lot P3 - Level 2', 'PARKING', '51.4750, 0.4590'),
-                                                       (6, 'Fuel Storage Area', 'FUEL_STORAGE', '51.4800, 0.4640');
+                                                       (1, 'Terminal A', 'TERMINAL', '51.4775, 0.4614'),
+                                                       (2, 'Terminal B', 'TERMINAL', '51.4780, 0.4620'),
+                                                       (3, 'Terminal C', 'TERMINAL', '51.4790, 0.4630'),
+                                                       (4, 'Terminal D', 'TERMINAL', '51.4800, 0.4640'),
+                                                       (5, 'Runway 09R/27L', 'RUNWAY', '51.4810, 0.4650'),
+                                                       (6, 'Runway 18/36', 'RUNWAY', '51.4820, 0.4660'),
+                                                       (7, 'Runway 05/23', 'RUNWAY', '51.4830, 0.4670'),
+                                                       (8, 'Taxiway Alpha', 'RUNWAY', '51.4840, 0.4680'),
+                                                       (9, 'Taxiway Bravo', 'RUNWAY', '51.4850, 0.4690'),
+                                                       (10, 'Gate A1', 'GATE', '51.4860, 0.4700'),
+                                                       (11, 'Gate A2', 'GATE', '51.4870, 0.4710'),
+                                                       (12, 'Gate A3', 'GATE', '51.4880, 0.4720'),
+                                                       (13, 'Gate B1', 'GATE', '51.4890, 0.4730'),
+                                                       (14, 'Gate B2', 'GATE', '51.4900, 0.4740'),
+                                                       (15, 'Gate B3', 'GATE', '51.4910, 0.4750'),
+                                                       (16, 'Gate C1', 'GATE', '51.4920, 0.4760'),
+                                                       (17, 'Gate C2', 'GATE', '51.4930, 0.4770'),
+                                                       (18, 'Gate C3', 'GATE', '51.4940, 0.4780'),
+                                                       (19, 'Gate D1', 'GATE', '51.4950, 0.4790'),
+                                                       (20, 'Gate D2', 'GATE', '51.4960, 0.4800'),
+                                                       (21, 'Gate G15', 'GATE', '51.4970, 0.4810'),
+                                                       (22, 'Gate G20', 'GATE', '51.4980, 0.4820'),
+                                                       (23, 'Gate G25', 'GATE', '51.4990, 0.4830'),
+                                                       (24, 'Security Checkpoint 1', 'SECURITY_CHECKPOINT', '51.5000, 0.4840'),
+                                                       (25, 'Security Checkpoint 2', 'SECURITY_CHECKPOINT', '51.5010, 0.4850'),
+                                                       (26, 'Security Checkpoint 3', 'SECURITY_CHECKPOINT', '51.5020, 0.4860'),
+                                                       (27, 'Security Checkpoint 4', 'SECURITY_CHECKPOINT', '51.5030, 0.4870'),
+                                                       (28, 'Security Checkpoint North', 'SECURITY_CHECKPOINT', '51.5040, 0.4880'),
+                                                       (29, 'Security Checkpoint Central', 'SECURITY_CHECKPOINT', '51.5050, 0.4890'),
+                                                       (30, 'Security Checkpoint South', 'SECURITY_CHECKPOINT', '51.5060, 0.4900'),
+                                                       (31, 'Baggage Claim 1', 'BAGGAGE', '51.5070, 0.4910'),
+                                                       (32, 'Baggage Claim 2', 'BAGGAGE', '51.5080, 0.4920'),
+                                                       (33, 'Baggage Claim 3', 'BAGGAGE', '51.5090, 0.4930'),
+                                                       (34, 'Baggage Claim 4', 'BAGGAGE', '51.5100, 0.4940'),
+                                                       (35, 'Baggage Claim International', 'BAGGAGE', '51.5110, 0.4950'),
+                                                       (36, 'Baggage Claim Domestic', 'BAGGAGE', '51.5120, 0.4960'),
+                                                       (37, 'Maintenance Bay 1', 'MAINTENANCE', '51.5130, 0.4970'),
+                                                       (38, 'Maintenance Bay 2', 'MAINTENANCE', '51.5140, 0.4980'),
+                                                       (39, 'Maintenance Bay 3', 'MAINTENANCE', '51.5150, 0.4990'),
+                                                       (40, 'Maintenance Bay 4', 'MAINTENANCE', '51.5160, 0.5000'),
+                                                       (41, 'Maintenance Bay 5', 'MAINTENANCE', '51.5170, 0.5010'),
+                                                       (42, 'Maintenance Bay 6', 'MAINTENANCE', '51.5180, 0.5020'),
+                                                       (43, 'Maintenance Bay 7', 'MAINTENANCE', '51.5190, 0.5030'),
+                                                       (44, 'Maintenance Bay 8', 'MAINTENANCE', '51.5200, 0.5040'),
+                                                       (45, 'Parking Lot P1', 'PARKING', '51.5210, 0.5050'),
+                                                       (46, 'Parking Lot P2', 'PARKING', '51.5220, 0.5060'),
+                                                       (47, 'Parking Lot P3', 'PARKING', '51.5230, 0.5070'),
+                                                       (48, 'Parking Lot P4', 'PARKING', '51.5240, 0.5080'),
+                                                       (49, 'Parking Lot P5', 'PARKING', '51.5250, 0.5090'),
+                                                       (50, 'Parking Lot P6', 'PARKING', '51.5260, 0.5100'),
+                                                       (51, 'Fuel Storage Area 1', 'FUEL_STORAGE', '51.5270, 0.5110'),
+                                                       (52, 'Fuel Storage Area 2', 'FUEL_STORAGE', '51.5280, 0.5120'),
+                                                       (53, 'Fuel Storage Area 3', 'FUEL_STORAGE', '51.5290, 0.5130'),
+                                                       (54, 'Cargo Warehouse 1', 'CARGO_AREA', '51.5300, 0.5140'),
+                                                       (55, 'Cargo Warehouse 2', 'CARGO_AREA', '51.5310, 0.5150'),
+                                                       (56, 'Cargo Warehouse 3', 'CARGO_AREA', '51.5320, 0.5160'),
+                                                       (57, 'Cargo Warehouse 4', 'CARGO_AREA', '51.5330, 0.5170'),
+                                                       (58, 'Control Tower Main', 'CONTROL_TOWER', '51.5340, 0.5180'),
+                                                       (59, 'Control Tower Backup', 'CONTROL_TOWER', '51.5350, 0.5190'),
+                                                       (60, 'Fire Station 1', 'FIRE_STATION', '51.5360, 0.5200'),
+                                                       (61, 'Fire Station 2', 'FIRE_STATION', '51.5370, 0.5210'),
+                                                       (62, 'Medical Center Main', 'MEDICAL_CENTER', '51.5380, 0.5220'),
+                                                       (63, 'Medical Center Satellite', 'MEDICAL_CENTER', '51.5390, 0.5230'),
+                                                       (64, 'Security Office Main', 'SECURITY_OFFICE', '51.5400, 0.5240'),
+                                                       (65, 'Security Office North', 'SECURITY_OFFICE', '51.5410, 0.5250'),
+                                                       (66, 'Security Office South', 'SECURITY_OFFICE', '51.5420, 0.5260'),
+                                                       (67, 'Operations Center', 'OPERATIONS_CENTER', '51.5430, 0.5270'),
+                                                       (68, 'Emergency Command Center', 'COMMAND_CENTER', '51.5440, 0.5280');
 
 -- 2. Employee
 INSERT INTO employee (id, first_name, last_name, service_number) VALUES
@@ -34,11 +96,11 @@ INSERT INTO security_manager (id) VALUES (3), (4);
 
 -- 5. IncidentTeam
 INSERT INTO incident_team (id, team_name, specialization, status) VALUES
-                                                                      (1, 'Alpha Team', 'FIRE', 'AVAILABLE'),
-                                                                      (2, 'Bravo Team', 'MEDICAL_RESPONSE', 'BUSY'),
-                                                                      (3, 'Charlie Team', 'SECURITY_THREAT', 'UNAVAILABLE'),
-                                                                      (4, 'Delta Team', 'TECHNICAL_SUPPORT', 'AVAILABLE'),
-                                                                      (5, 'Echo Team', 'K9_UNIT', 'BUSY');
+                                                                      (1, 'Alpha Team', 'TECHNICAL_WATER_LEAKAGE', 'AVAILABLE'),
+                                                                      (2, 'Bravo Team', 'MEDICAL_EMERGENCY', 'BUSY'),
+                                                                      (3, 'Charlie Team', 'FIRE_ELECTRICAL', 'UNAVAILABLE'),
+                                                                      (4, 'Delta Team', 'FIRE_CHEMICAL', 'AVAILABLE'),
+                                                                      (5, 'Echo Team', 'EQUIPMENT_ELEVATOR_STUCK', 'BUSY');
 
 -- 6. IncidentTeamMember
 INSERT INTO incident_team_member (id, radio_id, team_id) VALUES
@@ -55,13 +117,24 @@ INSERT INTO standard_operating_procedure (id, procedure_name, description) VALUE
                                                                                (4, 'Hazardous Material Spill', 'Protocol for chemical and hazardous material spills'),
                                                                                (5, 'Power Outage Response', 'Procedure for electrical power failures');
 
--- 8. StandardOperatingProcedure_applicable_incident_types
+-- 8. StandardOperatingProcedure_applicable_incident_types - POPRAWIONE!
 INSERT INTO standard_operating_procedure_applicable_incident_types (standard_operating_procedure_id, applicable_incident_types) VALUES
-                                                                                                                                    (1, 'FIRE'),
-                                                                                                                                    (2, 'MEDICAL'),
-                                                                                                                                    (3, 'SECURITY_THREAT'),
-                                                                                                                                    (4, 'TECHNICAL'),
-                                                                                                                                    (5, 'TECHNICAL');
+                                                                                                                                    (1, 'FIRE_ELECTRICAL'),
+                                                                                                                                    (1, 'FIRE_CHEMICAL'),
+                                                                                                                                    (1, 'FIRE_STRUCTURAL'),
+                                                                                                                                    (1, 'FIRE_VEHICLE'),
+                                                                                                                                    (2, 'MEDICAL_EMERGENCY'),
+                                                                                                                                    (2, 'MEDICAL_HEART_ATTACK'),
+                                                                                                                                    (2, 'MEDICAL_STROKE'),
+                                                                                                                                    (2, 'MEDICAL_ALLERGIC_REACTION'),
+                                                                                                                                    (3, 'SECURITY_UNAUTHORIZED_ACCESS'),
+                                                                                                                                    (3, 'SECURITY_SUSPICIOUS_PACKAGE'),
+                                                                                                                                    (3, 'SECURITY_ASSAULT'),
+                                                                                                                                    (3, 'SECURITY_THEFT'),
+                                                                                                                                    (4, 'HAZARDOUS_MATERIAL_SPILL'),
+                                                                                                                                    (4, 'FIRE_CHEMICAL'),
+                                                                                                                                    (5, 'TECHNICAL_POWER_OUTAGE'),
+                                                                                                                                    (5, 'TECHNICAL_EQUIPMENT_FAILURE');
 
 -- 9. AirportResource
 INSERT INTO airport_resource (id, resource_name, resource_type) VALUES
@@ -72,16 +145,15 @@ INSERT INTO airport_resource (id, resource_name, resource_type) VALUES
                                                                     (5, 'Fuel Pipeline Valve 7', 'INFRASTRUCTURE'),
                                                                     (6, 'X-Ray Scanner A', 'SECURITY_EQUIPMENT');
 
--- 10. Incident
+-- 10. Incident - POPRAWIONE TYPY!
 INSERT INTO incident (id, report_number, report_time, close_time, description, type, priority, status, source, location_id, dispatcher_id, team_id, manager_id, sop_id) VALUES
-                                                                                                                                                                            (1, 'INC-2024-001', '2024-01-15 08:30:00', '2024-01-15 10:15:00', 'Small electrical fire in control panel', 'FIRE', 'HIGH', 'CLOSED', 'MANUAL', 1, 1, 1, 3, 1),
-                                                                                                                                                                            (2, 'INC-2024-002', '2024-01-15 14:45:00', NULL, 'Passenger collapsed near gate 12', 'MEDICAL', 'CRITICAL', 'IN_PROGRESS', 'MANUAL', 2, 2, 2, 4, 2),
-                                                                                                                                                                            (3, 'INC-2024-003', '2024-01-16 03:20:00', '2024-01-16 05:30:00', 'Unauthorized person in restricted area', 'SECURITY_THREAT', 'NORMAL', 'CLOSED', 'ACCESS_CONTROL', 3, 1, 3, 3, 3),
-                                                                                                                                                                            (4, 'INC-2024-004', '2024-01-16 11:10:00', NULL, 'Minor fuel spill during refueling', 'TECHNICAL', 'HIGH', 'ASSIGNED', 'SYSTEM', 6, 2, 1, 4, 4),
-                                                                                                                                                                            (5, 'INC-2024-005', '2024-01-17 19:45:00', NULL, 'Power outage in terminal B', 'TECHNICAL', 'NORMAL', 'NEW', 'SYSTEM', 1, 1, 4, 3, 5);
+                                                                                                                                                                            (1, 'INC-2024-001', '2024-01-15 08:30:00', '2024-01-15 10:15:00', 'Small electrical fire in control panel', 'FIRE_ELECTRICAL', 'HIGH', 'CLOSED', 'MANUAL', 1, 1, 3, 3, 1),
+                                                                                                                                                                            (2, 'INC-2024-002', '2024-01-15 14:45:00', NULL, 'Passenger collapsed near gate 12', 'MEDICAL_HEART_ATTACK', 'CRITICAL', 'IN_PROGRESS', 'MANUAL', 21, 2, 2, 4, 2),
+                                                                                                                                                                            (3, 'INC-2024-003', '2024-01-16 03:20:00', '2024-01-16 05:30:00', 'Unauthorized person in restricted area', 'SECURITY_UNAUTHORIZED_ACCESS', 'NORMAL', 'CLOSED', 'ACCESS_CONTROL', 43, 1, 1, 3, 3),
+                                                                                                                                                                            (4, 'INC-2024-004', '2024-01-16 11:10:00', NULL, 'Minor fuel spill during refueling', 'HAZARDOUS_MATERIAL_SPILL', 'HIGH', 'ASSIGNED', 'SYSTEM', 51, 2, 4, 4, 4),
+                                                                                                                                                                            (5, 'INC-2024-005', '2024-01-17 19:45:00', NULL, 'Power outage in terminal B', 'TECHNICAL_POWER_OUTAGE', 'NORMAL', 'NEW', 'SYSTEM', 2, 1, 5, 3, 5);
 
--- 11. Incident_resources (tabela asocjacyjna) - POPRAWIONE NAZWY KOLUMN!
--- Hibernate wygenerował: affected_resources_id i incidents_id
+-- 11. Incident_resources (tabela asocjacyjna)
 INSERT INTO incident_resources (affected_resources_id, incidents_id) VALUES
                                                                          (1, 1),
                                                                          (4, 1),
@@ -92,7 +164,7 @@ INSERT INTO incident_resources (affected_resources_id, incidents_id) VALUES
 
 -- 12. LogEntry
 INSERT INTO log_entry (id, action_time, action_description, incident_id, employee_id) VALUES
-                                                                                          (1, '2024-01-15 08:35:00', 'Dispatched Alpha Team to location', 1, 1),
+                                                                                          (1, '2024-01-15 08:35:00', 'Dispatched Charlie Team (Fire) to location', 1, 1),
                                                                                           (2, '2024-01-15 09:15:00', 'Fire extinguished, area secured', 1, 5),
                                                                                           (3, '2024-01-15 14:50:00', 'Medical team dispatched with defibrillator', 2, 2),
                                                                                           (4, '2024-01-16 03:25:00', 'Security breach detected, initiating lockdown', 3, 1),
@@ -148,8 +220,7 @@ INSERT INTO report (id, generated_at, report_type, date_range, manager_id) VALUE
                                                                                (3, '2024-01-20 09:15:00', 'INCIDENT_ANALYSIS', '2024-01-15 to 2024-01-20', 3),
                                                                                (4, '2024-01-10 16:45:00', 'RESOURCE_USAGE', '2024-01-01 to 2024-01-10', 4);
 
--- 18. Report_analyzed_incidents - POPRAWIONE NAZWY KOLUMN!
--- Hibernate wygenerował: analyzed_incidents_id i report_id
+-- 18. Report_analyzed_incidents
 INSERT INTO report_analyzed_incidents (report_id, analyzed_incidents_id) VALUES
                                                                              (1, 1),
                                                                              (1, 2),
@@ -166,10 +237,10 @@ INSERT INTO report_analyzed_incidents (report_id, analyzed_incidents_id) VALUES
 INSERT INTO sensor_events (sensor_id, sensor_type, location_details, timestamp, location_id, incident_id, is_processed) VALUES
                                                                                                                             ('SENSOR-F001', 'FIRE', 'Control panel room', '2024-01-15 08:28:30', 1, 1, true),
                                                                                                                             ('SENSOR-S045', 'SMOKE', 'Near electrical room', '2024-01-15 08:29:00', 1, 1, true),
-                                                                                                                            ('SENSOR-M201', 'MOTION', 'Restricted corridor', '2024-01-16 03:18:45', 3, 3, true),
+                                                                                                                            ('SENSOR-M201', 'MOTION', 'Restricted corridor', '2024-01-16 03:18:45', 43, 3, true),
                                                                                                                             ('SENSOR-T301', 'TEMPERATURE', 'Outdoor sensor', '2024-01-17 19:40:00', 1, NULL, false),
-                                                                                                                            ('SENSOR-C101', 'CAMERA', 'Gate 12 camera detected fall', '2024-01-15 14:44:30', 2, 2, true),
-                                                                                                                            ('SENSOR-P401', 'PRESSURE', 'Fuel pipeline pressure drop', '2024-01-16 11:08:20', 6, 4, true);
+                                                                                                                            ('SENSOR-C101', 'CAMERA', 'Gate 12 camera detected fall', '2024-01-15 14:44:30', 21, 2, true),
+                                                                                                                            ('SENSOR-P401', 'PRESSURE', 'Fuel pipeline pressure drop', '2024-01-16 11:08:20', 51, 4, true);
 
 -- 20. Shift
 INSERT INTO shift (id, name, start_time, end_time) VALUES
@@ -227,11 +298,6 @@ INSERT INTO certificate (id, certificate_name, expiry_date, member_id) VALUES
                                                                            (9, 'K9 Handler Advanced', '2025-05-20 00:00:00', 12),
                                                                            (10, 'Explosive Detection', '2026-02-28 00:00:00', 12);
 
--- Dodatkowe SensorEvents
--- INSERT INTO sensor_events (id, sensor_id, sensor_type, reading_value, unit, severity, location_details, timestamp, location_id, incident_id, is_processed, processed_at) VALUES
---                                                                                                                                                                              (7, 'SENSOR-H001', 'HUMIDITY', 65.5, '%', 0.1, 'Normal operation', '2024-01-18 10:00:00', 2, NULL, true, '2024-01-18 10:00:05'),
---                                                                                                                                                                              (8, 'SENSOR-V001', 'VIBRATION', 2.1, 'm/s²', 0.05, 'Near runway', '2024-01-18 12:30:00', 2, NULL, true, '2024-01-18 12:30:10');
-
 -- Dodatkowe AirportResources
 INSERT INTO airport_resource (id, resource_name, resource_type) VALUES
                                                                     (7, 'Ambulance Unit 1', 'VEHICLE'),
@@ -239,12 +305,11 @@ INSERT INTO airport_resource (id, resource_name, resource_type) VALUES
                                                                     (9, 'Thermal Camera X1', 'SURVEILLANCE'),
                                                                     (10, 'Communication Tower', 'INFRASTRUCTURE');
 
--- Dodatkowe StandardOperatingProcedure_applicable_incident_types
-INSERT INTO standard_operating_procedure_applicable_incident_types (standard_operating_procedure_id, applicable_incident_types) VALUES
-                                                                                                                                    (1, 'TECHNICAL'),
-                                                                                                                                    (3, 'OTHER'),
-                                                                                                                 (4, 'FIRE');
+-- ============================================
+-- KONIEC - USTAWIENIE SEKWENCJI
+-- ============================================
 
+-- Ustaw sekwencje na odpowiednie wartości
 SELECT setval('incidents_seq', COALESCE((SELECT MAX(id) FROM incident), 0) + 1);
 SELECT setval('log_entries_seq', COALESCE((SELECT MAX(id) FROM log_entry), 0) + 1);
 SELECT setval('audit_logs_seq', COALESCE((SELECT MAX(id) FROM audit_logs), 0) + 1);

@@ -258,174 +258,174 @@ public class IncidentController {
 //    }
 
     // ========== INCIDENT RETRIEVAL ==========
+//
+//    @GetMapping("/my-team")
+//    public ResponseEntity<List<IncidentResponseDTO>> getMyTeamIncidents(
+//            @RequestHeader("X-User-Id") Long userId) {
+//
+//        log.debug("Received request to get team incidents for user ID: {}", userId);
+//
+//        try {
+////            List<IncidentResponseDTO> incidents = incidentService.getIncidentsForTeamMember(userId);
+//            List<IncidentResponseDTO> incidents = new ArrayList<>();
+//
+//            log.info("Returning {} incidents for team member {}", incidents.size(), userId);
+//            return ResponseEntity.ok(incidents);
+//
+//        } catch (Exception e) {
+//            log.error("Error retrieving team incidents: {}", e.getMessage(), e);
+//            throw e;
+//        }
+//    }
+//
+//
+//
+//    @GetMapping("/report/{reportNumber}")
+//    public ResponseEntity<IncidentResponseDTO> getIncidentByReportNumber(
+//            @PathVariable String reportNumber,
+//            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+//
+//        log.debug("Received request to get incident by report number: {}", reportNumber);
+//
+//        try {
+//            // This would require a new method in service or repository
+//            // For now, we'll redirect to a placeholder
+//            throw new UnsupportedOperationException("Get by report number not implemented yet");
+//
+//        } catch (Exception e) {
+//            log.error("Error retrieving incident by report number {}: {}", reportNumber, e.getMessage(), e);
+//            throw e;
+//        }
+//    }
+//
+//    // ========== INCIDENT MANAGEMENT ==========
+//
+//
+//    @PatchMapping("/{id}")
+//    public ResponseEntity<IncidentResponseDTO> updateIncident(
+//            @PathVariable Long id,
+//            @RequestBody IncidentUpdateDTO updateDTO,
+//            @RequestHeader("X-User-Id") Long userId) {
+//
+//        log.info("Received request to update incident {} by user {}", id, userId);
+//
+//        try {
+//            // This would require a new method in service
+//            // For now, we'll redirect to a placeholder
+//            throw new UnsupportedOperationException("Partial update not implemented yet");
+//
+//        } catch (Exception e) {
+//            log.error("Error updating incident {}: {}", id, e.getMessage(), e);
+//            throw e;
+//        }
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> deleteIncident(
+//            @PathVariable Long id,
+//            @RequestHeader("X-User-Id") Long userId) {
+//
+//        log.warn("Received request to delete incident {} by user {}", id, userId);
+//
+//        try {
+//            // Incidents should not be deleted, only closed
+//            // This endpoint might be disabled in production
+//            throw new UnsupportedOperationException("Delete operation not allowed for incidents");
+//
+//        } catch (Exception e) {
+//            log.error("Error deleting incident {}: {}", id, e.getMessage(), e);
+//            throw e;
+//        }
+//    }
 
-    @GetMapping("/my-team")
-    public ResponseEntity<List<IncidentResponseDTO>> getMyTeamIncidents(
-            @RequestHeader("X-User-Id") Long userId) {
-
-        log.debug("Received request to get team incidents for user ID: {}", userId);
-
-        try {
-//            List<IncidentResponseDTO> incidents = incidentService.getIncidentsForTeamMember(userId);
-            List<IncidentResponseDTO> incidents = new ArrayList<>();
-
-            log.info("Returning {} incidents for team member {}", incidents.size(), userId);
-            return ResponseEntity.ok(incidents);
-
-        } catch (Exception e) {
-            log.error("Error retrieving team incidents: {}", e.getMessage(), e);
-            throw e;
-        }
-    }
-
-
-
-    @GetMapping("/report/{reportNumber}")
-    public ResponseEntity<IncidentResponseDTO> getIncidentByReportNumber(
-            @PathVariable String reportNumber,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
-
-        log.debug("Received request to get incident by report number: {}", reportNumber);
-
-        try {
-            // This would require a new method in service or repository
-            // For now, we'll redirect to a placeholder
-            throw new UnsupportedOperationException("Get by report number not implemented yet");
-
-        } catch (Exception e) {
-            log.error("Error retrieving incident by report number {}: {}", reportNumber, e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    // ========== INCIDENT MANAGEMENT ==========
-
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<IncidentResponseDTO> updateIncident(
-            @PathVariable Long id,
-            @RequestBody IncidentUpdateDTO updateDTO,
-            @RequestHeader("X-User-Id") Long userId) {
-
-        log.info("Received request to update incident {} by user {}", id, userId);
-
-        try {
-            // This would require a new method in service
-            // For now, we'll redirect to a placeholder
-            throw new UnsupportedOperationException("Partial update not implemented yet");
-
-        } catch (Exception e) {
-            log.error("Error updating incident {}: {}", id, e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteIncident(
-            @PathVariable Long id,
-            @RequestHeader("X-User-Id") Long userId) {
-
-        log.warn("Received request to delete incident {} by user {}", id, userId);
-
-        try {
-            // Incidents should not be deleted, only closed
-            // This endpoint might be disabled in production
-            throw new UnsupportedOperationException("Delete operation not allowed for incidents");
-
-        } catch (Exception e) {
-            log.error("Error deleting incident {}: {}", id, e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    @PostMapping("/{id}/escalate")
-    public ResponseEntity<IncidentResponseDTO> escalateIncident(
-            @PathVariable Long id,
-            @RequestHeader("X-User-Id") Long userId) {
-
-        log.info("Received request to escalate incident {} by user {}", id, userId);
-
-        try {
-            // This would require a new method in service
-            // For now, we'll redirect to a placeholder
-            throw new UnsupportedOperationException("Manual escalation not implemented yet");
-
-        } catch (Exception e) {
-            log.error("Error escalating incident {}: {}", id, e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    @PostMapping("/{id}/reassign")
-    public ResponseEntity<IncidentResponseDTO> reassignTeam(
-            @PathVariable Long id,
-            @RequestBody TeamAssignmentDTO assignmentDTO,
-            @RequestHeader("X-User-Id") Long userId) {
-
-        log.info("Received request to reassign team for incident {} by user {}", id, userId);
-
-        try {
-            // This would require a new method in service
-            // For now, we'll redirect to a placeholder
-            throw new UnsupportedOperationException("Reassignment not implemented yet");
-
-        } catch (Exception e) {
-            log.error("Error reassigning team for incident {}: {}", id, e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    // ========== AUDIT & LOGS ==========
-
-    @GetMapping("/{id}/audit-logs")
-    public ResponseEntity<List<AuditLogDTO>> getIncidentAuditLogs(
-            @PathVariable Long id,
-            @RequestHeader("X-User-Id") Long userId) {
-
-        log.debug("Received request to get audit logs for incident {} by user {}", id, userId);
-
-        try {
-//            List<AuditLog> auditLogs = incidentService.getIncidentAuditLogs(id, userId);
-            List<AuditLog> auditLogs = new ArrayList<>();
-
-            List<AuditLogDTO> auditLogDTOs = auditLogs.stream()
-                    .map(this::convertToAuditLogDTO)
-                    .toList();
-
-            log.info("Returning {} audit logs for incident {}", auditLogDTOs.size(), id);
-            return ResponseEntity.ok(auditLogDTOs);
-
-        } catch (Exception e) {
-            log.error("Error retrieving audit logs for incident {}: {}", id, e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    @GetMapping("/{id}/journal")
-    public ResponseEntity<List<LogEntryDTO>> getIncidentJournal(
-            @PathVariable Long id,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
-
-        log.debug("Received request to get journal for incident {} by user {}", id, userId);
-
-        try {
-            // Get incident first to check permissions
-            IncidentResponseDTO incident = incidentService.getIncidentById(id, userId);
-
-            // Journal entries are included in incident response
-            // But we could create a separate endpoint if needed
-            List<LogEntryDTO> journalEntries = incident.getJournalEntries();
-
-            log.info("Returning {} journal entries for incident {}",
-                    journalEntries != null ? journalEntries.size() : 0, id);
-
-            return ResponseEntity.ok(journalEntries);
-
-        } catch (Exception e) {
-            log.error("Error retrieving journal for incident {}: {}", id, e.getMessage(), e);
-            throw e;
-        }
-    }
+//    @PostMapping("/{id}/escalate")
+//    public ResponseEntity<IncidentResponseDTO> escalateIncident(
+//            @PathVariable Long id,
+//            @RequestHeader("X-User-Id") Long userId) {
+//
+//        log.info("Received request to escalate incident {} by user {}", id, userId);
+//
+//        try {
+//            // This would require a new method in service
+//            // For now, we'll redirect to a placeholder
+//            throw new UnsupportedOperationException("Manual escalation not implemented yet");
+//
+//        } catch (Exception e) {
+//            log.error("Error escalating incident {}: {}", id, e.getMessage(), e);
+//            throw e;
+//        }
+//    }
+//
+//    @PostMapping("/{id}/reassign")
+//    public ResponseEntity<IncidentResponseDTO> reassignTeam(
+//            @PathVariable Long id,
+//            @RequestBody TeamAssignmentDTO assignmentDTO,
+//            @RequestHeader("X-User-Id") Long userId) {
+//
+//        log.info("Received request to reassign team for incident {} by user {}", id, userId);
+//
+//        try {
+//            // This would require a new method in service
+//            // For now, we'll redirect to a placeholder
+//            throw new UnsupportedOperationException("Reassignment not implemented yet");
+//
+//        } catch (Exception e) {
+//            log.error("Error reassigning team for incident {}: {}", id, e.getMessage(), e);
+//            throw e;
+//        }
+//    }
+//
+//    // ========== AUDIT & LOGS ==========
+//
+//    @GetMapping("/{id}/audit-logs")
+//    public ResponseEntity<List<AuditLogDTO>> getIncidentAuditLogs(
+//            @PathVariable Long id,
+//            @RequestHeader("X-User-Id") Long userId) {
+//
+//        log.debug("Received request to get audit logs for incident {} by user {}", id, userId);
+//
+//        try {
+////            List<AuditLog> auditLogs = incidentService.getIncidentAuditLogs(id, userId);
+//            List<AuditLog> auditLogs = new ArrayList<>();
+//
+//            List<AuditLogDTO> auditLogDTOs = auditLogs.stream()
+//                    .map(this::convertToAuditLogDTO)
+//                    .toList();
+//
+//            log.info("Returning {} audit logs for incident {}", auditLogDTOs.size(), id);
+//            return ResponseEntity.ok(auditLogDTOs);
+//
+//        } catch (Exception e) {
+//            log.error("Error retrieving audit logs for incident {}: {}", id, e.getMessage(), e);
+//            throw e;
+//        }
+//    }
+//
+//    @GetMapping("/{id}/journal")
+//    public ResponseEntity<List<LogEntryDTO>> getIncidentJournal(
+//            @PathVariable Long id,
+//            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+//
+//        log.debug("Received request to get journal for incident {} by user {}", id, userId);
+//
+//        try {
+//            // Get incident first to check permissions
+//            IncidentResponseDTO incident = incidentService.getIncidentById(id, userId);
+//
+//            // Journal entries are included in incident response
+//            // But we could create a separate endpoint if needed
+//            List<LogEntryDTO> journalEntries = incident.getJournalEntries();
+//
+//            log.info("Returning {} journal entries for incident {}",
+//                    journalEntries != null ? journalEntries.size() : 0, id);
+//
+//            return ResponseEntity.ok(journalEntries);
+//
+//        } catch (Exception e) {
+//            log.error("Error retrieving journal for incident {}: {}", id, e.getMessage(), e);
+//            throw e;
+//        }
+//    }
 
     @PostMapping("/{id}/journal")
     public ResponseEntity<JournalEntryDTO> addJournalEntry(
@@ -447,120 +447,120 @@ public class IncidentController {
     }
 
     // ========== NOTIFICATIONS ==========
-
-    @GetMapping("/{id}/notifications")
-    public ResponseEntity<List<NotificationDTO>> getIncidentNotifications(
-            @PathVariable Long id,
-            @RequestHeader("X-User-Id") Long userId) {
-
-        log.debug("Received request to get notifications for incident {} by user {}", id, userId);
-
-        try {
-            // This would require a new method in service
-            // For now, we'll redirect to a placeholder
-            throw new UnsupportedOperationException("Notification retrieval not implemented yet");
-
-        } catch (Exception e) {
-            log.error("Error retrieving notifications for incident {}: {}", id, e.getMessage(), e);
-            throw e;
-        }
-    }
-
-
-
-    // ========== STATISTICS & REPORTS ==========
-
-
-    @GetMapping("/statistics/monthly")
-    public ResponseEntity<MonthlyStatisticsDTO> getMonthlyStatistics(
-            @RequestParam int year,
-            @RequestParam int month,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
-
-        log.debug("Received request for monthly statistics for {}-{}", year, month);
-
-        try {
-            // This would require a new method in service
-            // For now, we'll return mock data
-            throw new UnsupportedOperationException("Monthly statistics not implemented yet");
-
-        } catch (Exception e) {
-            log.error("Error retrieving monthly statistics: {}", e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    @GetMapping("/reports/generate")
-    public ResponseEntity<ReportDTO> generateReport(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
-            @RequestParam(required = false) IncidentType type,
-            @RequestParam(required = false) IncidentPriority priority,
-            @RequestHeader("X-User-Id") Long userId) {
-
-        log.info("Received request to generate report from {} to {} by user {}", from, to, userId);
-
-        try {
-            // This would require a new method in service
-            // For now, we'll redirect to a placeholder
-            throw new UnsupportedOperationException("Report generation not implemented yet");
-
-        } catch (Exception e) {
-            log.error("Error generating report: {}", e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    // ========== HEALTH & STATUS ==========
-
-    @GetMapping("/status/summary")
-    public ResponseEntity<IncidentStatusSummaryDTO> getStatusSummary(
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
-
-        log.debug("Received request for status summary");
-
-        try {
-            // Get counts for different statuses
-            List<IncidentResponseDTO> allIncidents = incidentService.getIncidents(
-                    null, null, null, null, null, userId);
-
-            long newCount = allIncidents.stream()
-                    .filter(i -> i.getStatus() == IncidentStatus.NEW)
-                    .count();
-
-            long assignedCount = allIncidents.stream()
-                    .filter(i -> i.getStatus() == IncidentStatus.ASSIGNED)
-                    .count();
-
-            long inProgressCount = allIncidents.stream()
-                    .filter(i -> i.getStatus() == IncidentStatus.IN_PROGRESS)
-                    .count();
-
-            long resolvedCount = allIncidents.stream()
-                    .filter(i -> i.getStatus() == IncidentStatus.RESOLVED)
-                    .count();
-
-            long closedCount = allIncidents.stream()
-                    .filter(i -> i.getStatus() == IncidentStatus.CLOSED)
-                    .count();
-
-            IncidentStatusSummaryDTO summary = new IncidentStatusSummaryDTO();
-            summary.setNewIncidents(newCount);
-            summary.setAssignedIncidents(assignedCount);
-            summary.setInProgressIncidents(inProgressCount);
-            summary.setResolvedIncidents(resolvedCount);
-            summary.setClosedIncidents(closedCount);
-            summary.setTotalIncidents(allIncidents.size());
-            summary.setTimestamp(LocalDateTime.now());
-
-            log.info("Returning status summary: {} total incidents", allIncidents.size());
-            return ResponseEntity.ok(summary);
-
-        } catch (Exception e) {
-            log.error("Error generating status summary: {}", e.getMessage(), e);
-            throw e;
-        }
-    }
+//
+//    @GetMapping("/{id}/notifications")
+//    public ResponseEntity<List<NotificationDTO>> getIncidentNotifications(
+//            @PathVariable Long id,
+//            @RequestHeader("X-User-Id") Long userId) {
+//
+//        log.debug("Received request to get notifications for incident {} by user {}", id, userId);
+//
+//        try {
+//            // This would require a new method in service
+//            // For now, we'll redirect to a placeholder
+//            throw new UnsupportedOperationException("Notification retrieval not implemented yet");
+//
+//        } catch (Exception e) {
+//            log.error("Error retrieving notifications for incident {}: {}", id, e.getMessage(), e);
+//            throw e;
+//        }
+//    }
+//
+//
+//
+//    // ========== STATISTICS & REPORTS ==========
+//
+//
+//    @GetMapping("/statistics/monthly")
+//    public ResponseEntity<MonthlyStatisticsDTO> getMonthlyStatistics(
+//            @RequestParam int year,
+//            @RequestParam int month,
+//            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+//
+//        log.debug("Received request for monthly statistics for {}-{}", year, month);
+//
+//        try {
+//            // This would require a new method in service
+//            // For now, we'll return mock data
+//            throw new UnsupportedOperationException("Monthly statistics not implemented yet");
+//
+//        } catch (Exception e) {
+//            log.error("Error retrieving monthly statistics: {}", e.getMessage(), e);
+//            throw e;
+//        }
+//    }
+//
+//    @GetMapping("/reports/generate")
+//    public ResponseEntity<ReportDTO> generateReport(
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+//            @RequestParam(required = false) IncidentType type,
+//            @RequestParam(required = false) IncidentPriority priority,
+//            @RequestHeader("X-User-Id") Long userId) {
+//
+//        log.info("Received request to generate report from {} to {} by user {}", from, to, userId);
+//
+//        try {
+//            // This would require a new method in service
+//            // For now, we'll redirect to a placeholder
+//            throw new UnsupportedOperationException("Report generation not implemented yet");
+//
+//        } catch (Exception e) {
+//            log.error("Error generating report: {}", e.getMessage(), e);
+//            throw e;
+//        }
+//    }
+//
+//    // ========== HEALTH & STATUS ==========
+//
+//    @GetMapping("/status/summary")
+//    public ResponseEntity<IncidentStatusSummaryDTO> getStatusSummary(
+//            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+//
+//        log.debug("Received request for status summary");
+//
+//        try {
+//            // Get counts for different statuses
+//            List<IncidentResponseDTO> allIncidents = incidentService.getIncidents(
+//                    null, null, null, null, null, userId);
+//
+//            long newCount = allIncidents.stream()
+//                    .filter(i -> i.getStatus() == IncidentStatus.NEW)
+//                    .count();
+//
+//            long assignedCount = allIncidents.stream()
+//                    .filter(i -> i.getStatus() == IncidentStatus.ASSIGNED)
+//                    .count();
+//
+//            long inProgressCount = allIncidents.stream()
+//                    .filter(i -> i.getStatus() == IncidentStatus.IN_PROGRESS)
+//                    .count();
+//
+//            long resolvedCount = allIncidents.stream()
+//                    .filter(i -> i.getStatus() == IncidentStatus.RESOLVED)
+//                    .count();
+//
+//            long closedCount = allIncidents.stream()
+//                    .filter(i -> i.getStatus() == IncidentStatus.CLOSED)
+//                    .count();
+//
+//            IncidentStatusSummaryDTO summary = new IncidentStatusSummaryDTO();
+//            summary.setNewIncidents(newCount);
+//            summary.setAssignedIncidents(assignedCount);
+//            summary.setInProgressIncidents(inProgressCount);
+//            summary.setResolvedIncidents(resolvedCount);
+//            summary.setClosedIncidents(closedCount);
+//            summary.setTotalIncidents(allIncidents.size());
+//            summary.setTimestamp(LocalDateTime.now());
+//
+//            log.info("Returning status summary: {} total incidents", allIncidents.size());
+//            return ResponseEntity.ok(summary);
+//
+//        } catch (Exception e) {
+//            log.error("Error generating status summary: {}", e.getMessage(), e);
+//            throw e;
+//        }
+//    }
 
     // ========== HELPER METHODS ==========
 
