@@ -37,4 +37,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             "sa.shift.startTime <= CURRENT_TIMESTAMP AND " +
             "sa.shift.endTime >= CURRENT_TIMESTAMP)")
     List<SecurityManager> findActiveSecurityManagers();
+
+    Employee findByUsername(String employeeUsername);
 }

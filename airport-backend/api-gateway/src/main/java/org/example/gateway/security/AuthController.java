@@ -44,6 +44,11 @@ public class AuthController {
         return new LoginResponse(null, "Invalid credentials");
     }
 
+    @GetMapping("/username")
+    public String login(@RequestHeader String token) {
+        return jwtUtil.getUsernameFromToken(token);
+    }
+
     // DTO
     public record LoginRequest(String username, String password) {}
     public record LoginResponse(String token, String message) {}

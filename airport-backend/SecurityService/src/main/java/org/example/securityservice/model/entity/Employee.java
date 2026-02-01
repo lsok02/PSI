@@ -28,6 +28,7 @@ public class Employee {
     private String firstName;
     private String lastName;
     private String serviceNumber;
+    private String username;
 
     @OneToMany(mappedBy = "employee")
     private List<ShiftAssignment> shiftAssignments;

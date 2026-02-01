@@ -12,11 +12,14 @@ import org.example.securityservice.model.dto.SensorEventDTO;
 import org.example.securityservice.model.dto.StatusChangeDTO;
 import org.example.securityservice.model.dto.TeamAssignmentDTO;
 import org.example.securityservice.model.entity.AuditLog;
+import org.example.securityservice.model.entity.Employee;
 import org.example.securityservice.model.entity.LogEntry;
 import org.example.securityservice.model.enumeration.IncidentPriority;
 import org.example.securityservice.model.enumeration.IncidentStatus;
 import org.example.securityservice.model.enumeration.IncidentType;
 import org.example.securityservice.service.AuditLogService;
+import org.example.securityservice.service.AuthServiceClient;
+import org.example.securityservice.service.EmployeeService;
 import org.example.securityservice.service.IncidentService;
 import org.example.securityservice.service.NotificationService;
 import org.example.securityservice.service.SensorEventService;
@@ -51,6 +54,8 @@ public class IncidentController {
     private final AuditLogService auditLogService;
     private final NotificationService notificationService;
     private final SensorEventService sensorEventService;
+    private final AuthServiceClient authServiceClient;
+    private final EmployeeService employeeService;
 
     @GetMapping
     public ResponseEntity<List<IncidentResponseDTO>> getIncidents(
@@ -61,23 +66,36 @@ public class IncidentController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+            @RequestHeader(value = "token", required = false) String token) {
 
         log.debug("Received request to get incidents with filters - status: {}, priority: {}, type: {}",
                 status, priority, type);
 
-        try {
+
+        String username = authServiceClient.validateTokenAndGetUsername(token);
+        Employee employee = employeeService.getEmployeeByUsername(username);
+
+
+
             List<IncidentResponseDTO> incidents = incidentService.getIncidents(
-                    status, priority, type, from, to, userId);
+                    status, priority, type, from, to, employee.getId());
 
-            log.info("Returning {} incidents", incidents.size());
+            log.info("Returning {} incidents for user {}", incidents.size(), employee.getId());
             return ResponseEntity.ok(incidents);
-
-        } catch (Exception e) {
-            log.error("Error retrieving incidents: {}", e.getMessage(), e);
-            throw e;
-        }
     }
+
+    private String extractToken(String authHeader, String tokenHeader) {
+        if (tokenHeader != null && !tokenHeader.isEmpty()) {
+            return tokenHeader;
+        }
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+
+        return null;
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<IncidentResponseDTO> getIncident(

@@ -264,11 +264,11 @@ INSERT INTO shift_assignment (id, status, actual_check_in, actual_check_out, not
 -- ============================================
 
 -- Dodatkowe Employee i IncidentTeamMember
-INSERT INTO employee (id, first_name, last_name, service_number) VALUES
-                                                                     (9, 'James', 'White', 'SEC-009'),
-                                                                     (10, 'Maria', 'Garcia', 'SEC-010'),
-                                                                     (11, 'Thomas', 'Lee', 'SEC-011'),
-                                                                     (12, 'Emily', 'Clark', 'SEC-012');
+INSERT INTO employee (id, first_name, last_name, service_number, username) VALUES
+                                                                     (9, 'James', 'White', 'SEC-009', 'admin'),
+                                                                     (10, 'Maria', 'Garcia', 'SEC-010', 'admin1'),
+                                                                     (11, 'Thomas', 'Lee', 'SEC-011', 'admin2'),
+                                                                     (12, 'Emily', 'Clark', 'SEC-012', 'admin3');
 
 INSERT INTO incident_team_member (id, radio_id, team_id) VALUES
                                                              (9, 'RADIO-701', 3),
