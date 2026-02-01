@@ -23,11 +23,11 @@ public class IncidentTeamMapper implements BaseMapper<IncidentTeam, IncidentTeam
         dto.setSpecialization(entity.getSpecialization());
         dto.setStatus(entity.getStatus());
 
-        if (entity.getMembers() != null) {
-            dto.setMembers(entity.getMembers().stream()
-                    .map(teamMemberMapper::toDto)
-                    .collect(Collectors.toList()));
-        }
+//        if (entity.() != null) {
+//            dto.setMembers(entity.getMembers().stream()
+//                    .map(teamMemberMapper::toDto)
+//                    .collect(Collectors.toList()));
+//        }
 
         return dto;
     }

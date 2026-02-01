@@ -101,12 +101,6 @@ public class IncidentController {
         }
     }
 
-
-
-
-
-    // ========== INCIDENT CREATION ==========
-
     @PostMapping
     public ResponseEntity<IncidentResponseDTO> createIncident(
              @RequestBody IncidentDTO incidentDTO,
@@ -128,90 +122,6 @@ public class IncidentController {
             throw e; // GlobalExceptionHandler will handle it
         }
     }
-
-    @PostMapping("/sensor-events")
-    public ResponseEntity<IncidentResponseDTO> handleSensorEvent(
-             @RequestBody SensorEventDTO sensorEvent) {
-
-        log.info("Received sensor event: {} in zone {}",
-                sensorEvent.getAlarmType(), sensorEvent.getZoneCode());
-
-        try {
-//            IncidentResponseDTO createdIncident = incidentService.createIncidentFromSensor(sensorEvent);
-            IncidentResponseDTO createdIncident = new IncidentResponseDTO();
-            log.info("Sensor incident created: {}", createdIncident.getReportNumber());
-
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .header("X-Incident-Id", createdIncident.getId().toString())
-                    .body(createdIncident);
-
-        } catch (Exception e) {
-            log.error("Error processing sensor event: {}", e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    // ========== INCIDENT RETRIEVAL ==========
-
-    @GetMapping("/active")
-    public ResponseEntity<List<IncidentResponseDTO>> getActiveIncidents(
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
-
-        log.debug("Received request to get active incidents for user ID: {}", userId);
-
-        try {
-            List<IncidentResponseDTO> incidents = incidentService.getActiveIncidents(userId);
-
-            log.info("Returning {} active incidents", incidents.size());
-            return ResponseEntity.ok(incidents);
-
-        } catch (Exception e) {
-            log.error("Error retrieving active incidents: {}", e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    @GetMapping("/my-team")
-    public ResponseEntity<List<IncidentResponseDTO>> getMyTeamIncidents(
-            @RequestHeader("X-User-Id") Long userId) {
-
-        log.debug("Received request to get team incidents for user ID: {}", userId);
-
-        try {
-//            List<IncidentResponseDTO> incidents = incidentService.getIncidentsForTeamMember(userId);
-            List<IncidentResponseDTO> incidents = new ArrayList<>();
-
-            log.info("Returning {} incidents for team member {}", incidents.size(), userId);
-            return ResponseEntity.ok(incidents);
-
-        } catch (Exception e) {
-            log.error("Error retrieving team incidents: {}", e.getMessage(), e);
-            throw e;
-        }
-    }
-
-
-
-    @GetMapping("/report/{reportNumber}")
-    public ResponseEntity<IncidentResponseDTO> getIncidentByReportNumber(
-            @PathVariable String reportNumber,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
-
-        log.debug("Received request to get incident by report number: {}", reportNumber);
-
-        try {
-            // This would require a new method in service or repository
-            // For now, we'll redirect to a placeholder
-            throw new UnsupportedOperationException("Get by report number not implemented yet");
-
-        } catch (Exception e) {
-            log.error("Error retrieving incident by report number {}: {}", reportNumber, e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    // ========== INCIDENT MANAGEMENT ==========
 
     @PostMapping("/{id}/assign/{teamId}")
     public ResponseEntity<IncidentResponseDTO> assignTeam(
@@ -259,6 +169,128 @@ public class IncidentController {
             throw e;
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @PostMapping("/sensor-events")
+    public ResponseEntity<IncidentResponseDTO> handleSensorEvent(
+             @RequestBody SensorEventDTO sensorEvent) {
+
+        log.info("Received sensor event: {} in zone {}",
+                sensorEvent.getAlarmType(), sensorEvent.getZoneCode());
+
+        try {
+//            IncidentResponseDTO createdIncident = incidentService.createIncidentFromSensor(sensorEvent);
+            IncidentResponseDTO createdIncident = new IncidentResponseDTO();
+            log.info("Sensor incident created: {}", createdIncident.getReportNumber());
+
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .header("X-Incident-Id", createdIncident.getId().toString())
+                    .body(createdIncident);
+
+        } catch (Exception e) {
+            log.error("Error processing sensor event: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    // ========== INCIDENT RETRIEVAL ==========
+
+//    @GetMapping("/active")
+//    public ResponseEntity<List<IncidentResponseDTO>> getActiveIncidents(
+//            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+//
+//        log.debug("Received request to get active incidents for user ID: {}", userId);
+//
+//        try {
+//            List<IncidentResponseDTO> incidents = incidentService.getActiveIncidents(userId);
+//
+//            log.info("Returning {} active incidents", incidents.size());
+//            return ResponseEntity.ok(incidents);
+//
+//        } catch (Exception e) {
+//            log.error("Error retrieving active incidents: {}", e.getMessage(), e);
+//            throw e;
+//        }
+//    }
+
+    @GetMapping("/my-team")
+    public ResponseEntity<List<IncidentResponseDTO>> getMyTeamIncidents(
+            @RequestHeader("X-User-Id") Long userId) {
+
+        log.debug("Received request to get team incidents for user ID: {}", userId);
+
+        try {
+//            List<IncidentResponseDTO> incidents = incidentService.getIncidentsForTeamMember(userId);
+            List<IncidentResponseDTO> incidents = new ArrayList<>();
+
+            log.info("Returning {} incidents for team member {}", incidents.size(), userId);
+            return ResponseEntity.ok(incidents);
+
+        } catch (Exception e) {
+            log.error("Error retrieving team incidents: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+
+
+    @GetMapping("/report/{reportNumber}")
+    public ResponseEntity<IncidentResponseDTO> getIncidentByReportNumber(
+            @PathVariable String reportNumber,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+
+        log.debug("Received request to get incident by report number: {}", reportNumber);
+
+        try {
+            // This would require a new method in service or repository
+            // For now, we'll redirect to a placeholder
+            throw new UnsupportedOperationException("Get by report number not implemented yet");
+
+        } catch (Exception e) {
+            log.error("Error retrieving incident by report number {}: {}", reportNumber, e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    // ========== INCIDENT MANAGEMENT ==========
 
 
     @PatchMapping("/{id}")

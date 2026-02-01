@@ -100,8 +100,8 @@ public class IncidentValidator {
         if (employee instanceof IncidentTeamMember) {
             IncidentTeamMember member = (IncidentTeamMember) employee;
 
-            if (incident.getAssignedTeam() != null &&
-                    incident.getAssignedTeam().getMembers().contains(member)) {
+//            if (incident.getAssignedTeam() != null &&
+//                    incident.getAssignedTeam().getMembers().contains(member)) {
 
                 // Team members can only change from ASSIGNED to IN_PROGRESS to RESOLVED
                 if (incident.getStatus() == IncidentStatus.ASSIGNED ||
@@ -109,7 +109,7 @@ public class IncidentValidator {
                         incident.getStatus() == IncidentStatus.RESOLVED) {
                     return;
                 }
-            }
+//            }
         }
 
         throw new BusinessRuleViolationException(

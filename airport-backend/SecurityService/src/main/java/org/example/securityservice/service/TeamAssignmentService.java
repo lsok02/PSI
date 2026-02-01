@@ -53,11 +53,6 @@ public class TeamAssignmentService {
         teamRepository.save(team);
     }
 
-    public void releaseTeam(IncidentTeam team) {
-        team.setStatus(TeamStatus.AVAILABLE);
-        teamRepository.save(team);
-    }
-
     public void autoAssignCriticalIncident(Incident incident) {
         try {
             List<IncidentTeam> availableTeams = teamRepository.findByStatusAndSpecialization(

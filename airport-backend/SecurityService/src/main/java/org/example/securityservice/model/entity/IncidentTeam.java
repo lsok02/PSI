@@ -28,6 +28,6 @@ public class IncidentTeam {
     @Enumerated(EnumType.STRING)
     private TeamStatus status;
 
-    @OneToMany(mappedBy = "team")
-    private List<IncidentTeamMember> members;
+//    @OneToMany(mappedBy = "team")
+//    private List<IncidentTeamMember> members;
 }

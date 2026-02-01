@@ -131,10 +131,10 @@ public class IncidentService {
         notificationService.createStatusChangeLog(updatedIncident, currentUser, oldStatus, statusChangeDTO);
         notificationService.logStatusChange(updatedIncident, oldStatus, statusChangeDTO.getNewStatus(), currentUser);
 
-        if (updatedIncident.getPriority() == IncidentPriority.CRITICAL ||
-                updatedIncident.getPriority() == IncidentPriority.HIGH) {
-            notificationService.sendStatusUpdateNotification(updatedIncident);
-        }
+//        if (updatedIncident.getPriority() == IncidentPriority.CRITICAL ||
+//                updatedIncident.getPriority() == IncidentPriority.HIGH) {
+//            notificationService.sendStatusUpdateNotification(updatedIncident);
+//        }
 
         log.info("Incident {} status updated from {} to {}",
                 updatedIncident.getReportNumber(), oldStatus, statusChangeDTO.getNewStatus());
@@ -166,24 +166,6 @@ public class IncidentService {
     public IncidentResponseDTO getIncidentById(Long id, Long userId) {
         Incident incident = validator.validateAndGetIncident(id);
         return permissionService.toResponseDtoWithPermissions(incident);
-    }
-
-    @Transactional
-    public List<IncidentResponseDTO> getActiveIncidents(Long userId) {
-        List<IncidentStatus> activeStatuses = Arrays.asList(
-                IncidentStatus.NEW, IncidentStatus.ASSIGNED, IncidentStatus.IN_PROGRESS
-        );
-
-        List<Incident> incidents = incidentRepository.findByStatusIn(activeStatuses);
-        Employee currentUser = userId != null ? validator.getUserIfExists(userId) : null;
-
-        if (currentUser != null && currentUser instanceof IncidentTeamMember) {
-            incidents = permissionService.filterIncidentsForTeamMember(incidents, (IncidentTeamMember) currentUser);
-        }
-
-        return incidents.stream()
-                .map(incident -> permissionService.toResponseDtoWithPermissions(incident))
-                .collect(Collectors.toList());
     }
 
     @Transactional
