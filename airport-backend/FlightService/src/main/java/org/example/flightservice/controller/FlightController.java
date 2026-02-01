@@ -72,6 +72,17 @@ public class FlightController {
         return ResponseEntity.ok(flightDTOs);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<FlightDTO> getFlightById(@PathVariable Long id) {
+        Flight flight = flightService.findFlightById(id)
+                .orElseThrow(() -> new RuntimeException("Flight not found with id: " + id));
+
+        FlightDTO dto = flightMapper.toDto(flight);
+        enrichWithStatusManagement(flight, dto);
+
+        return ResponseEntity.ok(dto);
+    }
+
     /**
      * Endpoint 2: Zablokuj i zaktualizuj loty na DELAYED dla danego terminala i dnia
      * POST /api/flights/lock-and-delay
