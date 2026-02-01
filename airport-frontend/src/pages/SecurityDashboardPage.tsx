@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, Plane, LogOut, User } from 'lucide-react';
+import { Shield, Plane, LogOut, User, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context';
+import { useIncidents, useSensorEvents, useRawSensorEvents } from '@/hooks';
 import {
     IncidentsList,
     AirportMap,
@@ -11,108 +12,9 @@ import {
     CreateIncidentModal
 } from '@/components/security';
 import { BackendStatus } from '@/components/BackendStatus';
-import type { Incident, Alert, ResponseTeam } from '@/types';
+import type { ResponseTeam } from '@/types';
 
-// Mock data
-const mockIncidents: Incident[] = [
-    {
-        id: 'INC-0125',
-        type: 'Medical Emergency',
-        priority: 'Critical',
-        location: 'Gate G15',
-        status: 'In Progress',
-        assignedTeam: 'Medic-1',
-        coordinates: { x: 65, y: 35 },
-        timestamp: '14:32',
-        description: 'Passenger collapsed at gate, requires immediate medical attention',
-        timeline: [
-            { time: '14:32', action: 'Incident reported by gate staff' },
-            { time: '14:33', action: 'Medic-1 dispatched' },
-            { time: '14:35', action: 'Medic-1 arrived on scene' },
-            { time: '14:37', action: 'Patient stabilized, preparing for transport' }
-        ]
-    },
-    {
-        id: 'INC-0126',
-        type: 'Fire Alarm',
-        priority: 'Critical',
-        location: 'Terminal B - Baggage',
-        status: 'In Progress',
-        assignedTeam: 'Fire-2',
-        coordinates: { x: 30, y: 65 },
-        timestamp: '14:28',
-        description: 'Fire alarm triggered in baggage handling area',
-        timeline: [
-            { time: '14:28', action: 'Alarm activated' },
-            { time: '14:29', action: 'Fire-2 dispatched' },
-            { time: '14:31', action: 'Fire-2 on scene, investigating' }
-        ]
-    },
-    {
-        id: 'INC-0127',
-        type: 'Security Breach',
-        priority: 'High',
-        location: 'Checkpoint C',
-        status: 'Under Investigation',
-        assignedTeam: 'Security-3',
-        coordinates: { x: 45, y: 50 },
-        timestamp: '14:15',
-        description: 'Unattended bag detected at security checkpoint',
-        timeline: [
-            { time: '14:15', action: 'Bag reported by TSA officer' },
-            { time: '14:16', action: 'Area cordoned off' },
-            { time: '14:18', action: 'Security-3 dispatched' },
-            { time: '14:20', action: 'Bomb squad notified' }
-        ]
-    },
-    {
-        id: 'INC-0128',
-        type: 'Unauthorized Access',
-        priority: 'High',
-        location: 'Maintenance Bay 7',
-        status: 'In Progress',
-        assignedTeam: 'Security-1',
-        coordinates: { x: 80, y: 70 },
-        timestamp: '14:10',
-        description: 'Unauthorized personnel detected in restricted area',
-        timeline: [
-            { time: '14:10', action: 'Access control system triggered' },
-            { time: '14:11', action: 'Security-1 dispatched' },
-            { time: '14:14', action: 'Personnel detained for questioning' }
-        ]
-    },
-    {
-        id: 'INC-0129',
-        type: 'Medical Emergency',
-        priority: 'Medium',
-        location: 'Food Court A',
-        status: 'Resolved',
-        assignedTeam: 'Medic-2',
-        coordinates: { x: 50, y: 30 },
-        timestamp: '13:55',
-        description: 'Minor injury requiring first aid',
-        timeline: [
-            { time: '13:55', action: 'Incident reported' },
-            { time: '13:57', action: 'Medic-2 dispatched' },
-            { time: '14:00', action: 'First aid administered' },
-            { time: '14:05', action: 'Incident resolved' }
-        ]
-    }
-];
-
-const mockAlerts: Alert[] = [
-    {
-        id: 'ALT-001',
-        description: 'Unauthorized access detected at Technical Zone T-04',
-        timestamp: '14:42'
-    },
-    {
-        id: 'ALT-002',
-        description: 'Suspicious package reported near Gate D12',
-        timestamp: '14:40'
-    }
-];
-
+// Mock data for teams (until backend service for teams is available)
 const mockResponseTeams: ResponseTeam[] = [
     { id: 'team-1', name: 'Medic-1', type: 'medical', coordinates: { x: 65, y: 35 } },
     { id: 'team-2', name: 'Fire-2', type: 'fire', coordinates: { x: 30, y: 65 } },
@@ -121,15 +23,70 @@ const mockResponseTeams: ResponseTeam[] = [
 ];
 
 export function SecurityDashboardPage() {
-    const [selectedIncidentId, setSelectedIncidentId] = useState<string>('INC-0125');
+    const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(null);
     const [createModalOpen, setCreateModalOpen] = useState(false);
-    const [incidents] = useState(mockIncidents);
-    const [alerts] = useState(mockAlerts);
+    const [selectedAlertData, setSelectedAlertData] = useState<{
+        sourceSystem: string;
+        detectionTime: string;
+        sensorId: string;
+        suggestedType?: string;
+        suggestedPriority?: string;
+        suggestedLocation?: string;
+        sensorEventId?: number;
+    } | undefined>(undefined);
     const [responseTeams] = useState(mockResponseTeams);
     const { logout, username } = useAuth();
     const navigate = useNavigate();
 
+    // Fetch incidents from backend
+    const { data: backendIncidents } = useIncidents();
+    const incidents = backendIncidents || [];
+
+    // Fetch alerts (unassigned sensor events) from backend
+    const { data: backendAlerts } = useSensorEvents();
+    const alerts = backendAlerts || [];
+
+    // Raw sensor events for getting full data when creating incident
+    const { data: rawSensorEvents = [] } = useRawSensorEvents();
+
+    // Select first incident by default when loaded
+    useEffect(() => {
+        if (!selectedIncidentId && incidents.length > 0) {
+            setSelectedIncidentId(incidents[0].id);
+        }
+    }, [incidents, selectedIncidentId]);
+
     const selectedIncident = incidents.find(inc => inc.id === selectedIncidentId);
+
+    // Map sensor type to suggested incident type
+    const getSuggestedType = (sensorType: string): string => {
+        const typeMap: Record<string, string> = {
+            SMOKE_DETECTOR: 'Fire Alarm',
+            MOTION_SENSOR: 'Security Breach',
+            ACCESS_CONTROL: 'Unauthorized Access',
+            CAMERA: 'Security Breach',
+            TEMPERATURE: 'Technical Failure',
+            PRESSURE: 'Technical Failure',
+            FIRE: 'Fire Alarm',
+            SMOKE: 'Fire Alarm',
+        };
+        return typeMap[sensorType] || 'Technical Failure';
+    };
+
+    // Map sensor type to suggested priority
+    const getSuggestedPriority = (sensorType: string): string => {
+        const priorityMap: Record<string, string> = {
+            SMOKE_DETECTOR: 'Critical',
+            FIRE: 'Critical',
+            SMOKE: 'Critical',
+            ACCESS_CONTROL: 'High',
+            MOTION_SENSOR: 'Medium',
+            CAMERA: 'Medium',
+            TEMPERATURE: 'Low',
+            PRESSURE: 'Low',
+        };
+        return priorityMap[sensorType] || 'Medium';
+    };
 
     const handleLogout = () => {
         logout();
@@ -141,7 +98,31 @@ export function SecurityDashboardPage() {
     };
 
     const handleCreateIncident = (alertId: string) => {
-        console.log('Creating incident from alert:', alertId);
+        // Extract numeric ID from alert ID (e.g., "ALT-123" -> 123)
+        const numericId = parseInt(alertId.replace('ALT-', ''), 10);
+
+        console.log('handleCreateIncident called with alertId:', alertId, 'numericId:', numericId);
+        console.log('rawSensorEvents:', rawSensorEvents);
+
+        // Find raw sensor event data
+        const sensorEvent = rawSensorEvents?.find(e => e.id === numericId);
+
+        console.log('Found sensorEvent:', sensorEvent);
+
+        if (sensorEvent) {
+            setSelectedAlertData({
+                sourceSystem: sensorEvent.sensorType,
+                detectionTime: new Date(sensorEvent.timestamp).toLocaleString(),
+                sensorId: sensorEvent.sensorId,
+                suggestedType: getSuggestedType(sensorEvent.sensorType),
+                suggestedPriority: getSuggestedPriority(sensorEvent.sensorType),
+                suggestedLocation: sensorEvent.locationName || sensorEvent.locationDetails || 'Unknown location',
+                sensorEventId: sensorEvent.id,
+            });
+        } else {
+            setSelectedAlertData(undefined);
+        }
+
         setCreateModalOpen(true);
     };
 
@@ -194,7 +175,7 @@ export function SecurityDashboardPage() {
                     <div className="col-span-3 min-h-0">
                         <IncidentsList
                             incidents={incidents}
-                            selectedIncidentId={selectedIncidentId}
+                            selectedIncidentId={selectedIncidentId ?? ''}
                             onIncidentSelect={handleIncidentSelect}
                         />
                     </div>
@@ -204,7 +185,7 @@ export function SecurityDashboardPage() {
                         <AirportMap
                             incidents={incidents}
                             responseTeams={responseTeams}
-                            selectedIncidentId={selectedIncidentId}
+                            selectedIncidentId={selectedIncidentId ?? ''}
                             onIncidentSelect={handleIncidentSelect}
                         />
                     </div>
@@ -219,7 +200,7 @@ export function SecurityDashboardPage() {
                         {selectedIncident && (
                             <IncidentDetails incident={selectedIncident} />
                         )}
-                        <BackendStatus />
+                        {/* <BackendStatus /> */}
                     </div>
                 </div>
             </main>
@@ -228,6 +209,7 @@ export function SecurityDashboardPage() {
             <CreateIncidentModal
                 open={createModalOpen}
                 onOpenChange={setCreateModalOpen}
+                alertData={selectedAlertData}
             />
         </div>
     );

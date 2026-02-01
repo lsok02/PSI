@@ -456,12 +456,16 @@ public class IncidentController {
 //    }
 
     @PostMapping("/{id}/journal")
-    public ResponseEntity<JournalEntryDTO> addJournalEntry(
+    public ResponseEntity<Void> addJournalEntry(
             @PathVariable Long id,
             @RequestBody JournalEntryCreateDTO entryDTO,
-            @RequestHeader("X-User-Id") Long userId) {
+            @RequestHeader(value = "token", required = false) String token) {
 
-        log.info("Received request to add journal entry to incident {} by user {}", id, userId);
+        String username = authServiceClient.validateTokenAndGetUsername(token);
+        Employee employee = employeeService.getEmployeeByUsername(username);
+
+
+        log.info("Received request to add journal entry to incident {} by user {}", id, employee.getId());
 
         try {
             // This would require a new method in service

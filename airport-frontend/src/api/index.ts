@@ -31,6 +31,7 @@ function createApiClient(baseURL: string): AxiosInstance {
             const token = getToken();
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
+                config.headers['token'] = token; // Add custom token header for Security Service
             }
             return config;
         },
@@ -113,9 +114,40 @@ export const passengerApi = {
 };
 
 // Security Service API (through gateway)
+import type { IncidentResponse, IncidentStatus, IncidentPriority, IncidentType, CreateIncidentRequest } from '@/types';
+
+export interface IncidentFilters {
+    status?: IncidentStatus;
+    priority?: IncidentPriority;
+    type?: IncidentType;
+}
+
 export const securityApi = {
-    // getIncidents: () => api.get<Incident[]>('/api/security/incidents').then(res => res.data),
-    // createIncident: (data: CreateIncidentDto) => api.post<Incident>('/api/security/incidents', data).then(res => res.data),
+    getIncidents: (filters?: IncidentFilters) => {
+        const params = new URLSearchParams();
+        if (filters?.status) params.append('status', filters.status);
+        if (filters?.priority) params.append('priority', filters.priority);
+        if (filters?.type) params.append('type', filters.type);
+        const queryString = params.toString();
+        const url = queryString ? `/api/security/incidents?${queryString}` : '/api/security/incidents';
+        return api.get<IncidentResponse[]>(url).then(res => res.data);
+    },
+    getIncidentById: (id: number) =>
+        api.get<IncidentResponse>(`/api/security/incidents/${id}`).then(res => res.data),
+    createIncident: (data: CreateIncidentRequest) =>
+        api.post<IncidentResponse>('/api/security/incidents', data).then(res => res.data),
+};
+
+// Sensor Events API (through gateway)
+import type { SensorEventDTO } from '@/types';
+
+export const sensorEventApi = {
+    getUnassigned: () =>
+        api.get<SensorEventDTO[]>('/api/sensor-events/unassigned').then(res => res.data),
+    createRandomAlarm: () =>
+        api.post<SensorEventDTO>('/api/sensor-events/random-alarm').then(res => res.data),
+    simulateAlarms: (count: number = 5) =>
+        api.post<SensorEventDTO[]>(`/api/sensor-events/simulate-alarms?count=${count}`).then(res => res.data),
 };
 
 // Ground Operations Service API (through gateway)

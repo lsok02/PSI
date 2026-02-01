@@ -270,9 +270,13 @@ INSERT INTO employee (id, first_name, last_name, service_number, username) VALUE
                                                                      (11, 'Thomas', 'Lee', 'SEC-011', 'admin10'),
                                                                      (12, 'Emily', 'Clark', 'SEC-012', 'admin11');
 
+-- Add admin to Dispatcher
+INSERT INTO dispatcher (id) VALUES (9);
+
+-- Add admin1 to SecurityManager
+INSERT INTO security_manager (id) VALUES (10);
+
 INSERT INTO incident_team_member (id, radio_id, team_id) VALUES
-                                                             (9, 'RADIO-701', 3),
-                                                             (10, 'RADIO-702', 3),
                                                              (11, 'RADIO-801', 4),
                                                              (12, 'RADIO-802', 5);
 
