@@ -85,11 +85,11 @@ export function FlightsTable({ flights }: FlightsTableProps) {
                                 </div>
                             </TableCell>
                             <TableCell className="text-slate-300">
-                                {flight.route ? (
+                                {flight.departureAirport ? (
                                     <div className="flex items-center gap-1">
-                                        <span>{flight.route.departureAirport}</span>
+                                        <span>{flight.departureAirport}</span>
                                         <span className="text-slate-500">→</span>
-                                        <span>{flight.route.destinationAirport}</span>
+                                        <span>{flight.arrivalAirport}</span>
                                     </div>
                                 ) : (
                                     <span className="text-slate-500">—</span>
@@ -110,18 +110,18 @@ export function FlightsTable({ flights }: FlightsTableProps) {
                                 </div>
                             </TableCell>
                             <TableCell className="text-slate-300">
-                                {flight.gate ? (
+                                {flight.terminal || flight.gateNumber ? (
                                     <div className="flex items-center gap-1">
                                         <MapPin className="w-3 h-3 text-slate-500" />
-                                        <span>{flight.gate.terminal}-{flight.gate.gateNumber}</span>
+                                        <span>{flight.terminal}-{flight.gateNumber}</span>
                                     </div>
                                 ) : (
                                     <span className="text-slate-500">—</span>
                                 )}
                             </TableCell>
                             <TableCell className="text-slate-300">
-                                {flight.aircraft ? (
-                                    <span>{flight.aircraft.model}</span>
+                                {flight.aircraftType ? (
+                                    <span>{flight.aircraftType}</span>
                                 ) : (
                                     <span className="text-slate-500">—</span>
                                 )}
@@ -132,8 +132,8 @@ export function FlightsTable({ flights }: FlightsTableProps) {
                                 </Badge>
                             </TableCell>
                             <TableCell className="text-slate-300">
-                                {flight.estimatedDelay && flight.estimatedDelay > 0 ? (
-                                    <span className="text-yellow-400">+{flight.estimatedDelay} min</span>
+                                {flight.estimatedDelayMinutes && flight.estimatedDelayMinutes > 0 ? (
+                                    <span className="text-yellow-400">+{flight.estimatedDelayMinutes} min</span>
                                 ) : (
                                     <span className="text-green-400">On time</span>
                                 )}

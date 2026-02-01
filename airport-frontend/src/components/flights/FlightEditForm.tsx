@@ -48,7 +48,7 @@ export function FlightEditForm({ flight, onSave, onCancel }: FlightEditFormProps
     };
 
     const handleDelayChange = (value: string) => {
-        setEditedFlight({ ...editedFlight, estimatedDelay: parseInt(value) || 0 });
+        setEditedFlight({ ...editedFlight, estimatedDelayMinutes: parseInt(value) || 0 });
     };
 
     const handleDelayReasonChange = (value: string) => {
@@ -72,8 +72,8 @@ export function FlightEditForm({ flight, onSave, onCancel }: FlightEditFormProps
                             <div>
                                 <h2 className="text-2xl font-semibold text-slate-100">{flight.flightNumber}</h2>
                                 <p className="text-slate-400">
-                                    {flight.route
-                                        ? `${flight.route.departureAirport} → ${flight.route.destinationAirport}`
+                                    {flight.departureAirport
+                                        ? `${flight.departureAirport} → ${flight.arrivalAirport}`
                                         : 'No route assigned'}
                                 </p>
                             </div>
@@ -105,14 +105,14 @@ export function FlightEditForm({ flight, onSave, onCancel }: FlightEditFormProps
                             <p className="text-slate-500 text-xs">Gate</p>
                             <div className="flex items-center gap-2 text-slate-200">
                                 <MapPin className="w-4 h-4 text-blue-400" />
-                                {flight.gate ? `${flight.gate.terminal}-${flight.gate.gateNumber}` : 'Not assigned'}
+                                {flight.terminal || flight.gateNumber ? `${flight.terminal}-${flight.gateNumber}` : 'Not assigned'}
                             </div>
                         </div>
                         <div className="space-y-1">
                             <p className="text-slate-500 text-xs">Aircraft</p>
                             <div className="flex items-center gap-2 text-slate-200">
                                 <Plane className="w-4 h-4 text-blue-400" />
-                                {flight.aircraft?.model || 'Not assigned'}
+                                {flight.aircraftType || 'Not assigned'}
                             </div>
                         </div>
                     </div>
@@ -160,7 +160,7 @@ export function FlightEditForm({ flight, onSave, onCancel }: FlightEditFormProps
                                     <Label className="text-slate-300">Estimated Delay (minutes)</Label>
                                     <Input
                                         type="number"
-                                        value={editedFlight.estimatedDelay || ''}
+                                        value={editedFlight.estimatedDelayMinutes || ''}
                                         onChange={(e) => handleDelayChange(e.target.value)}
                                         placeholder="Enter delay in minutes"
                                         className="bg-slate-950 border-slate-700 text-slate-100"

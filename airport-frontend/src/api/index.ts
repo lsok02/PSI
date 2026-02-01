@@ -99,12 +99,21 @@ export const authApi = {
     isAuthenticated: () => !!getToken(),
 };
 
+import type { Flight, FlightStatus } from '@/types';
+
 // Flight Service API (through gateway)
 export const flightApi = {
     hello: () => api.get<string>('/api/flights/hello').then(res => res.data),
-    // getFlights: () => api.get<Flight[]>('/api/flights').then(res => res.data),
-    // getFlightById: (id: number) => api.get<Flight>(`/api/flights/${id}`).then(res => res.data),
-    // updateFlightStatus: (id: number, status: string) => api.patch(`/api/flights/${id}/status`, { status }),
+    getFlights: (date?: string) => {
+        const url = date ? `/api/flights?date=${date}` : '/api/flights';
+        return api.get<Flight[]>(url).then(res => res.data);
+    },
+    getFlightById: (id: number) =>
+        api.get<Flight>(`/api/flights/${id}`).then(res => res.data),
+    updateFlightStatus: (id: number, status: FlightStatus) =>
+        api.put<Flight>(`/api/flights/${id}/status`, { status }).then(res => res.data),
+    getAvailableStatuses: (id: number) =>
+        api.get<any>(`/api/flights/${id}/available-statuses`).then(res => res.data),
 };
 
 // Passenger Service API (through gateway)

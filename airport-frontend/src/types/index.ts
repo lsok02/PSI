@@ -136,9 +136,28 @@ export interface Flight {
     scheduledArrivalTime: string;
     actualArrivalTime?: string;
     status: FlightStatus;
-    estimatedDelay?: number;
+    estimatedDelayMinutes?: number;
     delayReason?: string;
-    route?: Route;
-    gate?: Gate;
-    aircraft?: Aircraft;
+
+    // Status management fields
+    isLockedForStatusChange?: boolean;
+    canBeCancelledOnly?: boolean;
+    allowedNextStatuses?: string[];
+
+    // Relationships (flattened from DTO)
+    gateId?: number;
+    gateNumber?: string;
+    terminal?: string;
+    gateAvailable?: boolean;
+
+    aircraftId?: number;
+    aircraftRegistration?: string;
+    aircraftType?: string;
+
+    runwayId?: number;
+    runwayName?: string;
+
+    routeId?: number;
+    departureAirport?: string;
+    arrivalAirport?: string;
 }
