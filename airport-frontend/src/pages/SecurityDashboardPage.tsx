@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Shield, Plane } from 'lucide-react';
 import {
     IncidentsList,
     AirportMap,
@@ -139,45 +141,66 @@ export function SecurityDashboardPage() {
     };
 
     return (
-        <div className="h-screen bg-slate-950 text-slate-100 p-4 flex flex-col overflow-hidden">
-            <div className="mb-4 shrink-0">
-                <h1 className="text-slate-100 mb-1">Airport Security Command Center</h1>
-                <p className="text-slate-400">Real-time Incident Management Dashboard</p>
-            </div>
-
-            <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
-                {/* Left Column: Active Incidents */}
-                <div className="col-span-3 min-h-0">
-                    <IncidentsList
-                        incidents={incidents}
-                        selectedIncidentId={selectedIncidentId}
-                        onIncidentSelect={handleIncidentSelect}
-                    />
+        <div className="h-screen bg-slate-950 text-slate-100 flex flex-col overflow-hidden">
+            {/* Navigation Header */}
+            <header className="shrink-0 border-b border-slate-800 bg-slate-900">
+                <div className="px-6 py-4 flex items-center justify-between">
+                    <h1 className="text-xl font-semibold text-slate-100">Airport Management System</h1>
+                    <nav className="flex items-center gap-4">
+                        <Link
+                            to="/security"
+                            className="flex items-center gap-2 px-4 py-2 rounded-md bg-blue-600 text-white"
+                        >
+                            <Shield className="w-4 h-4" />
+                            Security
+                        </Link>
+                        <Link
+                            to="/flights"
+                            className="flex items-center gap-2 px-4 py-2 rounded-md text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
+                        >
+                            <Plane className="w-4 h-4" />
+                            Flights
+                        </Link>
+                    </nav>
                 </div>
+            </header>
 
-                {/* Center Column: Airport Map */}
-                <div className="col-span-6 min-h-0">
-                    <AirportMap
-                        incidents={incidents}
-                        responseTeams={responseTeams}
-                        selectedIncidentId={selectedIncidentId}
-                        onIncidentSelect={handleIncidentSelect}
-                    />
-                </div>
+            {/* Main Content */}
+            <main className="flex-1 min-h-0 p-4 flex flex-col">
+                <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
+                    {/* Left Column: Active Incidents */}
+                    <div className="col-span-3 min-h-0">
+                        <IncidentsList
+                            incidents={incidents}
+                            selectedIncidentId={selectedIncidentId}
+                            onIncidentSelect={handleIncidentSelect}
+                        />
+                    </div>
 
-                {/* Right Column: Alerts & Details */}
-                <div className="col-span-3 flex flex-col gap-4 min-h-0 overflow-y-auto">
-                    <AlertsPanel
-                        alerts={alerts}
-                        onCreateIncident={handleCreateIncident}
-                        onDismissAlert={handleDismissAlert}
-                    />
-                    {selectedIncident && (
-                        <IncidentDetails incident={selectedIncident} />
-                    )}
-                    <BackendStatus />
+                    {/* Center Column: Airport Map */}
+                    <div className="col-span-6 min-h-0">
+                        <AirportMap
+                            incidents={incidents}
+                            responseTeams={responseTeams}
+                            selectedIncidentId={selectedIncidentId}
+                            onIncidentSelect={handleIncidentSelect}
+                        />
+                    </div>
+
+                    {/* Right Column: Alerts & Details */}
+                    <div className="col-span-3 flex flex-col gap-4 min-h-0 overflow-y-auto">
+                        <AlertsPanel
+                            alerts={alerts}
+                            onCreateIncident={handleCreateIncident}
+                            onDismissAlert={handleDismissAlert}
+                        />
+                        {selectedIncident && (
+                            <IncidentDetails incident={selectedIncident} />
+                        )}
+                        <BackendStatus />
+                    </div>
                 </div>
-            </div>
+            </main>
 
             {/* Create Incident Modal */}
             <CreateIncidentModal

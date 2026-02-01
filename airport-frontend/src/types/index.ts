@@ -23,3 +23,43 @@ export interface ResponseTeam {
     type: 'medical' | 'security' | 'fire';
     coordinates: { x: number; y: number };
 }
+
+// Flight Management Types
+export type FlightStatus = 'PLANNED' | 'DELAYED' | 'CANCELLED' | 'DEPARTED' | 'LANDED';
+
+export interface Route {
+    id: number;
+    departureAirport: string;
+    destinationAirport: string;
+    routeCode: string;
+    type: string;
+}
+
+export interface Gate {
+    id: number;
+    gateNumber: string;
+    terminal: string;
+    isAvailable: boolean;
+}
+
+export interface Aircraft {
+    id: number;
+    registrationNumber: string;
+    model: string;
+    capacity: number;
+}
+
+export interface Flight {
+    id: number;
+    flightNumber: string;
+    scheduledDepartureTime: string;
+    actualDepartureTime?: string;
+    scheduledArrivalTime: string;
+    actualArrivalTime?: string;
+    status: FlightStatus;
+    estimatedDelay?: number;
+    delayReason?: string;
+    route?: Route;
+    gate?: Gate;
+    aircraft?: Aircraft;
+}
