@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
+public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
 }

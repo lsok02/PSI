@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-interface TurnaroundProcessRepository extends JpaRepository<TurnaroundProcess, Long> {
+public interface TurnaroundProcessRepository extends JpaRepository<TurnaroundProcess, Long> {
 }
