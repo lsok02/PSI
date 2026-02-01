@@ -24,18 +24,18 @@ INSERT INTO route (id, departure_airport, destination_airport, route_code, type)
 INSERT INTO route (id, departure_airport, destination_airport, route_code, type) VALUES (7, 'KTW', 'DUB', 'KTWDUB01', 'SHORT_HAUL');
 
 -- FlightSchedule - Harmonogramy lotów
-INSERT INTO flight_schedule (id, effective_date, version) VALUES (1, '2024-01-01', 'WINTER_2024');
-INSERT INTO flight_schedule (id, effective_date, version) VALUES (2, '2024-03-31', 'SUMMER_2024');
-INSERT INTO flight_schedule (id, effective_date, version) VALUES (3, '2024-10-27', 'WINTER_2024_2025');
-INSERT INTO flight_schedule (id, effective_date, version) VALUES (4, '2024-06-01', 'SUMMER_PEAK_2024');
+INSERT INTO flight_schedule (id, effective_date, version) VALUES (1, '2026-01-01', 'WINTER_2026');
+INSERT INTO flight_schedule (id, effective_date, version) VALUES (2, '2026-03-31', 'SUMMER_2026');
+INSERT INTO flight_schedule (id, effective_date, version) VALUES (3, '2026-10-27', 'WINTER_2026_2025');
+INSERT INTO flight_schedule (id, effective_date, version) VALUES (4, '2026-06-01', 'SUMMER_PEAK_2026');
 
 -- TimeSlot - Sloty czasowe
-INSERT INTO time_slot (id, start_time, landing_time, confirmed) VALUES (1, '2024-06-15 06:00:00', '2024-06-15 08:30:00', true);
-INSERT INTO time_slot (id, start_time, landing_time, confirmed) VALUES (2, '2024-06-15 10:15:00', '2024-06-15 11:45:00', true);
-INSERT INTO time_slot (id, start_time, landing_time, confirmed) VALUES (3, '2024-06-15 14:30:00', '2024-06-15 17:00:00', true);
-INSERT INTO time_slot (id, start_time, landing_time, confirmed) VALUES (4, '2024-06-15 19:45:00', '2024-06-16 06:30:00', true);
-INSERT INTO time_slot (id, start_time, landing_time, confirmed) VALUES (5, '2024-06-16 07:20:00', '2024-06-16 08:50:00', false);
-INSERT INTO time_slot (id, start_time, landing_time, confirmed) VALUES (6, '2024-06-16 12:10:00', '2024-06-16 14:40:00', true);
+INSERT INTO time_slot (id, start_time, landing_time, confirmed) VALUES (1, '2026-06-15 06:00:00', '2026-06-15 08:30:00', true);
+INSERT INTO time_slot (id, start_time, landing_time, confirmed) VALUES (2, '2026-06-15 10:15:00', '2026-06-15 11:45:00', true);
+INSERT INTO time_slot (id, start_time, landing_time, confirmed) VALUES (3, '2026-06-15 14:30:00', '2026-06-15 17:00:00', true);
+INSERT INTO time_slot (id, start_time, landing_time, confirmed) VALUES (4, '2026-06-15 19:45:00', '2026-06-16 06:30:00', true);
+INSERT INTO time_slot (id, start_time, landing_time, confirmed) VALUES (5, '2026-06-16 07:20:00', '2026-06-16 08:50:00', false);
+INSERT INTO time_slot (id, start_time, landing_time, confirmed) VALUES (6, '2026-06-16 12:10:00', '2026-06-16 14:40:00', true);
 
 -- Runway - Pasy startowe
 INSERT INTO runway (id, runway_number, length, is_available) VALUES (1, '11/29', 3690, true);
@@ -45,13 +45,13 @@ INSERT INTO runway (id, runway_number, length, is_available) VALUES (4, '12/30',
 INSERT INTO runway (id, runway_number, length, is_available) VALUES (5, '07/25', 2900, true);
 
 -- Gate - Bramki
-INSERT INTO gate (id, gate_number, terminal, is_available) VALUES (1, 'A1', 'A', true);
-INSERT INTO gate (id, gate_number, terminal, is_available) VALUES (2, 'A2', 'A', true);
-INSERT INTO gate (id, gate_number, terminal, is_available) VALUES (3, 'A3', 'A', false);
-INSERT INTO gate (id, gate_number, terminal, is_available) VALUES (4, 'B1', 'B', true);
-INSERT INTO gate (id, gate_number, terminal, is_available) VALUES (5, 'B2', 'B', true);
-INSERT INTO gate (id, gate_number, terminal, is_available) VALUES (6, 'C1', 'C', true);
-INSERT INTO gate (id, gate_number, terminal, is_available) VALUES (7, 'C2', 'C', true);
+INSERT INTO gate (id, gate_number, terminal, is_available) VALUES (1, 'A1', 'Terminal A', true);
+INSERT INTO gate (id, gate_number, terminal, is_available) VALUES (2, 'A2', 'Terminal A', true);
+INSERT INTO gate (id, gate_number, terminal, is_available) VALUES (3, 'A3', 'Terminal A', false);
+INSERT INTO gate (id, gate_number, terminal, is_available) VALUES (4, 'B1', 'Terminal B', true);
+INSERT INTO gate (id, gate_number, terminal, is_available) VALUES (5, 'B2', 'Terminal B', true);
+INSERT INTO gate (id, gate_number, terminal, is_available) VALUES (6, 'C1', 'Terminal C', true);
+INSERT INTO gate (id, gate_number, terminal, is_available) VALUES (7, 'C2', 'Terminal D', true);
 
 -- ParkingStand - Miejsca postojowe
 INSERT INTO parking_stand (id, stand_number, type, is_available) VALUES (1, 'P1', 'REMOTE', true);
@@ -74,11 +74,11 @@ INSERT INTO crew_member (id, first_name, last_name, position) VALUES (9, 'Micha�
 INSERT INTO crew_member (id, first_name, last_name, position) VALUES (10, 'Katarzyna', 'Woźniak', 'FIRST_OFFICER');
 
 -- TurnaroundProcess - Procesy obsługi naziemnej
-INSERT INTO turnaround_process (id, start_time, end_time, status) VALUES (1, '2024-06-15 08:45:00', '2024-06-15 10:00:00', 'FINISHED');
-INSERT INTO turnaround_process (id, start_time, end_time, status) VALUES (2, '2024-06-15 12:00:00', '2024-06-15 13:30:00', 'IN_PROGRESS');
-INSERT INTO turnaround_process (id, start_time, end_time, status) VALUES (3, '2024-06-15 17:15:00', NULL, 'PLANNED');
-INSERT INTO turnaround_process (id, start_time, end_time, status) VALUES (4, '2024-06-16 07:00:00', NULL, 'PLANNED');
-INSERT INTO turnaround_process (id, start_time, end_time, status) VALUES (5, '2024-06-15 11:50:00', '2024-06-15 12:45:00', 'FINISHED');
+INSERT INTO turnaround_process (id, start_time, end_time, status) VALUES (1, '2026-06-15 08:45:00', '2026-06-15 10:00:00', 'FINISHED');
+INSERT INTO turnaround_process (id, start_time, end_time, status) VALUES (2, '2026-06-15 12:00:00', '2026-06-15 13:30:00', 'IN_PROGRESS');
+INSERT INTO turnaround_process (id, start_time, end_time, status) VALUES (3, '2026-06-15 17:15:00', NULL, 'PLANNED');
+INSERT INTO turnaround_process (id, start_time, end_time, status) VALUES (4, '2026-06-16 07:00:00', NULL, 'PLANNED');
+INSERT INTO turnaround_process (id, start_time, end_time, status) VALUES (5, '2026-06-15 11:50:00', '2026-06-15 12:45:00', 'FINISHED');
 
 -- GroundHandling - Obsługa naziemna
 INSERT INTO ground_handling (id, team_name, service_type, turnaround_process_id) VALUES (1, 'Team Alpha', 'CLEANING', 1);
@@ -92,22 +92,22 @@ INSERT INTO ground_handling (id, team_name, service_type, turnaround_process_id)
 
 -- Flight - Loty
 INSERT INTO flight (id, flight_number, scheduled_departure_time, actual_departure_time, scheduled_arrival_time, actual_arrival_time, status, estimated_delay, delay_reason, schedule_id, route_id, time_slot_id, aircraft_id, runway_id, gate_id, parking_stand_id, turnaround_process_id)
-VALUES (1, 'LO001', '2024-06-15 06:00:00', '2024-06-15 06:05:00', '2024-06-15 08:30:00', '2024-06-15 08:25:00', 'LANDED', 5, 'Boarding delay', 2, 1, 1, 7, 1, 6, NULL, 1);
+VALUES (1, 'LO001', '2026-02-01 23:30:00', '2026-02-01 23:45:00', '2026-06-15 08:30:00', '2026-06-15 08:25:00', 'PLANNED', 5, 'Boarding delay', 2, 1, 1, 7, 1, 6, NULL, 1);
 
 INSERT INTO flight (id, flight_number, scheduled_departure_time, actual_departure_time, scheduled_arrival_time, actual_arrival_time, status, estimated_delay, delay_reason, schedule_id, route_id, time_slot_id, aircraft_id, runway_id, gate_id, parking_stand_id, turnaround_process_id)
-VALUES (2, 'LH1234', '2024-06-15 10:15:00', '2024-06-15 10:15:00', '2024-06-15 11:45:00', NULL, 'DEPARTED', 0, NULL, 2, 3, 2, 3, 2, 1, NULL, 2);
+VALUES (2, 'LH1234', '2026-06-15 10:15:00', '2026-06-15 10:15:00', '2026-06-15 11:45:00', NULL, 'DEPARTED', 0, NULL, 2, 3, 2, 3, 2, 1, NULL, 2);
 
 INSERT INTO flight (id, flight_number, scheduled_departure_time, actual_departure_time, scheduled_arrival_time, actual_arrival_time, status, estimated_delay, delay_reason, schedule_id, route_id, time_slot_id, aircraft_id, runway_id, gate_id, parking_stand_id, turnaround_process_id)
-VALUES (3, 'FR5678', '2024-06-15 14:30:00', NULL, '2024-06-15 17:00:00', NULL, 'DELAYED', 45, 'Technical issues', 2, 4, 3, 4, 4, NULL, 2, 3);
+VALUES (3, 'FR5678', '2026-06-15 14:30:00', NULL, '2026-06-15 17:00:00', NULL, 'DELAYED', 45, 'Technical issues', 2, 4, 3, 4, 4, NULL, 2, 3);
 
 INSERT INTO flight (id, flight_number, scheduled_departure_time, actual_departure_time, scheduled_arrival_time, actual_arrival_time, status, estimated_delay, delay_reason, schedule_id, route_id, time_slot_id, aircraft_id, runway_id, gate_id, parking_stand_id, turnaround_process_id)
-VALUES (4, 'BA789', '2024-06-15 19:45:00', '2024-06-15 19:40:00', '2024-06-16 06:30:00', NULL, 'DEPARTED', -5, NULL, 2, 5, 4, 5, 1, 7, NULL, NULL);
+VALUES (4, 'BA789', '2026-06-15 19:45:00', '2026-06-15 19:40:00', '2026-06-16 06:30:00', NULL, 'DEPARTED', -5, NULL, 2, 5, 4, 5, 1, 7, NULL, NULL);
 
 INSERT INTO flight (id, flight_number, scheduled_departure_time, actual_departure_time, scheduled_arrival_time, actual_arrival_time, status, estimated_delay, delay_reason, schedule_id, route_id, time_slot_id, aircraft_id, runway_id, gate_id, parking_stand_id, turnaround_process_id)
-VALUES (5, 'LO002', '2024-06-16 07:20:00', NULL, '2024-06-16 08:50:00', NULL, 'PLANNED', 0, NULL, 2, 2, 5, 1, 2, 2, NULL, 4);
+VALUES (5, 'LO002', '2026-06-16 07:20:00', NULL, '2026-06-16 08:50:00', NULL, 'PLANNED', 0, NULL, 2, 2, 5, 1, 2, 2, NULL, 4);
 
 INSERT INTO flight (id, flight_number, scheduled_departure_time, actual_departure_time, scheduled_arrival_time, actual_arrival_time, status, estimated_delay, delay_reason, schedule_id, route_id, time_slot_id, aircraft_id, runway_id, gate_id, parking_stand_id, turnaround_process_id)
-VALUES (6, 'AF456', '2024-06-16 12:10:00', NULL, '2024-06-16 14:40:00', NULL, 'PLANNED', 0, NULL, 2, 6, 6, 6, 5, 4, NULL, NULL);
+VALUES (6, 'AF456', '2026-06-16 12:10:00', NULL, '2026-06-16 14:40:00', NULL, 'PLANNED', 0, NULL, 2, 6, 6, 6, 5, 4, NULL, NULL);
 
 -- flight_crew - Tabela łącząca loty z załogą
 INSERT INTO flight_crew (flight_id, crew_member_id) VALUES (1, 1);

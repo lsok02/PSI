@@ -20,6 +20,7 @@ import org.example.securityservice.model.enumeration.IncidentType;
 import org.example.securityservice.service.AuditLogService;
 import org.example.securityservice.service.AuthServiceClient;
 import org.example.securityservice.service.EmployeeService;
+import org.example.securityservice.service.FlightServiceClient;
 import org.example.securityservice.service.IncidentService;
 import org.example.securityservice.service.NotificationService;
 import org.example.securityservice.service.SensorEventService;
@@ -56,6 +57,7 @@ public class IncidentController {
     private final SensorEventService sensorEventService;
     private final AuthServiceClient authServiceClient;
     private final EmployeeService employeeService;
+    private final FlightServiceClient flightServiceClient;
 
     @GetMapping
     public ResponseEntity<List<IncidentResponseDTO>> getIncidents(
@@ -83,19 +85,6 @@ public class IncidentController {
             log.info("Returning {} incidents for user {}", incidents.size(), employee.getId());
             return ResponseEntity.ok(incidents);
     }
-
-    private String extractToken(String authHeader, String tokenHeader) {
-        if (tokenHeader != null && !tokenHeader.isEmpty()) {
-            return tokenHeader;
-        }
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7);
-        }
-
-        return null;
-    }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<IncidentResponseDTO> getIncident(
@@ -136,6 +125,19 @@ public class IncidentController {
         try {
             IncidentResponseDTO createdIncident = incidentService.createIncident(incidentDTO, employee.getId());
             log.info("Incident created successfully: {}", createdIncident.getReportNumber());
+
+            String terminalName = createdIncident.getLocation().getName();
+            LocalDateTime creationTime = createdIncident.getCreationTime();
+            LocalDate incidentDate = creationTime.toLocalDate();
+            boolean flightsLocked = flightServiceClient.lockFlightsForTerminalAndDate(
+                    incidentDate,
+                    terminalName
+            );
+
+            if (flightsLocked) {
+                log.info("Successfully locked flights for terminal: {} on date: {}",
+                        terminalName, incidentDate);
+            }
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)

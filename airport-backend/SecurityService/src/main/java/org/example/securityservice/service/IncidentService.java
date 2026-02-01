@@ -78,9 +78,9 @@ public class IncidentService {
         notificationService.createInitialLog(savedIncident, currentUser, incidentDTO.getDescription());
 //        notificationService.logIncidentCreation(savedIncident, currentUser);
 
-        if (savedIncident.getPriority() == IncidentPriority.CRITICAL) {
-            flightIntegrationService.checkAffectedFlights(savedIncident);
-        }
+//        if (savedIncident.getPriority() == IncidentPriority.CRITICAL) {
+//            flightIntegrationService.checkAffectedFlights(savedIncident);
+//        }
 
         log.info("Incident created successfully: {}", savedIncident.getReportNumber());
         return permissionService.toResponseDtoWithPermissions(savedIncident);

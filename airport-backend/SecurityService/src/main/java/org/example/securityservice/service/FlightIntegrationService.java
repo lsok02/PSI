@@ -18,38 +18,38 @@ public class FlightIntegrationService {
 
     private final FlightServiceClient flightServiceClient;
     private final LogEntryRepository logEntryRepository;
+//
+//    public void checkAffectedFlights(Incident incident) {
+//        try {
+//            if (incident.getLocation() != null) {
+//                List<FlightDTO> affectedFlights = flightServiceClient.getFlightsByLocation(
+//                        incident.getLocation().getName(), LocalDateTime.now());
+//
+//                if (!affectedFlights.isEmpty()) {
+//                    createAffectedFlightsLog(incident, affectedFlights);
+//                }
+//            }
+//        } catch (Exception e) {
+//            log.warn("Failed to check affected flights for incident {}: {}",
+//                    incident.getReportNumber(), e.getMessage());
+//        }
+//    }
 
-    public void checkAffectedFlights(Incident incident) {
-        try {
-            if (incident.getLocation() != null) {
-                List<FlightDTO> affectedFlights = flightServiceClient.getFlightsByLocation(
-                        incident.getLocation().getName(), LocalDateTime.now());
-
-                if (!affectedFlights.isEmpty()) {
-                    createAffectedFlightsLog(incident, affectedFlights);
-                }
-            }
-        } catch (Exception e) {
-            log.warn("Failed to check affected flights for incident {}: {}",
-                    incident.getReportNumber(), e.getMessage());
-        }
-    }
-
-    public void blockFlightOperationsIfNeeded(Incident incident) {
-        try {
-            if (incident.getLocation() != null && incident.getLocation().getName() != null) {
-                flightServiceClient.blockOperationsInZone(
-                        incident.getLocation().getName(),
-                        "CRITICAL_INCIDENT_" + incident.getType(),
-                        incident.getId());
-
-                createFlightBlockLog(incident);
-            }
-        } catch (Exception e) {
-            log.error("Failed to block flight operations for incident {}: {}",
-                    incident.getReportNumber(), e.getMessage());
-        }
-    }
+//    public void blockFlightOperationsIfNeeded(Incident incident) {
+//        try {
+//            if (incident.getLocation() != null && incident.getLocation().getName() != null) {
+//                flightServiceClient.blockOperationsInZone(
+//                        incident.getLocation().getName(),
+//                        "CRITICAL_INCIDENT_" + incident.getType(),
+//                        incident.getId());
+//
+//                createFlightBlockLog(incident);
+//            }
+//        } catch (Exception e) {
+//            log.error("Failed to block flight operations for incident {}: {}",
+//                    incident.getReportNumber(), e.getMessage());
+//        }
+//    }
 
     private void createAffectedFlightsLog(Incident incident, List<FlightDTO> affectedFlights) {
         LogEntry logEntry = LogEntry.builder()

@@ -78,15 +78,15 @@ INSERT INTO location (id, name, type, coordinates) VALUES
                                                        (68, 'Emergency Command Center', 'COMMAND_CENTER', '51.5440, 0.5280');
 
 -- 2. Employee
-INSERT INTO employee (id, first_name, last_name, service_number) VALUES
-                                                                     (1, 'John', 'Smith', 'SEC-001'),
-                                                                     (2, 'Emma', 'Johnson', 'SEC-002'),
-                                                                     (3, 'Michael', 'Brown', 'SEC-003'),
-                                                                     (4, 'Sarah', 'Davis', 'SEC-004'),
-                                                                     (5, 'Robert', 'Wilson', 'SEC-005'),
-                                                                     (6, 'Jennifer', 'Miller', 'SEC-006'),
-                                                                     (7, 'David', 'Taylor', 'SEC-007'),
-                                                                     (8, 'Lisa', 'Anderson', 'SEC-008');
+INSERT INTO employee (id, first_name, last_name, service_number, username) VALUES
+                                                                     (1, 'John', 'Smith', 'SEC-001', 'admin'),
+                                                                     (2, 'Emma', 'Johnson', 'SEC-002', 'admin1'),
+                                                                     (3, 'Michael', 'Brown', 'SEC-003', 'admin2'),
+                                                                     (4, 'Sarah', 'Davis', 'SEC-004', 'admin3'),
+                                                                     (5, 'Robert', 'Wilson', 'SEC-005', 'admin4'),
+                                                                     (6, 'Jennifer', 'Miller', 'SEC-006', 'admin5'),
+                                                                     (7, 'David', 'Taylor', 'SEC-007', 'admin6'),
+                                                                     (8, 'Lisa', 'Anderson', 'SEC-008', 'admin7');
 
 -- 3. Dispatcher
 INSERT INTO dispatcher (id) VALUES (1), (2);
@@ -265,10 +265,10 @@ INSERT INTO shift_assignment (id, status, actual_check_in, actual_check_out, not
 
 -- Dodatkowe Employee i IncidentTeamMember
 INSERT INTO employee (id, first_name, last_name, service_number, username) VALUES
-                                                                     (9, 'James', 'White', 'SEC-009', 'admin'),
-                                                                     (10, 'Maria', 'Garcia', 'SEC-010', 'admin1'),
-                                                                     (11, 'Thomas', 'Lee', 'SEC-011', 'admin2'),
-                                                                     (12, 'Emily', 'Clark', 'SEC-012', 'admin3');
+                                                                     (9, 'James', 'White', 'SEC-009', 'admin8'),
+                                                                     (10, 'Maria', 'Garcia', 'SEC-010', 'admin9'),
+                                                                     (11, 'Thomas', 'Lee', 'SEC-011', 'admin10'),
+                                                                     (12, 'Emily', 'Clark', 'SEC-012', 'admin11');
 
 INSERT INTO incident_team_member (id, radio_id, team_id) VALUES
                                                              (9, 'RADIO-701', 3),

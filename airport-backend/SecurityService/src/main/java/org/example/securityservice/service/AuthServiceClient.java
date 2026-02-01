@@ -2,24 +2,29 @@ package org.example.securityservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class AuthServiceClient {
 
     private final WebClient authServiceWebClient;
 
+    public AuthServiceClient() {
+        this.authServiceWebClient = WebClient.builder()
+                .baseUrl("http://localhost:9090")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+    }
+
     public String validateTokenAndGetUsername(String token) {
         try {
-            // Wywołaj endpoint /api/auth/username z tokenem w headerze
             return authServiceWebClient.get()
                     .uri("/api/auth/username")
-//                    .header("token", "Bearer " + token)
-                    .header("token", token) // Dodatkowo jeśli potrzebujesz w headerze "token"
+                    .header("token", token)
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.example.securityservice.model.dto.FlightDTO;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -13,71 +14,60 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-@Component
-@RequiredArgsConstructor
+@Service
 @Slf4j
 public class FlightServiceClient {
 
-    private final RestTemplate restTemplate;
+    private final WebClient flightServiceWebClient;
 
-    private final String flightServiceUrl = "http://localhost:8081";
+    public FlightServiceClient() {
+        this.flightServiceWebClient = WebClient.builder()
+                .baseUrl("http://localhost:8081")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+    }
 
-    public List<FlightDTO> getFlightsByLocation(String zoneCode, LocalDateTime time) {
+    public boolean lockFlightsForTerminalAndDate(LocalDate date, String terminal) {
         try {
-            String url = flightServiceUrl + "/flights/by-location?zone={zone}&time={time}";
+            log.info("Calling flight service to lock flights for terminal: {}, date: {}", terminal, date);
 
-            ResponseEntity<FlightDTO[]> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    null,
-                    FlightDTO[].class,
-                    zoneCode,
-                    time.toString()
+            Map<String, Object> requestBody = Map.of(
+                    "date", date.toString(),
+                    "terminal", terminal
             );
 
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                return Arrays.asList(response.getBody());
+            Map<String, Object> response = flightServiceWebClient.post()
+                    .uri("/api/flights/lock-and-delay")
+                    .bodyValue(requestBody)
+                    .retrieve()
+                    .bodyToMono(Map.class)
+                    .block();
+
+            if (response != null) {
+                log.info("Flight service response: {}", response);
+                return true;
             }
+
+            return false;
+
+        } catch (WebClientResponseException e) {
+            log.error("Error calling flight service: HTTP {} - {}", e.getStatusCode(), e.getResponseBodyAsString());
+            throw new RuntimeException("Failed to lock flights: " + e.getMessage());
         } catch (Exception e) {
-            log.error("Error fetching flights by location: {}", e.getMessage());
+            log.error("Error communicating with flight service: {}", e.getMessage());
+            throw new RuntimeException("Flight service unavailable");
         }
-        return Collections.emptyList();
-    }
-
-    public void blockOperationsInZone(String zoneCode, String reason, Long incidentId) {
-        try {
-            String url = flightServiceUrl + "/operations/block";
-
-            BlockOperationsRequest request = new BlockOperationsRequest(
-                    zoneCode, reason, incidentId, LocalDateTime.now());
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            HttpEntity<BlockOperationsRequest> entity = new HttpEntity<>(request, headers);
-
-            restTemplate.exchange(url, HttpMethod.POST, entity, Void.class);
-
-            log.info("Blocked operations in zone: {}", zoneCode);
-        } catch (Exception e) {
-            log.error("Error blocking operations: {}", e.getMessage());
-            throw new RuntimeException("Failed to block flight operations", e);
-        }
-    }
-
-    @Data
-    @AllArgsConstructor
-    private static class BlockOperationsRequest {
-        private String zoneCode;
-        private String reason;
-        private Long incidentId;
-        private LocalDateTime timestamp;
     }
 }
