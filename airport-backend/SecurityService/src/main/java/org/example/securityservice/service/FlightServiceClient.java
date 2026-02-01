@@ -70,4 +70,38 @@ public class FlightServiceClient {
             throw new RuntimeException("Flight service unavailable");
         }
     }
+
+
+    public boolean unlockFlightsForTerminalAndDate(LocalDate date, String terminal) {
+        try {
+            log.info("Calling flight service to unlock flights for terminal: {}, date: {}", terminal, date);
+
+            Map<String, Object> requestBody = Map.of(
+                    "date", date.toString(),
+                    "terminal", terminal
+            );
+
+            Map<String, Object> response = flightServiceWebClient.post()
+                    .uri("/api/flights/unlock")
+                    .bodyValue(requestBody)
+                    .retrieve()
+                    .bodyToMono(Map.class)
+                    .block();
+
+            if (response != null) {
+                log.info("Flight service unlock response: {}", response);
+                return true;
+            }
+
+            return false;
+
+        } catch (WebClientResponseException e) {
+            log.error("Error calling flight service unlock: HTTP {} - {}",
+                    e.getStatusCode(), e.getResponseBodyAsString());
+            throw new RuntimeException("Failed to unlock flights: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Error communicating with flight service: {}", e.getMessage());
+            throw new RuntimeException("Flight service unavailable");
+        }
+    }
 }

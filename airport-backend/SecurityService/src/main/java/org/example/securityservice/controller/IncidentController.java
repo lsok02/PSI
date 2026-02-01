@@ -163,7 +163,21 @@ public class IncidentController {
             IncidentResponseDTO createdIncident = incidentService.createIncident(incidentDTO, employee.getId());
 
             log.info("Incident created successfully: {}", createdIncident.getReportNumber());
+
             sensorEventService.addIncidentForAlarm(alarmId, createdIncident);
+
+            String terminalName = createdIncident.getLocation().getName();
+            LocalDateTime creationTime = createdIncident.getCreationTime();
+            LocalDate incidentDate = creationTime.toLocalDate();
+            boolean flightsLocked = flightServiceClient.lockFlightsForTerminalAndDate(
+                    incidentDate,
+                    terminalName
+            );
+
+            if (flightsLocked) {
+                log.info("Successfully locked flights for terminal: {} on date: {}",
+                        terminalName, incidentDate);
+            }
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .header("X-Incident-Id", createdIncident.getId().toString())
@@ -211,6 +225,23 @@ public class IncidentController {
         try {
             IncidentResponseDTO updatedIncident = incidentService.updateStatus(id, statusChangeDTO, employee.getId());
 
+
+
+            if(statusChangeDTO.getNewStatus() == IncidentStatus.CLOSED) {
+
+                String terminalName = updatedIncident.getLocation().getName();
+                LocalDateTime creationTime = updatedIncident.getCreationTime();
+                LocalDate incidentDate = creationTime.toLocalDate();
+                boolean flightsUnlocked = flightServiceClient.unlockFlightsForTerminalAndDate(
+                        incidentDate,
+                        terminalName
+                );
+
+                if (flightsUnlocked) {
+                    log.info("Successfully locked flights for terminal: {} on date: {}",
+                            terminalName, incidentDate);
+                }
+            }
             log.info("Status updated for incident {}: {} -> {}",
                     updatedIncident.getReportNumber(),
                     updatedIncident.getStatus(),

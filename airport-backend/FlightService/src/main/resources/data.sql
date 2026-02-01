@@ -92,7 +92,7 @@ INSERT INTO ground_handling (id, team_name, service_type, turnaround_process_id)
 
 -- Flight - Loty
 INSERT INTO flight (id, flight_number, scheduled_departure_time, actual_departure_time, scheduled_arrival_time, actual_arrival_time, status, estimated_delay, delay_reason, schedule_id, route_id, time_slot_id, aircraft_id, runway_id, gate_id, parking_stand_id, turnaround_process_id)
-VALUES (1, 'LO001', '2026-02-01 23:30:00', '2026-02-01 23:45:00', '2026-06-15 08:30:00', '2026-06-15 08:25:00', 'PLANNED', 5, 'Boarding delay', 2, 1, 1, 7, 1, 6, NULL, 1);
+VALUES (1, 'LO001', '2026-02-01 23:50:00', '2026-02-01 23:55:00', '2026-06-15 08:30:00', '2026-06-15 08:25:00', 'PLANNED', 5, 'Boarding delay', 2, 1, 1, 7, 1, 6, NULL, 1);
 
 INSERT INTO flight (id, flight_number, scheduled_departure_time, actual_departure_time, scheduled_arrival_time, actual_arrival_time, status, estimated_delay, delay_reason, schedule_id, route_id, time_slot_id, aircraft_id, runway_id, gate_id, parking_stand_id, turnaround_process_id)
 VALUES (2, 'LH1234', '2026-06-15 10:15:00', '2026-06-15 10:15:00', '2026-06-15 11:45:00', NULL, 'DEPARTED', 0, NULL, 2, 3, 2, 3, 2, 1, NULL, 2);
