@@ -38,9 +38,26 @@ export function SecurityDashboardPage() {
     const { logout, username } = useAuth();
     const navigate = useNavigate();
 
-    // Fetch incidents from backend
-    const { data: backendIncidents } = useIncidents();
+    const [incidentFilters, setIncidentFilters] = useState({
+        priority: 'CRITICAL', // Default to urgent incidents
+        status: 'all'
+    });
+
+    // Fetch incidents from backend with filters
+    const { data: backendIncidents } = useIncidents({
+        status: incidentFilters.status === 'all' ? undefined : incidentFilters.status,
+        priority: incidentFilters.priority === 'all' ? undefined : incidentFilters.priority
+    });
     const incidents = backendIncidents || [];
+
+    // Set default filter to "Urgent" (Critical/High) on first load if no priority is set
+    useEffect(() => {
+        // Only set default if we haven't manually changed it yet
+        // In a real app we might want a more sophisticated "Urgent" view that combines multiple priorities
+        // For now, let's just default to 'all' but allow the user to easily filter.
+        // Actually the user asked for "more urgent", so let's default to CRITICAL first.
+        // setIncidentFilters(prev => ({ ...prev, priority: 'CRITICAL' }));
+    }, []);
 
     // Fetch alerts (unassigned sensor events) from backend
     const { data: backendAlerts } = useSensorEvents();
@@ -177,6 +194,12 @@ export function SecurityDashboardPage() {
                             incidents={incidents}
                             selectedIncidentId={selectedIncidentId ?? ''}
                             onIncidentSelect={handleIncidentSelect}
+                            onCreateManual={() => {
+                                setSelectedAlertData(undefined);
+                                setCreateModalOpen(true);
+                            }}
+                            filters={incidentFilters}
+                            onFilterChange={setIncidentFilters}
                         />
                     </div>
 

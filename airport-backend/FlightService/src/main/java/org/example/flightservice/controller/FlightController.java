@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 @RestController
 @RequestMapping("/api/flights")
 @RequiredArgsConstructor
@@ -147,18 +146,15 @@ public class FlightController {
                     "terminal", request.getTerminal(),
                     "date", request.getDate(),
                     "unlockedFlightCount", unlockedIds.size(),
-                    "unlockedFlightIds", unlockedIds
-            ));
+                    "unlockedFlightIds", unlockedIds));
         }
 
         return ResponseEntity.ok(Map.of(
                 "message", "No locked flights found for this terminal and date",
                 "terminal", request.getTerminal(),
                 "date", request.getDate(),
-                "unlockedFlightCount", 0
-        ));
+                "unlockedFlightCount", 0));
     }
-
 
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateFlightStatus(
@@ -178,15 +174,13 @@ public class FlightController {
                 if (request.getStatus() != FlightStatus.CANCELLED) {
                     return ResponseEntity.badRequest().body(Map.of(
                             "error", "Flight is locked. Only CANCELLED status is allowed.",
-                            "allowedStatus", FlightStatus.CANCELLED.name()
-                    ));
+                            "allowedStatus", FlightStatus.CANCELLED.name()));
                 }
             } else {
                 // Całkowicie zablokowany
                 return ResponseEntity.badRequest().body(Map.of(
                         "error", "Flight is completely locked for status changes.",
-                        "allowedNextStatuses", currentDto.getAllowedNextStatuses()
-                ));
+                        "allowedNextStatuses", currentDto.getAllowedNextStatuses()));
             }
         }
 
@@ -196,8 +190,7 @@ public class FlightController {
             return ResponseEntity.badRequest().body(Map.of(
                     "error", "Requested status is not allowed.",
                     "allowedNextStatuses", currentDto.getAllowedNextStatuses(),
-                    "requestedStatus", request.getStatus().name()
-            ));
+                    "requestedStatus", request.getStatus().name()));
         }
 
         // Aktualizacja statusu
@@ -224,8 +217,7 @@ public class FlightController {
                 "isLockedForStatusChange", dto.getIsLockedForStatusChange(),
                 "canBeCancelledOnly", dto.getCanBeCancelledOnly(),
                 "allowedNextStatuses", dto.getAllowedNextStatuses(),
-                "allPossibleStatuses", getAllPossibleStatuses(flight.getStatus())
-        ));
+                "allPossibleStatuses", getAllPossibleStatuses(flight.getStatus())));
     }
 
     // ========== PRYWATNE METODY POMOCNICZE ==========
@@ -262,25 +254,21 @@ public class FlightController {
                     FlightStatus.GATE_CLOSED.name(),
                     FlightStatus.BOARDING.name(),
                     FlightStatus.CANCELLED.name(),
-                    FlightStatus.DEPARTED.name()
-            );
+                    FlightStatus.DEPARTED.name());
             case DELAYED -> Arrays.asList(
                     FlightStatus.PLANNED.name(),
                     FlightStatus.GATE_CLOSED.name(),
                     FlightStatus.BOARDING.name(),
                     FlightStatus.CANCELLED.name(),
-                    FlightStatus.DEPARTED.name()
-            );
+                    FlightStatus.DEPARTED.name());
             case GATE_CLOSED -> Arrays.asList(
                     FlightStatus.BOARDING.name(),
                     FlightStatus.DELAYED.name(),
-                    FlightStatus.CANCELLED.name()
-            );
+                    FlightStatus.CANCELLED.name());
             case BOARDING -> Arrays.asList(
                     FlightStatus.DEPARTED.name(),
                     FlightStatus.DELAYED.name(),
-                    FlightStatus.CANCELLED.name()
-            );
+                    FlightStatus.CANCELLED.name());
             default -> Collections.emptyList(); // Dla DEPARTED, LANDED, CANCELLED
         };
     }

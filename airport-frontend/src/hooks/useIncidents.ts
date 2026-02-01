@@ -46,11 +46,11 @@ function transformIncident(response: IncidentResponse): Incident {
 }
 
 // Hook to fetch all incidents
-export function useIncidents() {
+export function useIncidents(filters?: { status?: string; priority?: string; type?: string }) {
     return useQuery({
-        queryKey: ['incidents'],
+        queryKey: ['incidents', filters],
         queryFn: async () => {
-            const response = await securityApi.getIncidents();
+            const response = await securityApi.getIncidents(filters as any);
             return response.map(transformIncident);
         },
         staleTime: 30000, // 30 seconds
@@ -72,5 +72,15 @@ export function useCreateIncident() {
         onError: (error) => {
             console.error('Failed to create incident:', error);
         },
+    });
+}
+
+// Hook to fetch teams by specialization
+export function useTeams(specialization?: string) {
+    return useQuery({
+        queryKey: ['teams', specialization],
+        queryFn: () => securityApi.getTeamsBySpecialization(specialization!),
+        enabled: !!specialization,
+        staleTime: 60000,
     });
 }

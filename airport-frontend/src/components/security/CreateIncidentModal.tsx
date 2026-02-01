@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X, Loader2 } from 'lucide-react';
-import { useCreateIncident } from '@/hooks';
+import { useCreateIncident, useTeams } from '@/hooks';
 import type { IncidentType, IncidentPriority } from '@/types';
 
 interface CreateIncidentModalProps {
@@ -52,6 +52,9 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
     const [assignedTeam, setAssignedTeam] = useState('');
     const [descriptionError, setDescriptionError] = useState<string | null>(null);
 
+    // Fetch teams based on selected specialization
+    const { data: teams = [], isLoading: isLoadingTeams } = useTeams(typeToBackend[incidentType]);
+
     // Update form when alertData changes
     useEffect(() => {
         if (alertData) {
@@ -60,8 +63,16 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
             setLocation(alertData.suggestedLocation || '');
             setDescription(`Alert from ${alertData.sourceSystem} (${alertData.sensorId}) detected at ${alertData.detectionTime}. Please verify the situation and update as needed.`);
             setDescriptionError(null);
+        } else if (open) {
+            // Reset for manual creation when opened without alertData
+            setIncidentType('Fire Alarm');
+            setPriority('Medium');
+            setLocation('');
+            setDescription('');
+            setDescriptionError(null);
+            setAssignedTeam('');
         }
-    }, [alertData]);
+    }, [alertData, open]);
 
     const validateDescription = (): boolean => {
         if (description.length < 20) {
@@ -83,7 +94,7 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
             locationId: 1, // Default location - would need to resolve from location name
             description,
             status: 'NEW' as const,
-            assignedTeamId: assignedTeam ? parseInt(assignedTeam.split('-')[1]) : undefined,
+            assignedTeamId: assignedTeam ? parseInt(assignedTeam) : undefined,
             sensorEventId: alertData?.sensorEventId,
         };
 
@@ -105,16 +116,7 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
         handleCreateIncident();
     };
 
-    const defaultAlertData = {
-        sourceSystem: 'Fire Detection System (PPOŻ)',
-        detectionTime: new Date().toLocaleString(),
-        sensorId: 'SD-T1-C-112',
-        suggestedType: 'Fire Alarm',
-        suggestedPriority: 'Critical',
-        suggestedLocation: 'Main Departures Hall, Zone C'
-    };
-
-    const data = alertData || defaultAlertData;
+    const isManual = !alertData;
 
     return (
         <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
@@ -126,7 +128,9 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
                 >
                     {/* Modal Header */}
                     <div className="flex items-center justify-between p-6 pb-4">
-                        <h2 className="text-white">Create New Incident from Alert</h2>
+                        <h2 className="text-white font-semibold flex items-center gap-2">
+                            {isManual ? 'Report New Security Incident' : 'Create Incident from Alert'}
+                        </h2>
                         <DialogPrimitive.Close asChild>
                             <button
                                 className="text-slate-400 hover:text-white transition-colors rounded-sm focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-[#2C2C2E]"
@@ -137,33 +141,35 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
                     </div>
 
                     <div className="px-6 pb-6 space-y-6">
-                        {/* Section 1: System Data (Read-Only) */}
-                        <div className="space-y-3">
-                            <h3 className="text-slate-400 tracking-wider text-xs">AUTOMATED ALERT DATA</h3>
+                        {/* Section 1: System Data (Read-Only) - Only shown if Not manual */}
+                        {!isManual && (
+                            <div className="space-y-3">
+                                <h3 className="text-slate-400 tracking-wider text-xs">AUTOMATED ALERT DATA</h3>
 
-                            <div className="grid grid-cols-3 gap-4">
-                                <div className="space-y-2">
-                                    <Label className="text-slate-400 text-xs">Source System</Label>
-                                    <div className="bg-[#1C1C1E] rounded-md px-3 py-2.5 text-slate-300 text-sm border border-slate-800">
-                                        {data.sourceSystem}
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="text-slate-400 text-xs">Source System</Label>
+                                        <div className="bg-[#1C1C1E] rounded-md px-3 py-2.5 text-slate-300 text-sm border border-slate-800">
+                                            {alertData.sourceSystem}
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div className="space-y-2">
-                                    <Label className="text-slate-400 text-xs">Detection Time</Label>
-                                    <div className="bg-[#1C1C1E] rounded-md px-3 py-2.5 text-slate-300 text-sm border border-slate-800">
-                                        {data.detectionTime}
+                                    <div className="space-y-2">
+                                        <Label className="text-slate-400 text-xs">Detection Time</Label>
+                                        <div className="bg-[#1C1C1E] rounded-md px-3 py-2.5 text-slate-300 text-sm border border-slate-800">
+                                            {alertData.detectionTime}
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div className="space-y-2">
-                                    <Label className="text-slate-400 text-xs">Sensor ID</Label>
-                                    <div className="bg-[#1C1C1E] rounded-md px-3 py-2.5 text-slate-300 text-sm border border-slate-800">
-                                        {data.sensorId}
+                                    <div className="space-y-2">
+                                        <Label className="text-slate-400 text-xs">Sensor ID</Label>
+                                        <div className="bg-[#1C1C1E] rounded-md px-3 py-2.5 text-slate-300 text-sm border border-slate-800">
+                                            {alertData.sensorId}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Section 2: Incident Details (Editable) */}
                         <div className="space-y-4">
@@ -240,16 +246,22 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
                                 <Label className="text-slate-300">Assign a Team</Label>
                                 <Select value={assignedTeam} onValueChange={setAssignedTeam}>
                                     <SelectTrigger className="bg-[#1C1C1E] border-slate-700 text-slate-400 hover:bg-[#252527]">
-                                        <SelectValue placeholder="Select an available team..." />
+                                        <SelectValue placeholder={isLoadingTeams ? "Loading teams..." : "Select an available team..."} />
                                     </SelectTrigger>
                                     <SelectContent className="bg-[#2C2C2E] border-slate-700">
-                                        <SelectItem value="fire-1" className="text-white hover:bg-[#3C3C3E] focus:bg-[#3C3C3E]">Fire-1 (Available)</SelectItem>
-                                        <SelectItem value="fire-2" className="text-white hover:bg-[#3C3C3E] focus:bg-[#3C3C3E]">Fire-2 (On Scene - INC-0126)</SelectItem>
-                                        <SelectItem value="medic-1" className="text-white hover:bg-[#3C3C3E] focus:bg-[#3C3C3E]">Medic-1 (On Scene - INC-0125)</SelectItem>
-                                        <SelectItem value="medic-2" className="text-white hover:bg-[#3C3C3E] focus:bg-[#3C3C3E]">Medic-2 (Available)</SelectItem>
-                                        <SelectItem value="security-1" className="text-white hover:bg-[#3C3C3E] focus:bg-[#3C3C3E]">Security-1 (On Scene - INC-0128)</SelectItem>
-                                        <SelectItem value="security-2" className="text-white hover:bg-[#3C3C3E] focus:bg-[#3C3C3E]">Security-2 (Available)</SelectItem>
-                                        <SelectItem value="security-3" className="text-white hover:bg-[#3C3C3E] focus:bg-[#3C3C3E]">Security-3 (On Scene - INC-0127)</SelectItem>
+                                        {teams.length > 0 ? (
+                                            teams.map((team: any) => (
+                                                <SelectItem
+                                                    key={team.id}
+                                                    value={team.id.toString()}
+                                                    className="text-white hover:bg-[#3C3C3E] focus:bg-[#3C3C3E]"
+                                                >
+                                                    {team.teamName} ({team.status.toLowerCase().replace('_', ' ')})
+                                                </SelectItem>
+                                            ))
+                                        ) : (
+                                            <div className="p-2 text-xs text-slate-500">No teams available for this specialization</div>
+                                        )}
                                     </SelectContent>
                                 </Select>
                             </div>

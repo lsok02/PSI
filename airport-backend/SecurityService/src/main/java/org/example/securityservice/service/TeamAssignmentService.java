@@ -56,7 +56,7 @@ public class TeamAssignmentService {
     public void autoAssignCriticalIncident(Incident incident) {
         try {
             List<IncidentTeam> availableTeams = teamRepository.findByStatusAndSpecialization(
-                    TeamStatus.AVAILABLE, incident.getType().toString());
+                    TeamStatus.AVAILABLE, incident.getType());
 
             if (!availableTeams.isEmpty()) {
                 IncidentTeam team = availableTeams.get(0);
