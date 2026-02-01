@@ -84,3 +84,18 @@ export function useTeams(specialization?: string) {
         staleTime: 60000,
     });
 }
+
+// Hook to escalate an incident
+export function useEscalateIncident() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (incidentId: number) => securityApi.escalateIncident(incidentId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['incidents'] });
+        },
+        onError: (error) => {
+            console.error('Failed to escalate incident:', error);
+        },
+    });
+}

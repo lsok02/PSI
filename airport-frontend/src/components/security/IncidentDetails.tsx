@@ -1,8 +1,10 @@
-import { Clock, Users, MapPin, AlertTriangle, ArrowUpCircle } from 'lucide-react';
+import { Clock, Users, MapPin, AlertTriangle, ArrowUpCircle, CheckCircle } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { useState, useEffect } from 'react';
+import { useEscalateIncident } from '@/hooks/useIncidents';
 import type { Incident } from '@/types';
 
 interface IncidentDetailsProps {
@@ -10,6 +12,31 @@ interface IncidentDetailsProps {
 }
 
 export function IncidentDetails({ incident }: IncidentDetailsProps) {
+    const [isConfirming, setIsConfirming] = useState(false);
+    const escalateMutation = useEscalateIncident();
+
+    // Reset confirmation state when incident changes
+    useEffect(() => {
+        setIsConfirming(false);
+    }, [incident.id]);
+
+    const handleEscalate = () => {
+        if (!isConfirming) {
+            setIsConfirming(true);
+            // Auto-reset after 3 seconds
+            setTimeout(() => setIsConfirming(false), 3000);
+            return;
+        }
+
+        // Extract numeric ID from "INC-XXXX"
+        const numericId = parseInt(incident.id.replace('INC-', ''), 10);
+        escalateMutation.mutate(numericId, {
+            onSuccess: () => {
+                setIsConfirming(false);
+            }
+        });
+    };
+
     const getPriorityColor = (priority: string) => {
         switch (priority) {
             case 'Critical':
@@ -101,10 +128,40 @@ export function IncidentDetails({ incident }: IncidentDetailsProps) {
                         <Users className="w-4 h-4 mr-2" />
                         Assign Team
                     </Button>
-                    <Button variant="outline" className="w-full border-orange-700 text-orange-400 hover:bg-orange-950">
-                        <ArrowUpCircle className="w-4 h-4 mr-2" />
-                        Escalate
+                    <Button
+                        variant={isConfirming ? "destructive" : "outline"}
+                        className={`w-full border-orange-700 text-orange-400 hover:bg-orange-950 transition-all duration-200 ${isConfirming ? "bg-red-900/50 border-red-500 text-red-200 hover:bg-red-900" : ""
+                            }`}
+                        onClick={handleEscalate}
+                        disabled={incident.priority === 'Critical' || escalateMutation.isPending}
+                    >
+                        {escalateMutation.isPending ? (
+                            <span className="flex items-center">
+                                <Clock className="w-4 h-4 mr-2 animate-spin" />
+                                Escalating...
+                            </span>
+                        ) : isConfirming ? (
+                            <span className="flex items-center">
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                Click to Confirm
+                            </span>
+                        ) : (
+                            <span className="flex items-center">
+                                <ArrowUpCircle className="w-4 h-4 mr-2" />
+                                {incident.priority === 'Critical' ? 'Max Priority' : 'Escalate'}
+                            </span>
+                        )}
                     </Button>
+                    {isConfirming && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full h-6 text-[10px] text-slate-500 hover:text-slate-300"
+                            onClick={() => setIsConfirming(false)}
+                        >
+                            Cancel
+                        </Button>
+                    )}
                 </div>
             </div>
         </Card>

@@ -254,6 +254,25 @@ public class IncidentController {
         }
     }
 
+    @PatchMapping("/{id}/escalate")
+    public ResponseEntity<IncidentResponseDTO> escalateIncident(
+            @PathVariable Long id,
+            @RequestHeader(value = "token", required = false) String token) {
+
+        String username = authServiceClient.validateTokenAndGetUsername(token);
+        Employee employee = employeeService.getEmployeeByUsername(username);
+
+        log.info("Received request to escalate incident ID: {} by user ID: {}", id, employee.getId());
+
+        try {
+            IncidentResponseDTO escalatedIncident = incidentService.escalateIncident(id, employee.getId());
+            return ResponseEntity.ok(escalatedIncident);
+        } catch (Exception e) {
+            log.error("Error escalating incident {}: {}", id, e.getMessage(), e);
+            throw e;
+        }
+    }
+
 
 
 

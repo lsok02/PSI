@@ -49,16 +49,17 @@ public class IncidentNotificationService {
         logEntryRepository.save(logEntry);
     }
 
-    public void createStatusChangeLog(Incident incident, Employee user, IncidentStatus oldStatus, StatusChangeDTO statusChangeDTO) {
+    public void createStatusChangeLog(Incident incident, Employee user, IncidentStatus oldStatus,
+            StatusChangeDTO statusChangeDTO) {
         LogEntry logEntry = LogEntry.builder()
                 .incident(incident)
                 .performedBy(user)
                 .actionTime(LocalDateTime.now())
-                .actionDescription(String.format("Status changed from %s to %s", oldStatus, statusChangeDTO.getNewStatus()))
+                .actionDescription(
+                        String.format("Status changed from %s to %s", oldStatus, statusChangeDTO.getNewStatus()))
                 .build();
         logEntryRepository.save(logEntry);
     }
-
 
     public void createUpdateLog(Incident incident, Employee user) {
         LogEntry logEntry = LogEntry.builder()
@@ -92,6 +93,10 @@ public class IncidentNotificationService {
 
     public void sendManagerReviewRequest(Incident incident) {
         notificationService.sendManagerReviewRequest(incident);
+    }
+
+    public void sendEscalationNotification(Incident incident) {
+        notificationService.sendEscalationNotification(incident);
     }
 
     public void checkForEscalation(Incident incident) {
@@ -131,6 +136,18 @@ public class IncidentNotificationService {
                 .actionDescription("Incident escalated")
                 .build();
         logEntryRepository.save(escalationLog);
+    }
+
+    public void createEscalationLog(Incident incident, Employee user, IncidentPriority oldPriority,
+            IncidentPriority newPriority) {
+        LogEntry logEntry = LogEntry.builder()
+                .incident(incident)
+                .performedBy(user)
+                .actionTime(LocalDateTime.now())
+                .actionDescription(
+                        String.format("User manually escalated priority from %s to %s", oldPriority, newPriority))
+                .build();
+        logEntryRepository.save(logEntry);
     }
 
     public void logSensorIncidentCreation(Incident incident) {

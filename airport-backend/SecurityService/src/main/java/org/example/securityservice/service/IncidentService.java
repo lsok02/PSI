@@ -7,13 +7,11 @@ import org.example.securityservice.exception.BusinessRuleViolationException;
 import org.example.securityservice.model.dto.IncidentDTO;
 import org.example.securityservice.model.dto.IncidentResponseDTO;
 import org.example.securityservice.model.dto.StatusChangeDTO;
-import org.example.securityservice.model.dto.TeamAssignmentDTO;
 import org.example.securityservice.model.entity.Dispatcher;
 import org.example.securityservice.model.entity.Employee;
 import org.example.securityservice.model.entity.SecurityManager;
 import org.example.securityservice.model.entity.Incident;
 import org.example.securityservice.model.entity.IncidentTeam;
-import org.example.securityservice.model.entity.IncidentTeamMember;
 import org.example.securityservice.model.enumeration.IncidentPriority;
 import org.example.securityservice.model.enumeration.IncidentStatus;
 import org.example.securityservice.model.enumeration.IncidentType;
@@ -26,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -87,11 +84,11 @@ public class IncidentService {
         updateDispatcherIncidents(dispatcher, savedIncident);
 
         notificationService.createInitialLog(savedIncident, currentUser, incidentDTO.getDescription());
-//        notificationService.logIncidentCreation(savedIncident, currentUser);
+        // notificationService.logIncidentCreation(savedIncident, currentUser);
 
-//        if (savedIncident.getPriority() == IncidentPriority.CRITICAL) {
-//            flightIntegrationService.checkAffectedFlights(savedIncident);
-//        }
+        // if (savedIncident.getPriority() == IncidentPriority.CRITICAL) {
+        // flightIntegrationService.checkAffectedFlights(savedIncident);
+        // }
 
         // Link sensor event to this incident if provided
         log.info("SensorEventId from DTO: {}", incidentDTO.getSensorEventId());
@@ -121,7 +118,7 @@ public class IncidentService {
         Incident updatedIncident = incidentRepository.save(incident);
 
         notificationService.createTeamAssignmentLog(updatedIncident, currentUser, team);
-//        notificationService.logTeamAssignment(updatedIncident, team, currentUser);
+        // notificationService.logTeamAssignment(updatedIncident, team, currentUser);
         notificationService.sendTeamAssignmentNotification(team, updatedIncident);
         notificationService.checkForEscalation(updatedIncident);
 
@@ -208,6 +205,47 @@ public class IncidentService {
 
         log.info("Incident {} updated by user {}", incidentId, currentUserId);
         return permissionService.toResponseDtoWithPermissions(updatedIncident);
+    }
+
+    @Transactional
+    public IncidentResponseDTO escalateIncident(Long incidentId, Long currentUserId) {
+        log.info("Escalating incident {} by user {}", incidentId, currentUserId);
+
+        Incident incident = validator.validateAndGetIncident(incidentId);
+        Employee currentUser = validator.validateAndGetUser(currentUserId);
+
+        IncidentPriority oldPriority = incident.getPriority();
+        IncidentPriority newPriority = bumpPriority(oldPriority);
+
+        if (oldPriority != newPriority) {
+            incident.setPriority(newPriority);
+            Incident updatedIncident = incidentRepository.save(incident);
+
+            notificationService.createEscalationLog(updatedIncident, currentUser, oldPriority, newPriority);
+            notificationService.sendEscalationNotification(updatedIncident);
+
+            log.info("Incident {} escalated from {} to {} by user {}",
+                    incidentId, oldPriority, newPriority, currentUserId);
+            return permissionService.toResponseDtoWithPermissions(updatedIncident);
+        }
+
+        return permissionService.toResponseDtoWithPermissions(incident);
+    }
+
+    private IncidentPriority bumpPriority(IncidentPriority priority) {
+        if (priority == null)
+            return IncidentPriority.NORMAL;
+        switch (priority) {
+            case LOW:
+                return IncidentPriority.NORMAL;
+            case NORMAL:
+                return IncidentPriority.HIGH;
+            case HIGH:
+            case CRITICAL:
+                return IncidentPriority.CRITICAL;
+            default:
+                return priority;
+        }
     }
 
     private Dispatcher getDispatcherForIncident(Employee user) {

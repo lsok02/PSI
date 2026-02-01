@@ -147,6 +147,8 @@ export const securityApi = {
         api.post<IncidentResponse>('/api/security/incidents', data).then(res => res.data),
     getTeamsBySpecialization: (specialization: string) =>
         api.get<any[]>(`/api/security/teams?specialization=${specialization}`).then(res => res.data),
+    escalateIncident: (id: number) =>
+        api.patch<IncidentResponse>(`/api/security/incidents/${id}/escalate`).then(res => res.data),
 };
 
 // Sensor Events API (through gateway)
