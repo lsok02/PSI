@@ -207,49 +207,31 @@ public class IncidentController {
 
 
 
-
-    @PostMapping("/sensor-events")
-    public ResponseEntity<IncidentResponseDTO> handleSensorEvent(
-             @RequestBody SensorEventDTO sensorEvent) {
-
-        log.info("Received sensor event: {} in zone {}",
-                sensorEvent.getAlarmType(), sensorEvent.getZoneCode());
-
-        try {
-//            IncidentResponseDTO createdIncident = incidentService.createIncidentFromSensor(sensorEvent);
-            IncidentResponseDTO createdIncident = new IncidentResponseDTO();
-            log.info("Sensor incident created: {}", createdIncident.getReportNumber());
-
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .header("X-Incident-Id", createdIncident.getId().toString())
-                    .body(createdIncident);
-
-        } catch (Exception e) {
-            log.error("Error processing sensor event: {}", e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    // ========== INCIDENT RETRIEVAL ==========
-
-//    @GetMapping("/active")
-//    public ResponseEntity<List<IncidentResponseDTO>> getActiveIncidents(
-//            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
 //
-//        log.debug("Received request to get active incidents for user ID: {}", userId);
+//    @PostMapping("/sensor-events")
+//    public ResponseEntity<IncidentResponseDTO> handleSensorEvent(
+//             @RequestBody SensorEventDTO sensorEvent) {
+//
+//        log.info("Received sensor event: {} in zone {}",
+//                sensorEvent.getAlarmType(), sensorEvent.getZoneCode());
 //
 //        try {
-//            List<IncidentResponseDTO> incidents = incidentService.getActiveIncidents(userId);
+////            IncidentResponseDTO createdIncident = incidentService.createIncidentFromSensor(sensorEvent);
+//            IncidentResponseDTO createdIncident = new IncidentResponseDTO();
+//            log.info("Sensor incident created: {}", createdIncident.getReportNumber());
 //
-//            log.info("Returning {} active incidents", incidents.size());
-//            return ResponseEntity.ok(incidents);
+//            return ResponseEntity
+//                    .status(HttpStatus.CREATED)
+//                    .header("X-Incident-Id", createdIncident.getId().toString())
+//                    .body(createdIncident);
 //
 //        } catch (Exception e) {
-//            log.error("Error retrieving active incidents: {}", e.getMessage(), e);
+//            log.error("Error processing sensor event: {}", e.getMessage(), e);
 //            throw e;
 //        }
 //    }
+
+    // ========== INCIDENT RETRIEVAL ==========
 
     @GetMapping("/my-team")
     public ResponseEntity<List<IncidentResponseDTO>> getMyTeamIncidents(

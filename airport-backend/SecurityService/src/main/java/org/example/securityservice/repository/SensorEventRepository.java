@@ -25,17 +25,12 @@ public interface SensorEventRepository extends JpaRepository<SensorEvent, Long> 
     // Znajdź eventy związane z incydentem
     List<SensorEvent> findByIncidentId(Long incidentId);
 
-    // Znajdź nieprzypisane eventy (bez incydentu)
-    List<SensorEvent> findByIncidentIsNull();
-
     // Znajdź eventy z danego obszaru/lokalizacji
     List<SensorEvent> findByLocationId(Long locationId);
-
-    // Znajdź krytyczne eventy (powyżej progu)
-    @Query("SELECT se FROM SensorEvent se WHERE se.severity >= :threshold")
-    List<SensorEvent> findCriticalEvents(@Param("threshold") Double threshold);
 
     // Liczba eventów w danym okresie
     @Query("SELECT COUNT(se) FROM SensorEvent se WHERE se.timestamp BETWEEN :start AND :end")
     Long countEventsInPeriod(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    List<SensorEvent> findByIncidentIsNull();
 }

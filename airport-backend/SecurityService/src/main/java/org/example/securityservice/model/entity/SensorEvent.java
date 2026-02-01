@@ -1,6 +1,5 @@
 package org.example.securityservice.model.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -9,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -36,9 +34,6 @@ public class SensorEvent {
     @Enumerated(EnumType.STRING)
     private SensorType sensorType; // FIRE, SMOKE, MOTION, TEMPERATURE, etc.
 
-    private Double readingValue;
-    private String unit;
-    private Double severity; // 0.0 - 1.0
     private String locationDetails;
     private LocalDateTime timestamp;
 
@@ -51,5 +46,4 @@ public class SensorEvent {
     private Incident incident;
 
     private Boolean isProcessed = false;
-    private LocalDateTime processedAt;
 }
