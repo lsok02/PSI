@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/incidents")
+@RequestMapping("/api/security/incidents")
 @RequiredArgsConstructor
 @Slf4j
 public class IncidentController {

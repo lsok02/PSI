@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/filters")
+@RequestMapping("/api/security/filters")
 @RequiredArgsConstructor
 public class FilterController {
 

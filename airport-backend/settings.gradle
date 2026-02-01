@@ -4,3 +4,6 @@ include 'FlightService'
 include 'GroundOpsService'
 include 'PassengerService'
 include 'SecurityService'
+include 'api-gateway'
+include 'api-gateway'
+
