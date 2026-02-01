@@ -21,7 +21,7 @@ public class IncidentPermissionService {
 
     private final IncidentMapper incidentMapper;
 
-    public IncidentResponseDTO toResponseDtoWithPermissions(Incident incident, Employee currentUser) {
+    public IncidentResponseDTO toResponseDtoWithPermissions(Incident incident) {
         IncidentResponseDTO dto = incidentMapper.toResponseDto(incident);
 
 

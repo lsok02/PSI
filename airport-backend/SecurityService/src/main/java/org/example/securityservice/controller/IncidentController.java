@@ -44,12 +44,66 @@ import java.util.Map;
 @RequestMapping("/api/incidents")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000")
 public class IncidentController {
 
     private final IncidentService incidentService;
     private final AuditLogService auditLogService;
     private final NotificationService notificationService;
+
+    @GetMapping
+    public ResponseEntity<List<IncidentResponseDTO>> getIncidents(
+            @RequestParam(required = false) IncidentStatus status,
+            @RequestParam(required = false) IncidentPriority priority,
+            @RequestParam(required = false) IncidentType type,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+
+        log.debug("Received request to get incidents with filters - status: {}, priority: {}, type: {}",
+                status, priority, type);
+
+        try {
+            List<IncidentResponseDTO> incidents = incidentService.getIncidents(
+                    status, priority, type, from, to, userId);
+
+            log.info("Returning {} incidents", incidents.size());
+            return ResponseEntity.ok(incidents);
+
+        } catch (Exception e) {
+            log.error("Error retrieving incidents: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<IncidentResponseDTO> getIncident(
+            @PathVariable Long id,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+
+        log.debug("Received request to get incident ID: {} for user ID: {}", id, userId);
+
+        try {
+            IncidentResponseDTO incident = incidentService.getIncidentById(id, userId);
+
+            if (incident == null) {
+                log.warn("Incident not found: {}", id);
+                return ResponseEntity.notFound().build();
+            }
+
+            log.info("Returning incident: {}", incident.getReportNumber());
+            return ResponseEntity.ok(incident);
+
+        } catch (Exception e) {
+            log.error("Error retrieving incident {}: {}", id, e.getMessage(), e);
+            throw e;
+        }
+    }
+
+
+
+
 
     // ========== INCIDENT CREATION ==========
 
@@ -100,33 +154,6 @@ public class IncidentController {
 
     // ========== INCIDENT RETRIEVAL ==========
 
-    @GetMapping
-    public ResponseEntity<List<IncidentResponseDTO>> getIncidents(
-            @RequestParam(required = false) IncidentStatus status,
-            @RequestParam(required = false) IncidentPriority priority,
-            @RequestParam(required = false) IncidentType type,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
-
-        log.debug("Received request to get incidents with filters - status: {}, priority: {}, type: {}",
-                status, priority, type);
-
-        try {
-            List<IncidentResponseDTO> incidents = incidentService.getIncidents(
-                    status, priority, type, from, to, userId);
-
-            log.info("Returning {} incidents", incidents.size());
-            return ResponseEntity.ok(incidents);
-
-        } catch (Exception e) {
-            log.error("Error retrieving incidents: {}", e.getMessage(), e);
-            throw e;
-        }
-    }
-
     @GetMapping("/active")
     public ResponseEntity<List<IncidentResponseDTO>> getActiveIncidents(
             @RequestHeader(value = "X-User-Id", required = false) Long userId) {
@@ -164,29 +191,7 @@ public class IncidentController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<IncidentResponseDTO> getIncident(
-            @PathVariable Long id,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
 
-        log.debug("Received request to get incident ID: {} for user ID: {}", id, userId);
-
-        try {
-            IncidentResponseDTO incident = incidentService.getIncidentById(id, userId);
-
-            if (incident == null) {
-                log.warn("Incident not found: {}", id);
-                return ResponseEntity.notFound().build();
-            }
-
-            log.info("Returning incident: {}", incident.getReportNumber());
-            return ResponseEntity.ok(incident);
-
-        } catch (Exception e) {
-            log.error("Error retrieving incident {}: {}", id, e.getMessage(), e);
-            throw e;
-        }
-    }
 
     @GetMapping("/report/{reportNumber}")
     public ResponseEntity<IncidentResponseDTO> getIncidentByReportNumber(
