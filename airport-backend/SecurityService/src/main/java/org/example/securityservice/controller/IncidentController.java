@@ -100,12 +100,15 @@ public class IncidentController {
     @GetMapping("/{id}")
     public ResponseEntity<IncidentResponseDTO> getIncident(
             @PathVariable Long id,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+            @RequestHeader(value = "token", required = false) String token) {
 
-        log.debug("Received request to get incident ID: {} for user ID: {}", id, userId);
+        String username = authServiceClient.validateTokenAndGetUsername(token);
+        Employee employee = employeeService.getEmployeeByUsername(username);
+
+        log.debug("Received request to get incident ID: {} for user ID: {}", id, employee.getId());
 
         try {
-            IncidentResponseDTO incident = incidentService.getIncidentById(id, userId);
+            IncidentResponseDTO incident = incidentService.getIncidentById(id, employee.getId());
 
             if (incident == null) {
                 log.warn("Incident not found: {}", id);
@@ -124,12 +127,14 @@ public class IncidentController {
     @PostMapping
     public ResponseEntity<IncidentResponseDTO> createIncident(
              @RequestBody IncidentDTO incidentDTO,
-            @RequestHeader("X-User-Id") Long userId) {
+             @RequestHeader(value = "token", required = false) String token) {
+        String username = authServiceClient.validateTokenAndGetUsername(token);
+        Employee employee = employeeService.getEmployeeByUsername(username);
 
-        log.info("Received request to create incident by user ID: {}", userId);
+        log.info("Received request to create incident by user ID: {}", employee.getId());
 
         try {
-            IncidentResponseDTO createdIncident = incidentService.createIncident(incidentDTO, userId);
+            IncidentResponseDTO createdIncident = incidentService.createIncident(incidentDTO, employee.getId());
             log.info("Incident created successfully: {}", createdIncident.getReportNumber());
 
             return ResponseEntity
@@ -147,12 +152,13 @@ public class IncidentController {
     public ResponseEntity<IncidentResponseDTO> createIncidentForAlarm(
             @RequestBody IncidentDTO incidentDTO,
             @PathVariable Long alarmId,
-            @RequestHeader("X-User-Id") Long userId) {
-
-        log.info("Received request to create incident by user ID: {}", userId);
+            @RequestHeader(value = "token", required = false) String token) {
+        String username = authServiceClient.validateTokenAndGetUsername(token);
+        Employee employee = employeeService.getEmployeeByUsername(username);
+        log.info("Received request to create incident by user ID: {}", employee.getId());
 
         try {
-            IncidentResponseDTO createdIncident = incidentService.createIncident(incidentDTO, userId);
+            IncidentResponseDTO createdIncident = incidentService.createIncident(incidentDTO, employee.getId());
 
             log.info("Incident created successfully: {}", createdIncident.getReportNumber());
             sensorEventService.addIncidentForAlarm(alarmId, createdIncident);
@@ -171,12 +177,13 @@ public class IncidentController {
     public ResponseEntity<IncidentResponseDTO> assignTeam(
             @PathVariable Long id,
             @PathVariable Long teamId,
-            @RequestHeader("X-User-Id") Long userId) {
-
-        log.info("Received request to assign team to incident {} by user {}", id, userId);
+            @RequestHeader(value = "token", required = false) String token) {
+        String username = authServiceClient.validateTokenAndGetUsername(token);
+        Employee employee = employeeService.getEmployeeByUsername(username);
+        log.info("Received request to assign team to incident {} by user {}", id, employee.getId());
 
         try {
-            IncidentResponseDTO updatedIncident = incidentService.assignTeam(id, teamId, userId);
+            IncidentResponseDTO updatedIncident = incidentService.assignTeam(id, teamId, employee.getId());
 
             log.info("Team assigned to incident {}: team ID {}",
                     updatedIncident.getReportNumber(), teamId);
@@ -193,13 +200,14 @@ public class IncidentController {
     public ResponseEntity<IncidentResponseDTO> updateStatus(
             @PathVariable Long id,
             @RequestBody StatusChangeDTO statusChangeDTO,
-            @RequestHeader("X-User-Id") Long userId) {
-
+            @RequestHeader(value = "token", required = false) String token) {
+        String username = authServiceClient.validateTokenAndGetUsername(token);
+        Employee employee = employeeService.getEmployeeByUsername(username);
         log.info("Received request to update status of incident {} to {} by user {}",
-                id, statusChangeDTO.getNewStatus(), userId);
+                id, statusChangeDTO.getNewStatus(), employee.getId());
 
         try {
-            IncidentResponseDTO updatedIncident = incidentService.updateStatus(id, statusChangeDTO, userId);
+            IncidentResponseDTO updatedIncident = incidentService.updateStatus(id, statusChangeDTO, employee.getId());
 
             log.info("Status updated for incident {}: {} -> {}",
                     updatedIncident.getReportNumber(),
