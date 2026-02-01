@@ -21,6 +21,7 @@ import org.example.securityservice.model.enumeration.ReportingSource;
 import org.example.securityservice.repository.DispatcherRepository;
 import org.example.securityservice.repository.IncidentRepository;
 import org.example.securityservice.validator.IncidentValidator;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -82,7 +83,7 @@ public class IncidentService {
         }
 
         log.info("Incident created successfully: {}", savedIncident.getReportNumber());
-        return permissionService.toResponseDtoWithPermissions(savedIncident, currentUser);
+        return permissionService.toResponseDtoWithPermissions(savedIncident);
     }
 
     @Transactional
@@ -107,7 +108,7 @@ public class IncidentService {
         notificationService.checkForEscalation(updatedIncident);
 
         log.info("Team {} assigned to incident {}", team.getTeamName(), updatedIncident.getReportNumber());
-        return permissionService.toResponseDtoWithPermissions(updatedIncident, currentUser);
+        return permissionService.toResponseDtoWithPermissions(updatedIncident);
     }
 
     @Transactional
@@ -138,7 +139,7 @@ public class IncidentService {
         log.info("Incident {} status updated from {} to {}",
                 updatedIncident.getReportNumber(), oldStatus, statusChangeDTO.getNewStatus());
 
-        return permissionService.toResponseDtoWithPermissions(updatedIncident, currentUser);
+        return permissionService.toResponseDtoWithPermissions(updatedIncident);
     }
 
     @Transactional
@@ -147,23 +148,24 @@ public class IncidentService {
                                                   Long userId) {
         log.debug("Getting incidents with filters: status={}, priority={}, type={}", status, priority, type);
 
-        Employee currentUser = userId != null ? validator.getUserIfExists(userId) : null;
-        List<Incident> incidents = incidentRepository.findByFilters(status, priority, type, from, to);
+        Specification<Incident> spec = IncidentSpecifications.hasStatus(status)
+                .and(IncidentSpecifications.hasPriority(priority))
+                .and(IncidentSpecifications.hasType(type))
+                .and(IncidentSpecifications.reportedAfter(from))
+                .and(IncidentSpecifications.reportedBefore(to));
 
-        if (currentUser != null && currentUser instanceof IncidentTeamMember) {
-            incidents = permissionService.filterIncidentsForTeamMember(incidents, (IncidentTeamMember) currentUser);
-        }
+        List<Incident> incidents = incidentRepository.findAll(spec);
+
 
         return incidents.stream()
-                .map(incident -> permissionService.toResponseDtoWithPermissions(incident, currentUser))
+                .map(incident -> permissionService.toResponseDtoWithPermissions(incident))
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public IncidentResponseDTO getIncidentById(Long id, Long userId) {
         Incident incident = validator.validateAndGetIncident(id);
-        Employee currentUser = userId != null ? validator.getUserIfExists(userId) : null;
-        return permissionService.toResponseDtoWithPermissions(incident, currentUser);
+        return permissionService.toResponseDtoWithPermissions(incident);
     }
 
     @Transactional
@@ -180,7 +182,7 @@ public class IncidentService {
         }
 
         return incidents.stream()
-                .map(incident -> permissionService.toResponseDtoWithPermissions(incident, currentUser))
+                .map(incident -> permissionService.toResponseDtoWithPermissions(incident))
                 .collect(Collectors.toList());
     }
 
@@ -208,7 +210,7 @@ public class IncidentService {
         notificationService.createUpdateLog(updatedIncident, currentUser);
 
         log.info("Incident {} updated by user {}", incidentId, currentUserId);
-        return permissionService.toResponseDtoWithPermissions(updatedIncident, currentUser);
+        return permissionService.toResponseDtoWithPermissions(updatedIncident);
     }
 
     private Dispatcher getDispatcherForIncident(Employee user) {

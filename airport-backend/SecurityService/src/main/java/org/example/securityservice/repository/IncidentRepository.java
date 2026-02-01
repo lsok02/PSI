@@ -6,6 +6,7 @@ import org.example.securityservice.model.enumeration.IncidentPriority;
 import org.example.securityservice.model.enumeration.IncidentStatus;
 import org.example.securityservice.model.enumeration.IncidentType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,12 +15,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface IncidentRepository extends JpaRepository<Incident, Long> {
+public interface IncidentRepository extends JpaRepository<Incident, Long>, JpaSpecificationExecutor<Incident> {
 
     List<Incident> findByStatus(IncidentStatus status);
-
     List<Incident> findByPriority(IncidentPriority priority);
-
     List<Incident> findByType(IncidentType type);
 
     List<Incident> findByStatusAndPriority(IncidentStatus status, IncidentPriority priority);
@@ -37,22 +36,6 @@ public interface IncidentRepository extends JpaRepository<Incident, Long> {
     List<Incident> findByStatusIn(@Param("statuses") List<IncidentStatus> statuses);
 
     boolean existsByReportNumber(String reportNumber);
-
-    // Metoda do wyszukiwania z wieloma filtrami
-    @Query("SELECT i FROM Incident i WHERE " +
-            "(:status IS NULL OR i.status = :status) AND " +
-            "(:priority IS NULL OR i.priority = :priority) AND " +
-            "(:type IS NULL OR i.type = :type) AND " +
-            "(:from IS NULL OR i.reportTime >= :from) AND " +
-            "(:to IS NULL OR i.reportTime <= :to) " +
-            "ORDER BY i.reportTime DESC")
-    List<Incident> findByFilters(
-            @Param("status") IncidentStatus status,
-            @Param("priority") IncidentPriority priority,
-            @Param("type") IncidentType type,
-            @Param("from") LocalDateTime from,
-            @Param("to") LocalDateTime to
-    );
 
     // Metoda do wyszukiwania incydentów przypisanych do członka zespołu
     @Query("SELECT DISTINCT i FROM Incident i " +
