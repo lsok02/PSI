@@ -19,6 +19,7 @@ import org.example.securityservice.model.enumeration.IncidentType;
 import org.example.securityservice.service.AuditLogService;
 import org.example.securityservice.service.IncidentService;
 import org.example.securityservice.service.NotificationService;
+import org.example.securityservice.service.SensorEventService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,7 @@ public class IncidentController {
     private final IncidentService incidentService;
     private final AuditLogService auditLogService;
     private final NotificationService notificationService;
+    private final SensorEventService sensorEventService;
 
     @GetMapping
     public ResponseEntity<List<IncidentResponseDTO>> getIncidents(
@@ -112,6 +114,30 @@ public class IncidentController {
             IncidentResponseDTO createdIncident = incidentService.createIncident(incidentDTO, userId);
             log.info("Incident created successfully: {}", createdIncident.getReportNumber());
 
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .header("X-Incident-Id", createdIncident.getId().toString())
+                    .body(createdIncident);
+
+        } catch (Exception e) {
+            log.error("Error creating incident: {}", e.getMessage(), e);
+            throw e; // GlobalExceptionHandler will handle it
+        }
+    }
+
+    @PostMapping("/{alarmId}")
+    public ResponseEntity<IncidentResponseDTO> createIncidentForAlarm(
+            @RequestBody IncidentDTO incidentDTO,
+            @PathVariable Long alarmId,
+            @RequestHeader("X-User-Id") Long userId) {
+
+        log.info("Received request to create incident by user ID: {}", userId);
+
+        try {
+            IncidentResponseDTO createdIncident = incidentService.createIncident(incidentDTO, userId);
+
+            log.info("Incident created successfully: {}", createdIncident.getReportNumber());
+            sensorEventService.addIncidentForAlarm(alarmId, createdIncident);
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .header("X-Incident-Id", createdIncident.getId().toString())

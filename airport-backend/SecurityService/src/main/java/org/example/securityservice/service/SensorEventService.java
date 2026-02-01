@@ -5,10 +5,13 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.securityservice.model.dto.IncidentResponseDTO;
 import org.example.securityservice.model.dto.SensorEventDTO;
+import org.example.securityservice.model.entity.Incident;
 import org.example.securityservice.model.entity.Location;
 import org.example.securityservice.model.entity.SensorEvent;
 import org.example.securityservice.model.enumeration.SensorType;
+import org.example.securityservice.repository.IncidentRepository;
 import org.example.securityservice.repository.LocationRepository;
 import org.example.securityservice.repository.SensorEventRepository;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -27,6 +31,7 @@ public class SensorEventService {
 
     private final SensorEventRepository sensorEventRepository;
     private final LocationRepository locationRepository;
+    private final IncidentRepository incidentRepository;
     private final Random random = new Random();
 
     /**
@@ -37,6 +42,13 @@ public class SensorEventService {
         return events.stream()
                 .map(SensorEventDTO::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    public void addIncidentForAlarm(Long alarmId, IncidentResponseDTO createdIncident) {
+        SensorEvent event = sensorEventRepository.getSensorEventById(alarmId);
+        Optional<Incident> incident = incidentRepository.findById(createdIncident.getId());
+        event.setIncident(incident.get());
+        sensorEventRepository.save(event);
     }
 
     /**

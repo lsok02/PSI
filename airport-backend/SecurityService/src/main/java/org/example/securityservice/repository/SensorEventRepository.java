@@ -33,4 +33,6 @@ public interface SensorEventRepository extends JpaRepository<SensorEvent, Long> 
     Long countEventsInPeriod(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     List<SensorEvent> findByIncidentIsNull();
+
+    SensorEvent getSensorEventById(Long alarmId);
 }
