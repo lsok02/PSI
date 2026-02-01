@@ -38,7 +38,6 @@ public class AuthController {
 
         if (storedPassword != null && storedPassword.equals(request.password())) {
             String token = jwtUtil.generateToken(request.username());
-            System.out.println("Login successful");
             return new LoginResponse(token, "Login successful");
         }
 

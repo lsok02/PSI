@@ -16,26 +16,19 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
     public JwtAuthFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        System.out.println("✅ JwtAuthFilter GlobalFilter INITIALIZED");
     }
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        System.out.println("🎯 JwtAuthFilter executing for path: " +
-                exchange.getRequest().getURI().getPath());
 
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getURI().getPath();
 
-        // Pomijaj endpointy auth
         if (path.startsWith("/api/auth/")) {
-            System.out.println("➡️ Skipping auth endpoint");
             return chain.filter(exchange);
         }
 
-        // Sprawdź token
         String authHeader = request.getHeaders().getFirst("Authorization");
-        System.out.println("🔑 Auth header: " + authHeader);
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -43,7 +36,6 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         }
 
         String token = authHeader.substring(7);
-        System.out.println("✅ Token found, validating...");
 
         if (!jwtUtil.validateToken(token)) {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -51,7 +43,6 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         }
 
         String username = jwtUtil.getUsernameFromToken(token);
-        System.out.println("👤 User authenticated: " + username);
 
         ServerHttpRequest modifiedRequest = request.mutate()
                 .header("X-User-Id", username)

@@ -47,22 +47,4 @@ public class JwtUtil {
                 .getBody()
                 .getSubject();
     }
-
-    public void debugToken(String token) {
-        try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-
-            System.out.println("Token DEBUG:");
-            System.out.println("Subject: " + claims.getSubject());
-            System.out.println("Issued at: " + claims.getIssuedAt());
-            System.out.println("Expires at: " + claims.getExpiration());
-            System.out.println("Valid: " + validateToken(token));
-        } catch (Exception e) {
-            System.out.println("Token invalid: " + e.getMessage());
-        }
-    }
 }
