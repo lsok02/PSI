@@ -11,7 +11,7 @@ interface AlertsPanelProps {
 
 export function AlertsPanel({ alerts, onCreateIncident, onDismissAlert }: AlertsPanelProps) {
     return (
-        <Card className="bg-slate-900 border-slate-800">
+        <Card className="bg-slate-900 border-slate-800 shrink-0">
             <div className="p-4 border-b border-red-900 bg-red-950/20">
                 <div className="flex items-center gap-2">
                     <AlertCircle className="w-5 h-5 text-red-500" />
@@ -19,7 +19,7 @@ export function AlertsPanel({ alerts, onCreateIncident, onDismissAlert }: Alerts
                 </div>
             </div>
 
-            <div className="p-3 space-y-3 max-h-64 overflow-y-auto">
+            <div className="p-3 space-y-3">
                 {alerts.map((alert) => (
                     <div
                         key={alert.id}

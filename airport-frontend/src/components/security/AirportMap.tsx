@@ -37,14 +37,14 @@ export function AirportMap({ incidents, responseTeams, selectedIncidentId, onInc
     };
 
     return (
-        <Card className="bg-slate-900 border-slate-800 h-full flex flex-col">
-            <div className="p-4 border-b border-slate-800">
+        <Card className="bg-slate-900 border-slate-800 h-full flex flex-col overflow-hidden">
+            <div className="p-4 border-b border-slate-800 shrink-0">
                 <h2 className="text-slate-100">Airport Map - Live View</h2>
                 <p className="text-slate-400 text-xs mt-1">Terminal A, B & C - Main Concourse</p>
             </div>
 
-            <div className="flex-1 p-4">
-                <div className="relative w-full h-full bg-slate-950 border border-slate-800 rounded-lg overflow-hidden">
+            <div className="flex-1 p-4 min-h-0 flex flex-col">
+                <div className="relative flex-1 min-h-0 bg-slate-950 border border-slate-800 rounded-lg overflow-hidden">
                     {/* Airport Layout */}
                     <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
                         {/* Terminal Buildings */}
@@ -130,7 +130,7 @@ export function AirportMap({ incidents, responseTeams, selectedIncidentId, onInc
                 </div>
 
                 {/* Legend */}
-                <div className="mt-4 flex items-center gap-6 text-xs text-slate-400">
+                <div className="mt-4 shrink-0 flex items-center gap-6 text-xs text-slate-400">
                     <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full bg-red-500"></div>
                         <span>Critical</span>

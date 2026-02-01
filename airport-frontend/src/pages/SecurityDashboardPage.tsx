@@ -6,6 +6,7 @@ import {
     IncidentDetails,
     CreateIncidentModal
 } from '@/components/security';
+import { BackendStatus } from '@/components/BackendStatus';
 import type { Incident, Alert, ResponseTeam } from '@/types';
 
 // Mock data
@@ -138,15 +139,15 @@ export function SecurityDashboardPage() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-100 p-4">
-            <div className="mb-6">
+        <div className="h-screen bg-slate-950 text-slate-100 p-4 flex flex-col overflow-hidden">
+            <div className="mb-4 shrink-0">
                 <h1 className="text-slate-100 mb-1">Airport Security Command Center</h1>
                 <p className="text-slate-400">Real-time Incident Management Dashboard</p>
             </div>
 
-            <div className="grid grid-cols-12 gap-4 h-[calc(100vh-140px)]">
+            <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
                 {/* Left Column: Active Incidents */}
-                <div className="col-span-3">
+                <div className="col-span-3 min-h-0">
                     <IncidentsList
                         incidents={incidents}
                         selectedIncidentId={selectedIncidentId}
@@ -155,7 +156,7 @@ export function SecurityDashboardPage() {
                 </div>
 
                 {/* Center Column: Airport Map */}
-                <div className="col-span-6">
+                <div className="col-span-6 min-h-0">
                     <AirportMap
                         incidents={incidents}
                         responseTeams={responseTeams}
@@ -165,7 +166,7 @@ export function SecurityDashboardPage() {
                 </div>
 
                 {/* Right Column: Alerts & Details */}
-                <div className="col-span-3 flex flex-col gap-4">
+                <div className="col-span-3 flex flex-col gap-4 min-h-0 overflow-y-auto">
                     <AlertsPanel
                         alerts={alerts}
                         onCreateIncident={handleCreateIncident}
@@ -174,6 +175,7 @@ export function SecurityDashboardPage() {
                     {selectedIncident && (
                         <IncidentDetails incident={selectedIncident} />
                     )}
+                    <BackendStatus />
                 </div>
             </div>
 
