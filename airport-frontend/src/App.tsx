@@ -1,23 +1,20 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { SecurityDashboardPage } from '@/pages';
+import { SecurityDashboardPage, FlightsPage, FlightDetailPage } from '@/pages';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Security Dashboard as the main page */}
+        {/* Security Dashboard */}
         <Route path="/security" element={<SecurityDashboardPage />} />
 
-        {/* Add more routes here as your app grows */}
-        {/* Example future routes:
+        {/* Flight Management */}
         <Route path="/flights" element={<FlightsPage />} />
-        <Route path="/passengers" element={<PassengersPage />} />
-        <Route path="/operations" element={<OperationsPage />} />
-        */}
+        <Route path="/flights/:id" element={<FlightDetailPage />} />
 
-        {/* Default redirect to security dashboard */}
-        <Route path="/" element={<Navigate to="/security" replace />} />
-        <Route path="*" element={<Navigate to="/security" replace />} />
+        {/* Default redirect to flights */}
+        <Route path="/" element={<Navigate to="/flights" replace />} />
+        <Route path="*" element={<Navigate to="/flights" replace />} />
       </Routes>
     </BrowserRouter>
   );
