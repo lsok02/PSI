@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Shield, Plane } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Shield, Plane, LogOut, User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context';
 import {
     IncidentsList,
     AirportMap,
@@ -124,8 +126,15 @@ export function SecurityDashboardPage() {
     const [incidents] = useState(mockIncidents);
     const [alerts] = useState(mockAlerts);
     const [responseTeams] = useState(mockResponseTeams);
+    const { logout, username } = useAuth();
+    const navigate = useNavigate();
 
     const selectedIncident = incidents.find(inc => inc.id === selectedIncidentId);
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
     const handleIncidentSelect = (incidentId: string) => {
         setSelectedIncidentId(incidentId);
@@ -161,6 +170,19 @@ export function SecurityDashboardPage() {
                             <Plane className="w-4 h-4" />
                             Flights
                         </Link>
+                        <div className="h-6 w-px bg-slate-700" />
+                        <div className="flex items-center gap-2 text-slate-400 text-sm">
+                            <User className="w-4 h-4" />
+                            <span>{username || 'User'}</span>
+                        </div>
+                        <Button
+                            onClick={handleLogout}
+                            variant="ghost"
+                            size="sm"
+                            className="text-slate-400 hover:text-red-400 hover:bg-slate-800"
+                        >
+                            <LogOut className="w-4 h-4" />
+                        </Button>
                     </nav>
                 </div>
             </header>

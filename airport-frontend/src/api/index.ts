@@ -1,15 +1,21 @@
 import axios, { type AxiosInstance } from 'axios';
 
-// Base API configuration
-// Configure these based on your backend services or via environment variables
-export const API_CONFIG = {
-    FLIGHT_SERVICE: import.meta.env.VITE_FLIGHT_SERVICE_URL || 'http://localhost:8081',
-    PASSENGER_SERVICE: import.meta.env.VITE_PASSENGER_SERVICE_URL || 'http://localhost:8082',
-    SECURITY_SERVICE: import.meta.env.VITE_SECURITY_SERVICE_URL || 'http://localhost:8083',
-    GROUND_OPS_SERVICE: import.meta.env.VITE_GROUND_OPS_SERVICE_URL || 'http://localhost:8084',
-};
+// API Gateway URL - all requests go through the gateway
+const API_GATEWAY_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:9090';
 
-// Create axios instance with default config
+// Token storage key
+const TOKEN_KEY = 'auth_token';
+
+// Get stored token
+export const getToken = () => localStorage.getItem(TOKEN_KEY);
+
+// Set token
+export const setToken = (token: string) => localStorage.setItem(TOKEN_KEY, token);
+
+// Remove token
+export const removeToken = () => localStorage.removeItem(TOKEN_KEY);
+
+// Create axios instance with auth interceptor
 function createApiClient(baseURL: string): AxiosInstance {
     const client = axios.create({
         baseURL,
@@ -19,29 +25,30 @@ function createApiClient(baseURL: string): AxiosInstance {
         },
     });
 
-    // Request interceptor - useful for adding auth tokens later
+    // Request interceptor - add auth token
     client.interceptors.request.use(
         (config) => {
-            // You can add auth token here when you implement authentication
-            // const token = localStorage.getItem('token');
-            // if (token) {
-            //   config.headers.Authorization = `Bearer ${token}`;
-            // }
+            const token = getToken();
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
             return config;
         },
         (error) => Promise.reject(error)
     );
 
-    // Response interceptor - centralized error handling
+    // Response interceptor - handle errors
     client.interceptors.response.use(
         (response) => response,
         (error) => {
-            // Handle specific error codes
             if (error.response) {
                 switch (error.response.status) {
                     case 401:
-                        // Handle unauthorized - redirect to login, etc.
-                        console.error('Unauthorized - please log in');
+                        // Clear token and redirect to login
+                        removeToken();
+                        if (window.location.pathname !== '/login') {
+                            window.location.href = '/login';
+                        }
                         break;
                     case 403:
                         console.error('Forbidden - you do not have permission');
@@ -63,45 +70,58 @@ function createApiClient(baseURL: string): AxiosInstance {
     return client;
 }
 
-// Create API clients for each service
-const flightClient = createApiClient(API_CONFIG.FLIGHT_SERVICE);
-const passengerClient = createApiClient(API_CONFIG.PASSENGER_SERVICE);
-const securityClient = createApiClient(API_CONFIG.SECURITY_SERVICE);
-const groundOpsClient = createApiClient(API_CONFIG.GROUND_OPS_SERVICE);
+// Single API client through gateway
+const api = createApiClient(API_GATEWAY_URL);
 
-// Flight Service API
+// Auth API (no token required for login)
+export interface LoginRequest {
+    username: string;
+    password: string;
+}
+
+export interface LoginResponse {
+    token: string | null;
+    message: string;
+}
+
+export const authApi = {
+    login: async (credentials: LoginRequest): Promise<LoginResponse> => {
+        const response = await api.post<LoginResponse>('/api/auth/login', credentials);
+        if (response.data.token) {
+            setToken(response.data.token);
+        }
+        return response.data;
+    },
+    logout: () => {
+        removeToken();
+    },
+    isAuthenticated: () => !!getToken(),
+};
+
+// Flight Service API (through gateway)
 export const flightApi = {
-    hello: () => flightClient.get<string>('/flights/hello').then(res => res.data),
-
-    // Add more endpoints as the backend grows
-    // getFlights: () => flightClient.get<Flight[]>('/flights').then(res => res.data),
-    // getFlightById: (id: string) => flightClient.get<Flight>(`/flights/${id}`).then(res => res.data),
-    // createFlight: (data: CreateFlightDto) => flightClient.post<Flight>('/flights', data).then(res => res.data),
-    // updateFlight: (id: string, data: UpdateFlightDto) => flightClient.put<Flight>(`/flights/${id}`, data).then(res => res.data),
-    // deleteFlight: (id: string) => flightClient.delete(`/flights/${id}`),
+    hello: () => api.get<string>('/api/flights/hello').then(res => res.data),
+    // getFlights: () => api.get<Flight[]>('/api/flights').then(res => res.data),
+    // getFlightById: (id: number) => api.get<Flight>(`/api/flights/${id}`).then(res => res.data),
+    // updateFlightStatus: (id: number, status: string) => api.patch(`/api/flights/${id}/status`, { status }),
 };
 
-// Passenger Service API
+// Passenger Service API (through gateway)
 export const passengerApi = {
-    hello: () => passengerClient.get<string>('/passengers/hello').then(res => res.data),
-
-    // Add more endpoints as the backend grows
-    // getPassengers: () => passengerClient.get<Passenger[]>('/passengers').then(res => res.data),
+    hello: () => api.get<string>('/api/passengers/hello').then(res => res.data),
+    // getPassengers: () => api.get<Passenger[]>('/api/passengers').then(res => res.data),
 };
 
-// Security Service API (for future incident integration)
+// Security Service API (through gateway)
 export const securityApi = {
-    // Will be implemented when backend security endpoints are available
-    // getIncidents: () => securityClient.get<Incident[]>('/incidents').then(res => res.data),
-    // createIncident: (data: CreateIncidentDto) => securityClient.post<Incident>('/incidents', data).then(res => res.data),
-    // updateIncident: (id: string, data: UpdateIncidentDto) => securityClient.put<Incident>(`/incidents/${id}`, data).then(res => res.data),
+    // getIncidents: () => api.get<Incident[]>('/api/security/incidents').then(res => res.data),
+    // createIncident: (data: CreateIncidentDto) => api.post<Incident>('/api/security/incidents', data).then(res => res.data),
 };
 
-// Ground Operations Service API
+// Ground Operations Service API (through gateway)
 export const groundOpsApi = {
-    // Will be implemented when backend ground ops endpoints are available
-    // getTeams: () => groundOpsClient.get<ResponseTeam[]>('/teams').then(res => res.data),
+    // getTeams: () => api.get<ResponseTeam[]>('/api/groundops/teams').then(res => res.data),
 };
 
-// Export clients for advanced usage
-export { flightClient, passengerClient, securityClient, groundOpsClient };
+// Export the main API client for advanced usage
+export { api };

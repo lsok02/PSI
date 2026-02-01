@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Shield, Plane, ArrowLeft } from 'lucide-react';
+import { Shield, Plane, ArrowLeft, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FlightEditForm } from '@/components/flights';
+import { useAuth } from '@/context';
 import type { Flight } from '@/types';
 
 // Mock data - same as FlightsPage (in real app, would fetch by ID)
@@ -77,9 +78,15 @@ const mockFlights: Flight[] = [
 export function FlightDetailPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { logout, username } = useAuth();
 
     const flight = mockFlights.find((f) => f.id === Number(id));
     const [currentFlight, setCurrentFlight] = useState<Flight | undefined>(flight);
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
     if (!currentFlight) {
         return (
@@ -126,6 +133,19 @@ export function FlightDetailPage() {
                             <Plane className="w-4 h-4" />
                             Flights
                         </Link>
+                        <div className="h-6 w-px bg-slate-700" />
+                        <div className="flex items-center gap-2 text-slate-400 text-sm">
+                            <User className="w-4 h-4" />
+                            <span>{username || 'User'}</span>
+                        </div>
+                        <Button
+                            onClick={handleLogout}
+                            variant="ghost"
+                            size="sm"
+                            className="text-slate-400 hover:text-red-400 hover:bg-slate-800"
+                        >
+                            <LogOut className="w-4 h-4" />
+                        </Button>
                     </nav>
                 </div>
             </header>
