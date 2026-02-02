@@ -11,6 +11,4 @@ public class AirportResourceDTO {
     private Long id;
     private String resourceName;
     private String resourceType;
-
-    // Nie dodajemy listy incidents - unikamy cykli
 }

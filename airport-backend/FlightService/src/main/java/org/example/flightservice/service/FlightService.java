@@ -1,21 +1,12 @@
 package org.example.flightservice.service;
 
 
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.example.flightservice.model.dto.FlightDTO;
 import org.example.flightservice.model.entity.Flight;
-import org.example.flightservice.model.enumeration.FlightStatus;
-import org.example.flightservice.model.mapper.FlightMapper;
 import org.example.flightservice.repository.FlightRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 

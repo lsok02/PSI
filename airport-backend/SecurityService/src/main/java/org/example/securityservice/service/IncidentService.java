@@ -45,7 +45,6 @@ public class IncidentService {
     private final IncidentPermissionService permissionService;
     private final IncidentNotificationService notificationService;
     private final TeamAssignmentService teamAssignmentService;
-    private final FlightIntegrationService flightIntegrationService;
     private final SensorEventService sensorEventService;
     private final LocationRepository locationRepository;
 
@@ -108,13 +107,7 @@ public class IncidentService {
         updateDispatcherIncidents(dispatcher, savedIncident);
 
         notificationService.createInitialLog(savedIncident, currentUser, incidentDTO.getDescription());
-        // notificationService.logIncidentCreation(savedIncident, currentUser);
 
-        // if (savedIncident.getPriority() == IncidentPriority.CRITICAL) {
-        // flightIntegrationService.checkAffectedFlights(savedIncident);
-        // }
-
-        // Link sensor event to this incident if provided
         log.info("SensorEventId from DTO: {}", incidentDTO.getSensorEventId());
         if (incidentDTO.getSensorEventId() != null) {
             sensorEventService.addIncidentForAlarm(incidentDTO.getSensorEventId(),
@@ -142,9 +135,6 @@ public class IncidentService {
         Incident updatedIncident = incidentRepository.save(incident);
 
         notificationService.createTeamAssignmentLog(updatedIncident, currentUser, team);
-        // notificationService.logTeamAssignment(updatedIncident, team, currentUser);
-        notificationService.sendTeamAssignmentNotification(team, updatedIncident);
-        notificationService.checkForEscalation(updatedIncident);
 
         log.info("Team {} assigned to incident {}", team.getTeamName(), updatedIncident.getReportNumber());
         return permissionService.toResponseDtoWithPermissions(updatedIncident);
@@ -173,7 +163,6 @@ public class IncidentService {
         Incident updatedIncident = incidentRepository.save(incident);
 
         notificationService.createStatusChangeLog(updatedIncident, currentUser, oldStatus, statusChangeDTO);
-        notificationService.logStatusChange(updatedIncident, oldStatus, newStatus, currentUser);
 
         log.info("Incident {} status updated from {} to {}",
                 updatedIncident.getReportNumber(), oldStatus, newStatus);
@@ -183,8 +172,8 @@ public class IncidentService {
 
     @Transactional
     public List<IncidentResponseDTO> getIncidents(IncidentStatus status, IncidentPriority priority,
-            IncidentType type, LocalDateTime from, LocalDateTime to,
-            Long userId) {
+                                                  IncidentType type, LocalDateTime from, LocalDateTime to,
+                                                  Long userId) {
         log.debug("Getting incidents with filters: status={}, priority={}, type={}", status, priority, type);
 
         Specification<Incident> spec = IncidentSpecifications.hasStatus(status)
@@ -248,7 +237,6 @@ public class IncidentService {
             Incident updatedIncident = incidentRepository.save(incident);
 
             notificationService.createEscalationLog(updatedIncident, currentUser, oldPriority, newPriority);
-            notificationService.sendEscalationNotification(updatedIncident);
 
             log.info("Incident {} escalated from {} to {} by user {}",
                     incidentId, oldPriority, newPriority, currentUserId);

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.example.securityservice.model.entity.SensorEvent;
 import org.example.securityservice.model.enumeration.SensorType;
 
@@ -35,7 +34,6 @@ public class SensorEventDTO {
                 .isProcessed(event.getIsProcessed())
                 .build();
 
-        // Bezpieczne pobieranie danych z relacji
         if (event.getLocation() != null) {
             dto.setLocationId(event.getLocation().getId());
             dto.setLocationName(event.getLocation().getName());

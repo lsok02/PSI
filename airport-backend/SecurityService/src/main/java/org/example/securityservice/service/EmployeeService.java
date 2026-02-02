@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.example.securityservice.model.entity.Employee;
 import org.example.securityservice.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 @RequiredArgsConstructor
 @Service

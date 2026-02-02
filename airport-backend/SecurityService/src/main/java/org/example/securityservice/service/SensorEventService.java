@@ -1,7 +1,6 @@
 package org.example.securityservice.service;
 
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +33,6 @@ public class SensorEventService {
     private final IncidentRepository incidentRepository;
     private final Random random = new Random();
 
-    /**
-     * Pobiera eventy które nie mają przypisanego incydentu
-     */
     public List<SensorEventDTO> getUnassignedSensorEvents() {
         List<SensorEvent> events = sensorEventRepository.findByIncidentIsNull();
         return events.stream()
@@ -51,31 +47,20 @@ public class SensorEventService {
         sensorEventRepository.save(event);
     }
 
-    /**
-     * Tworzy losowy alarm sensorowy
-     */
-
     public SensorEvent createRandomAlarm() {
         try {
-            // Losowy typ sensora
             SensorType[] sensorTypes = SensorType.values();
             SensorType randomType = sensorTypes[random.nextInt(sensorTypes.length)];
 
-            // Pobierz losową lokalizację
             List<Location> locations = locationRepository.findAll();
             if (locations.isEmpty()) {
                 throw new IllegalStateException("No locations available in database");
             }
 
             Location randomLocation = locations.get(random.nextInt(locations.size()));
-
-            // Generuj losowy sensorId
             String sensorId = "RANDOM-" + generateRandomSensorId();
-
-            // Generuj opis lokalizacji
             String locationDetails = generateLocationDetails(randomLocation, randomType);
 
-            // Utwórz event
             SensorEvent sensorEvent = SensorEvent.builder()
                     .sensorId(sensorId)
                     .sensorType(randomType)
@@ -99,7 +84,7 @@ public class SensorEventService {
         }
     }
 
-//    @Scheduled(fixedDelay = 30 * 1000) // 5 minut
+    @Scheduled(fixedDelay = 2 * 60 * 1000) // 5 minut
     public void scheduleRandomAlarms() {
         log.debug("Scheduled task: Creating random sensor alarm");
         try {
@@ -133,7 +118,6 @@ public class SensorEventService {
                 .replace("{}", location.getName());
     }
 
-
     private String getSensorTypeDescription(SensorType sensorType) {
         return switch (sensorType) {
             case FIRE -> "Fire";
@@ -146,10 +130,6 @@ public class SensorEventService {
             case ACCESS_CONTROL -> "Access violation";
             case VIBRATION -> "Vibration detected";
         };
-    }
-
-    public List<SensorEvent> getSensorEventsByLocation(Long locationId) {
-        return sensorEventRepository.findByLocationId(locationId);
     }
 
     @Transactional

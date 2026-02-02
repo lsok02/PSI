@@ -30,10 +30,6 @@ public class IncidentValidator {
                 .orElseThrow(() -> new BusinessRuleViolationException("User not found"));
     }
 
-    public Employee getUserIfExists(Long userId) {
-        return employeeRepository.findById(userId).orElse(null);
-    }
-
     public Incident validateAndGetIncident(Long incidentId) {
         return incidentRepository.findById(incidentId)
                 .orElseThrow(() -> new IncidentNotFoundException(incidentId));
@@ -104,15 +100,11 @@ public class IncidentValidator {
         if (employee instanceof IncidentTeamMember) {
             IncidentTeamMember member = (IncidentTeamMember) employee;
 
-//            if (incident.getAssignedTeam() != null &&
-//                    incident.getAssignedTeam().getMembers().contains(member)) {
-
-                // Team members can only change from ASSIGNED to IN_PROGRESS to RESOLVED
-                if (incident.getStatus() == IncidentStatus.ASSIGNED ||
-                        incident.getStatus() == IncidentStatus.IN_PROGRESS ||
-                        incident.getStatus() == IncidentStatus.RESOLVED) {
-                    return;
-                }
+            if (incident.getStatus() == IncidentStatus.ASSIGNED ||
+                    incident.getStatus() == IncidentStatus.IN_PROGRESS ||
+                    incident.getStatus() == IncidentStatus.RESOLVED) {
+                return;
+            }
 //            }
         }
 
