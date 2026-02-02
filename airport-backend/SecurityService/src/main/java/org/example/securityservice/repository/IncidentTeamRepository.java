@@ -11,10 +11,6 @@ import java.util.List;
 @Repository
 public interface IncidentTeamRepository extends JpaRepository<IncidentTeam, Long> {
 
-    List<IncidentTeam> findByStatus(TeamStatus status);
-
-    List<IncidentTeam> findBySpecialization(IncidentType specialization);
-
     List<IncidentTeam> findByStatusAndSpecialization(TeamStatus status, IncidentType specialization);
 
 }

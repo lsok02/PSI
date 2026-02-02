@@ -1,12 +1,17 @@
 package org.example.flightservice.controller;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.example.flightservice.model.dto.FlightDTO;
 import org.example.flightservice.model.entity.Flight;
 import org.example.flightservice.model.enumeration.FlightStatus;
 import org.example.flightservice.model.mapper.FlightMapper;
+import org.example.flightservice.model.request.LockDelayRequest;
+import org.example.flightservice.model.request.StatusUpdateRequest;
+import org.example.flightservice.model.request.UnlockRequest;
+import org.example.flightservice.service.FlightEnrichmentService;
+import org.example.flightservice.service.FlightLockService;
 import org.example.flightservice.service.FlightService;
+import org.example.flightservice.service.FlightStatusService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,14 +36,10 @@ public class FlightController {
 
     private final FlightService flightService;
     private final FlightMapper flightMapper;
+    private final FlightLockService flightLockService;
+    private final FlightStatusService flightStatusService;
+    private final FlightEnrichmentService flightEnrichmentService;
 
-    // Cache dla zablokowanych lotów (terminal, data -> lista lotów)
-    private final Map<String, List<Long>> lockedFlightsCache = new java.util.concurrent.ConcurrentHashMap<>();
-
-    /**
-     * Endpoint 1: Pobierz wszystkie loty z opcjonalnym filtrem daty
-     * GET /api/flights?date=2024-01-15
-     */
     @GetMapping
     public ResponseEntity<List<FlightDTO>> getAllFlights(
             @RequestParam(required = false)
@@ -50,20 +49,17 @@ public class FlightController {
         List<Flight> flights;
 
         if (date != null) {
-            // Pobierz loty dla konkretnego dnia
             LocalDateTime startOfDay = date.atStartOfDay();
             LocalDateTime endOfDay = date.atTime(23, 59, 59);
             flights = flightService.findFlightsByDateRange(startOfDay, endOfDay);
         } else {
-            // Pobierz wszystkie loty
             flights = flightService.findAllFlights();
         }
 
-        // Mapowanie do DTO z dodatkowymi polami status management
         List<FlightDTO> flightDTOs = flights.stream()
                 .map(flight -> {
                     FlightDTO dto = flightMapper.toDto(flight);
-                    enrichWithStatusManagement(flight, dto);
+                    flightEnrichmentService.enrichWithStatusManagement(flight, dto);
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -77,16 +73,11 @@ public class FlightController {
                 .orElseThrow(() -> new RuntimeException("Flight not found with id: " + id));
 
         FlightDTO dto = flightMapper.toDto(flight);
-        enrichWithStatusManagement(flight, dto);
+        flightEnrichmentService.enrichWithStatusManagement(flight, dto);
 
         return ResponseEntity.ok(dto);
     }
 
-    /**
-     * Endpoint 2: Zablokuj i zaktualizuj loty na DELAYED dla danego terminala i dnia
-     * POST /api/flights/lock-and-delay
-     * Request body: {"date": "2024-01-15", "terminal": "A"}
-     */
     @PostMapping("/lock-and-delay")
     public ResponseEntity<Map<String, Object>> lockAndDelayFlights(
             @RequestBody LockDelayRequest request) {
@@ -94,20 +85,17 @@ public class FlightController {
         LocalDateTime startOfDay = request.getDate().atStartOfDay();
         LocalDateTime endOfDay = request.getDate().atTime(23, 59, 59);
 
-        // Znajdź loty które jeszcze nie odleciały dla danego terminala i dnia
         List<Flight> flights = flightService.findFlightsByTerminalAndDateRange(
                         request.getTerminal(),
                         startOfDay,
                         endOfDay
                 ).stream()
-                .filter(flight -> !hasDeparted(flight.getStatus()))
+                .filter(flight -> !flightStatusService.hasDeparted(flight.getStatus()))
                 .collect(Collectors.toList());
 
-        // Zaktualizuj status na DELAYED i zablokuj
         List<Long> updatedFlightIds = flights.stream()
                 .map(flight -> {
-                    // Sprawdź czy lot nie jest już zablokowany
-                    if (!isFlightLocked(flight.getId())) {
+                    if (!flightLockService.isFlightLocked(flight.getId())) {
                         flight.setStatus(FlightStatus.DELAYED);
                         flight.setDelayReason("Automatic delay due to terminal issues");
                         flightService.saveFlight(flight);
@@ -118,9 +106,7 @@ public class FlightController {
                 .filter(id -> id != null)
                 .collect(Collectors.toList());
 
-        // Zablokuj loty w cache
-        String cacheKey = generateCacheKey(request.getTerminal(), request.getDate());
-        lockedFlightsCache.put(cacheKey, updatedFlightIds);
+        flightLockService.lockFlights(request.getTerminal(), request.getDate(), updatedFlightIds);
 
         return ResponseEntity.ok(Map.of(
                 "message", "Flights locked and delayed successfully",
@@ -131,16 +117,13 @@ public class FlightController {
         ));
     }
 
-
     @PostMapping("/unlock")
     public ResponseEntity<Map<String, Object>> unlockFlights(
             @RequestBody UnlockRequest request) {
 
-        String cacheKey = generateCacheKey(request.getTerminal(), request.getDate());
+        List<Long> unlockedIds = flightLockService.unlockFlights(request.getTerminal(), request.getDate());
 
-        if (lockedFlightsCache.containsKey(cacheKey)) {
-            List<Long> unlockedIds = lockedFlightsCache.remove(cacheKey);
-
+        if (unlockedIds != null) {
             return ResponseEntity.ok(Map.of(
                     "message", "Flights unlocked successfully",
                     "terminal", request.getTerminal(),
@@ -165,26 +148,22 @@ public class FlightController {
                 .orElseThrow(() -> new RuntimeException("Flight not found with id: " + id));
 
         FlightDTO currentDto = flightMapper.toDto(flight);
-        enrichWithStatusManagement(flight, currentDto);
+        flightEnrichmentService.enrichWithStatusManagement(flight, currentDto);
 
-        // Walidacja: czy lot jest zablokowany do zmiany statusu
         if (currentDto.getIsLockedForStatusChange()) {
             if (currentDto.getCanBeCancelledOnly()) {
-                // Można zmienić tylko na CANCELLED
                 if (request.getStatus() != FlightStatus.CANCELLED) {
                     return ResponseEntity.badRequest().body(Map.of(
                             "error", "Flight is locked. Only CANCELLED status is allowed.",
                             "allowedStatus", FlightStatus.CANCELLED.name()));
                 }
             } else {
-                // Całkowicie zablokowany
                 return ResponseEntity.badRequest().body(Map.of(
                         "error", "Flight is completely locked for status changes.",
                         "allowedNextStatuses", currentDto.getAllowedNextStatuses()));
             }
         }
 
-        // Walidacja: czy żądany status jest dozwolony
         if (!currentDto.getAllowedNextStatuses().isEmpty() &&
                 !currentDto.getAllowedNextStatuses().contains(request.getStatus().name())) {
             return ResponseEntity.badRequest().body(Map.of(
@@ -193,11 +172,10 @@ public class FlightController {
                     "requestedStatus", request.getStatus().name()));
         }
 
-        // Aktualizacja statusu
         flight.setStatus(request.getStatus());
         Flight updatedFlight = flightService.saveFlight(flight);
         FlightDTO updatedDto = flightMapper.toDto(updatedFlight);
-        enrichWithStatusManagement(updatedFlight, updatedDto);
+        flightEnrichmentService.enrichWithStatusManagement(updatedFlight, updatedDto);
 
         return ResponseEntity.ok(updatedDto);
     }
@@ -208,7 +186,7 @@ public class FlightController {
                 .orElseThrow(() -> new RuntimeException("Flight not found with id: " + id));
 
         FlightDTO dto = flightMapper.toDto(flight);
-        enrichWithStatusManagement(flight, dto);
+        flightEnrichmentService.enrichWithStatusManagement(flight, dto);
 
         return ResponseEntity.ok(Map.of(
                 "flightId", id,
@@ -217,84 +195,6 @@ public class FlightController {
                 "isLockedForStatusChange", dto.getIsLockedForStatusChange(),
                 "canBeCancelledOnly", dto.getCanBeCancelledOnly(),
                 "allowedNextStatuses", dto.getAllowedNextStatuses(),
-                "allPossibleStatuses", getAllPossibleStatuses(flight.getStatus())));
-    }
-
-    // ========== PRYWATNE METODY POMOCNICZE ==========
-
-    private void enrichWithStatusManagement(Flight flight, FlightDTO dto) {
-        // Sprawdź czy lot jest zablokowany
-        boolean isLocked = isFlightLocked(flight.getId());
-
-        if (isLocked) {
-            dto.setIsLockedForStatusChange(true);
-            dto.setCanBeCancelledOnly(true);
-            dto.setAllowedNextStatuses(Collections.singletonList(FlightStatus.CANCELLED.name()));
-        } else {
-            dto.setIsLockedForStatusChange(false);
-            dto.setCanBeCancelledOnly(false);
-            dto.setAllowedNextStatuses(getAllPossibleStatuses(flight.getStatus()));
-        }
-    }
-
-    private boolean isFlightLocked(Long flightId) {
-        return lockedFlightsCache.values().stream()
-                .anyMatch(flightIds -> flightIds.contains(flightId));
-    }
-
-    private boolean hasDeparted(FlightStatus status) {
-        return status == FlightStatus.DEPARTED ||
-                status == FlightStatus.LANDED;
-    }
-
-    private List<String> getAllPossibleStatuses(FlightStatus currentStatus) {
-        return switch (currentStatus) {
-            case PLANNED -> Arrays.asList(
-                    FlightStatus.DELAYED.name(),
-                    FlightStatus.GATE_CLOSED.name(),
-                    FlightStatus.BOARDING.name(),
-                    FlightStatus.CANCELLED.name(),
-                    FlightStatus.DEPARTED.name());
-            case DELAYED -> Arrays.asList(
-                    FlightStatus.PLANNED.name(),
-                    FlightStatus.GATE_CLOSED.name(),
-                    FlightStatus.BOARDING.name(),
-                    FlightStatus.CANCELLED.name(),
-                    FlightStatus.DEPARTED.name());
-            case GATE_CLOSED -> Arrays.asList(
-                    FlightStatus.BOARDING.name(),
-                    FlightStatus.DELAYED.name(),
-                    FlightStatus.CANCELLED.name());
-            case BOARDING -> Arrays.asList(
-                    FlightStatus.DEPARTED.name(),
-                    FlightStatus.DELAYED.name(),
-                    FlightStatus.CANCELLED.name());
-            default -> Collections.emptyList(); // Dla DEPARTED, LANDED, CANCELLED
-        };
-    }
-
-    private String generateCacheKey(String terminal, LocalDate date) {
-        return terminal + "_" + date.toString();
-    }
-
-    // ========== KLASY REQUEST ==========
-
-    @Data
-    public static class LockDelayRequest {
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-        private LocalDate date;
-        private String terminal;
-    }
-
-    @Data
-    public static class UnlockRequest {
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-        private LocalDate date;
-        private String terminal;
-    }
-
-    @Data
-    public static class StatusUpdateRequest {
-        private FlightStatus status;
+                "allPossibleStatuses", flightStatusService.getAllPossibleStatuses(flight.getStatus())));
     }
 }
