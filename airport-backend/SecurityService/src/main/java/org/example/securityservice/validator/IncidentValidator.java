@@ -71,6 +71,10 @@ public class IncidentValidator {
             throw new BusinessRuleViolationException("Priority is required");
         }
 
+        if (dto.getReportSource() == null) {
+            throw new BusinessRuleViolationException("Report source is required");
+        }
+
         // Walidacja czy lokalizacja istnieje
         validateLocationExists(dto.getLocationId());
     }

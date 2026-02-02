@@ -13,6 +13,8 @@ export type IncidentType =
     | 'ENVIRONMENTAL_BIRD_STRIKE' | 'ENVIRONMENTAL_WILDLIFE_INTRUSION' | 'ENVIRONMENTAL_POLLUTION'
     | 'OTHER_MISCELLANEOUS' | 'OTHER_DRILL_EXERCISE' | 'OTHER_TEST_ALARM';
 
+export type ReportingSource = 'MANUAL' | 'FIRE_ALARM_SYSTEM' | 'ACCESS_CONTROL' | 'SYSTEM' | 'CCTV';
+
 export interface LocationDTO {
     id: number;
     name: string;
@@ -42,6 +44,7 @@ export interface IncidentResponse {
     type: IncidentType;
     priority: IncidentPriority;
     status: IncidentStatus;
+    reportSource?: ReportingSource;
     description: string;
     creationTime: string;
     closureTime?: string;
@@ -56,6 +59,7 @@ export interface CreateIncidentRequest {
     priority: IncidentPriority;
     locationId: number;
     description: string;
+    reportSource: ReportingSource;
     status?: IncidentStatus;
     assignedTeamId?: number;
     sensorEventId?: number; // Link to sensor event (alert) that triggered this incident
@@ -84,6 +88,7 @@ export interface Incident {
     location: string;
     status: string;
     assignedTeam: string;
+    reportSource?: ReportingSource;
     coordinates: { x: number; y: number };
     timestamp: string;
     description: string;
