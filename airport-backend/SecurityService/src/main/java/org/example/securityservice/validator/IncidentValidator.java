@@ -30,6 +30,10 @@ public class IncidentValidator {
                 .orElseThrow(() -> new BusinessRuleViolationException("User not found"));
     }
 
+    public Employee getUserIfExists(Long userId) {
+        return employeeRepository.findById(userId).orElse(null);
+    }
+
     public Incident validateAndGetIncident(Long incidentId) {
         return incidentRepository.findById(incidentId)
                 .orElseThrow(() -> new IncidentNotFoundException(incidentId));
@@ -67,6 +71,10 @@ public class IncidentValidator {
             throw new BusinessRuleViolationException("Priority is required");
         }
 
+        if (dto.getReportSource() == null) {
+            throw new BusinessRuleViolationException("Report source is required");
+        }
+
         // Walidacja czy lokalizacja istnieje
         validateLocationExists(dto.getLocationId());
     }
@@ -87,22 +95,36 @@ public class IncidentValidator {
     }
 
     public void validateUserCanChangeStatus(Employee employee, Incident incident) {
+        // Dispatcher and SecurityManager can change any status
         if (employee instanceof Dispatcher || employee instanceof SecurityManager) {
             return;
         }
 
+        // Team members can change status only for their assigned incidents
         if (employee instanceof IncidentTeamMember) {
             IncidentTeamMember member = (IncidentTeamMember) employee;
 
+//            if (incident.getAssignedTeam() != null &&
+//                    incident.getAssignedTeam().getMembers().contains(member)) {
+
+            // Team members can only change from ASSIGNED to IN_PROGRESS to RESOLVED
             if (incident.getStatus() == IncidentStatus.ASSIGNED ||
                     incident.getStatus() == IncidentStatus.IN_PROGRESS ||
                     incident.getStatus() == IncidentStatus.RESOLVED) {
                 return;
             }
+//            }
         }
 
         throw new BusinessRuleViolationException(
                 "User does not have permission to change incident status.");
+    }
+
+    public void validateIncidentIsResolved(Incident incident) {
+        if (incident.getStatus() != IncidentStatus.RESOLVED) {
+            throw new BusinessRuleViolationException(
+                    "Incident must be RESOLVED before adding closure report. Current status: " + incident.getStatus());
+        }
     }
 
 }

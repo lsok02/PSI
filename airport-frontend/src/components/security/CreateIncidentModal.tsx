@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X, Loader2 } from 'lucide-react';
 import { useCreateIncident, useTeams, useAssignTeam } from '@/hooks';
-import type { IncidentType, IncidentPriority } from '@/types';
+import type { IncidentType, IncidentPriority, ReportingSource } from '@/types';
 
 interface CreateIncidentModalProps {
     open: boolean;
@@ -39,6 +39,15 @@ const priorityToBackend: Record<string, IncidentPriority> = {
     'High': 'HIGH',
     'Medium': 'NORMAL',
     'Low': 'LOW',
+};
+
+const mapReportSource = (sourceSystem?: string): ReportingSource => {
+    if (!sourceSystem) return 'SYSTEM';
+    const normalized = sourceSystem.toLowerCase();
+    if (normalized.includes('smoke') || normalized.includes('fire')) return 'FIRE_ALARM_SYSTEM';
+    if (normalized.includes('access')) return 'ACCESS_CONTROL';
+    if (normalized.includes('cctv') || normalized.includes('camera')) return 'CCTV';
+    return 'SYSTEM';
 };
 
 export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateIncidentModalProps) {
@@ -96,6 +105,7 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
             priority: priorityToBackend[priority] || 'NORMAL',
             locationId: 1, // Default location - would need to resolve from location name
             description,
+            reportSource: resolvedReportSource,
             status: 'NEW' as const,
             sensorEventId: alertData?.sensorEventId,
         };
@@ -126,6 +136,9 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
     };
 
     const isManual = !alertData;
+    const resolvedReportSource: ReportingSource = isManual
+        ? 'MANUAL'
+        : mapReportSource(alertData?.sourceSystem);
 
     return (
         <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
@@ -218,13 +231,21 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label className="text-slate-300">Location</Label>
-                                <Input
-                                    value={location}
-                                    onChange={(e) => setLocation(e.target.value)}
-                                    className="bg-[#1C1C1E] border-[#0A84FF] text-white placeholder:text-slate-500 hover:bg-[#252527] focus-visible:ring-[#0A84FF]"
-                                />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="text-slate-300">Report Source (auto)</Label>
+                                    <div className="bg-[#1C1C1E] rounded-md px-3 py-2.5 text-slate-300 text-sm border border-slate-800">
+                                        {resolvedReportSource}
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-slate-300">Location</Label>
+                                    <Input
+                                        value={location}
+                                        onChange={(e) => setLocation(e.target.value)}
+                                        className="bg-[#1C1C1E] border-[#0A84FF] text-white placeholder:text-slate-500 hover:bg-[#252527] focus-visible:ring-[#0A84FF]"
+                                    />
+                                </div>
                             </div>
 
                             <div className="space-y-2">

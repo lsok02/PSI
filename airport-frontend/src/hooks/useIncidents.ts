@@ -86,6 +86,7 @@ function transformIncident(response: IncidentResponse): Incident {
         location: locationName,
         status: statusMap[response.status] || response.status,
         assignedTeam: response.assignedTeam?.teamName || 'Unassigned',
+        reportSource: response.reportSource,
         coordinates: getLocationCoordinates(locationName),
         timestamp: new Date(response.creationTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
         description: response.description,

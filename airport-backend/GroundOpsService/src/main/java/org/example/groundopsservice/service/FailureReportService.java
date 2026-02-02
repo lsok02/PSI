@@ -2,6 +2,7 @@ package org.example.groundopsservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.groundopsservice.client.AuthServiceClient;
 import org.example.groundopsservice.client.SecurityIncidentClient;
 import org.example.groundopsservice.client.dto.SecurityIncidentRequest;
 import org.example.groundopsservice.client.dto.SecurityIncidentResponse;
@@ -30,6 +31,7 @@ public class FailureReportService {
     private final FailureReportRepository failureReportRepository;
     private final ResourceService resourceService;
     private final SecurityIncidentClient securityIncidentClient;
+    private final AuthServiceClient authServiceClient;
 
     @Value("${integration.security.default-location-id:1}")
     private Long defaultSecurityLocationId;
@@ -56,6 +58,8 @@ public class FailureReportService {
 
         TechnicalResource resource = resourceService.getResource(request.getResourceId());
 
+        String reporter = authServiceClient.getUsernameFromToken(token);
+
         FailureReport report = new FailureReport();
         report.setResource(resource);
         report.setFailureType(request.getFailureType());
@@ -64,6 +68,7 @@ public class FailureReportService {
         report.setLocation(request.getLocation());
         report.setReportedAt(LocalDateTime.now());
         report.setStatus(FailureStatus.REPORTED);
+        report.setReportedBy(reporter != null ? reporter : "system");
 
         FailureReport saved = failureReportRepository.save(report);
 
@@ -117,6 +122,7 @@ public class FailureReportService {
                 .location(report.getLocation())
                 .status(report.getStatus() != null ? report.getStatus().name() : null)
                 .reportedAt(report.getReportedAt())
+                .reportedBy(report.getReportedBy())
                 .securityIncidentId(report.getSecurityIncidentId())
                 .build();
     }

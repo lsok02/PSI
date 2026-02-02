@@ -17,5 +17,6 @@ public class FailureReportResponse {
     private String location;
     private String status;
     private LocalDateTime reportedAt;
+    private String reportedBy;
     private Long securityIncidentId;
 }

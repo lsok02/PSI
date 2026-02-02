@@ -156,6 +156,11 @@ export function IncidentsList({
                                 <div className="flex items-center gap-2 text-slate-400">
                                     <span className="text-xs">📍 {incident.location}</span>
                                 </div>
+                                {incident.reportSource && (
+                                    <div className="flex items-center gap-2 text-slate-400">
+                                        <span className="text-xs">Source: {incident.reportSource.replace(/_/g, ' ')}</span>
+                                    </div>
+                                )}
                                 <div className="flex items-center gap-2 text-slate-400">
                                     <span className="text-xs">👥 {incident.assignedTeam}</span>
                                 </div>
