@@ -137,20 +137,22 @@ public class IncidentService {
         validator.validateUserCanChangeStatus(currentUser, incident);
 
         IncidentStatus oldStatus = incident.getStatus();
-        incident.setStatus(statusChangeDTO.getNewStatus());
+        IncidentStatus newStatus = statusChangeDTO.getNewStatus();
+        incident.setStatus(newStatus);
+
+        // Release team when incident is closed or resolved
+        if ((newStatus == IncidentStatus.CLOSED || newStatus == IncidentStatus.RESOLVED)
+                && incident.getAssignedTeam() != null) {
+            teamAssignmentService.releaseTeam(incident.getAssignedTeam());
+        }
 
         Incident updatedIncident = incidentRepository.save(incident);
 
         notificationService.createStatusChangeLog(updatedIncident, currentUser, oldStatus, statusChangeDTO);
-        notificationService.logStatusChange(updatedIncident, oldStatus, statusChangeDTO.getNewStatus(), currentUser);
-
-        // if (updatedIncident.getPriority() == IncidentPriority.CRITICAL ||
-        // updatedIncident.getPriority() == IncidentPriority.HIGH) {
-        // notificationService.sendStatusUpdateNotification(updatedIncident);
-        // }
+        notificationService.logStatusChange(updatedIncident, oldStatus, newStatus, currentUser);
 
         log.info("Incident {} status updated from {} to {}",
-                updatedIncident.getReportNumber(), oldStatus, statusChangeDTO.getNewStatus());
+                updatedIncident.getReportNumber(), oldStatus, newStatus);
 
         return permissionService.toResponseDtoWithPermissions(updatedIncident);
     }

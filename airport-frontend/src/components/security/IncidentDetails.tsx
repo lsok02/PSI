@@ -1,4 +1,4 @@
-import { Clock, Users, MapPin, AlertTriangle, ArrowUpCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { Clock, Users, MapPin, AlertTriangle, ArrowUpCircle, CheckCircle, Loader2, XCircle, CheckCheck } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useState, useEffect } from 'react';
-import { useEscalateIncident, useTeams, useAssignTeam } from '@/hooks/useIncidents';
+import { useEscalateIncident, useTeams, useAssignTeam, useUpdateIncidentStatus } from '@/hooks/useIncidents';
 import type { Incident, IncidentType } from '@/types';
 
 // Map UI display values to backend enum values for team specialization
@@ -29,9 +29,11 @@ interface IncidentDetailsProps {
 export function IncidentDetails({ incident }: IncidentDetailsProps) {
     const [isConfirming, setIsConfirming] = useState(false);
     const [selectedTeamId, setSelectedTeamId] = useState<string>('');
+    const [confirmingAction, setConfirmingAction] = useState<'resolve' | 'close' | null>(null);
 
     const escalateMutation = useEscalateIncident();
     const assignTeamMutation = useAssignTeam();
+    const updateStatusMutation = useUpdateIncidentStatus();
 
     // Fetch teams based on incident type
     const backendType = typeToBackend[incident.type] || 'OTHER_MISCELLANEOUS';
@@ -86,6 +88,41 @@ export function IncidentDetails({ incident }: IncidentDetailsProps) {
     };
 
     const isAssigned = incident.assignedTeam !== 'Unassigned';
+    const isClosed = incident.status === 'Closed' || incident.status === 'CLOSED';
+    const isResolved = incident.status === 'Resolved' || incident.status === 'RESOLVED';
+    const canClose = !isClosed && !isResolved;
+
+    const handleResolve = () => {
+        if (confirmingAction !== 'resolve') {
+            setConfirmingAction('resolve');
+            setTimeout(() => setConfirmingAction(null), 3000);
+            return;
+        }
+        const numericId = parseInt(incident.id.replace('INC-', ''), 10);
+        updateStatusMutation.mutate({
+            incidentId: numericId,
+            status: 'RESOLVED',
+            notes: 'Incident resolved - team released'
+        }, {
+            onSuccess: () => setConfirmingAction(null)
+        });
+    };
+
+    const handleClose = () => {
+        if (confirmingAction !== 'close') {
+            setConfirmingAction('close');
+            setTimeout(() => setConfirmingAction(null), 3000);
+            return;
+        }
+        const numericId = parseInt(incident.id.replace('INC-', ''), 10);
+        updateStatusMutation.mutate({
+            incidentId: numericId,
+            status: 'CLOSED',
+            notes: 'Incident closed - team released'
+        }, {
+            onSuccess: () => setConfirmingAction(null)
+        });
+    };
 
     return (
         <Card className="bg-slate-900 border-slate-800 shrink-0">
@@ -247,6 +284,62 @@ export function IncidentDetails({ incident }: IncidentDetailsProps) {
                         >
                             Cancel
                         </Button>
+                    )}
+
+                    {/* Close/Resolve Section */}
+                    {canClose && (
+                        <>
+                            <Separator className="bg-slate-800 my-2" />
+                            <Label className="text-slate-500 text-[10px] uppercase tracking-wider">Complete Incident</Label>
+                            <div className="grid grid-cols-2 gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={`${confirmingAction === 'resolve'
+                                        ? 'border-green-500 bg-green-950/50 text-green-300'
+                                        : 'border-green-700 text-green-400 hover:bg-green-950'}`}
+                                    onClick={handleResolve}
+                                    disabled={updateStatusMutation.isPending}
+                                >
+                                    {updateStatusMutation.isPending && confirmingAction === 'resolve' ? (
+                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                    ) : confirmingAction === 'resolve' ? (
+                                        <>
+                                            <CheckCheck className="w-3 h-3 mr-1" />
+                                            Confirm?
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CheckCheck className="w-3 h-3 mr-1" />
+                                            Resolve
+                                        </>
+                                    )}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={`${confirmingAction === 'close'
+                                        ? 'border-red-500 bg-red-950/50 text-red-300'
+                                        : 'border-slate-600 text-slate-400 hover:bg-slate-800'}`}
+                                    onClick={handleClose}
+                                    disabled={updateStatusMutation.isPending}
+                                >
+                                    {updateStatusMutation.isPending && confirmingAction === 'close' ? (
+                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                    ) : confirmingAction === 'close' ? (
+                                        <>
+                                            <XCircle className="w-3 h-3 mr-1" />
+                                            Confirm?
+                                        </>
+                                    ) : (
+                                        <>
+                                            <XCircle className="w-3 h-3 mr-1" />
+                                            Close
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
+                        </>
                     )}
                 </div>
             </div>

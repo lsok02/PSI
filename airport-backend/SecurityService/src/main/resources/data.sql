@@ -94,13 +94,26 @@ INSERT INTO dispatcher (id) VALUES (1), (2);
 -- 4. SecurityManager
 INSERT INTO security_manager (id) VALUES (3), (4);
 
--- 5. IncidentTeam
+-- 5. IncidentTeam - Teams matching frontend incident types
 INSERT INTO incident_team (id, team_name, specialization, status) VALUES
-                                                                      (1, 'Alpha Team', 'TECHNICAL_WATER_LEAKAGE', 'AVAILABLE'),
-                                                                      (2, 'Bravo Team', 'MEDICAL_EMERGENCY', 'BUSY'),
-                                                                      (3, 'Charlie Team', 'FIRE_ELECTRICAL', 'UNAVAILABLE'),
-                                                                      (4, 'Delta Team', 'FIRE_CHEMICAL', 'AVAILABLE'),
-                                                                      (5, 'Echo Team', 'EQUIPMENT_ELEVATOR_STUCK', 'BUSY');
+    -- Fire teams (for Fire Alarm -> FIRE_STRUCTURAL)
+    (1, 'Fire Team Alpha', 'FIRE_STRUCTURAL', 'AVAILABLE'),
+    (2, 'Fire Team Bravo', 'FIRE_STRUCTURAL', 'AVAILABLE'),
+    -- Medical teams (for Medical Emergency -> MEDICAL_EMERGENCY)  
+    (3, 'Medical Response Unit 1', 'MEDICAL_EMERGENCY', 'AVAILABLE'),
+    (4, 'Medical Response Unit 2', 'MEDICAL_EMERGENCY', 'AVAILABLE'),
+    -- Security teams (for Security Breach/Unauthorized Access -> SECURITY_UNAUTHORIZED_ACCESS)
+    (5, 'Security Team Red', 'SECURITY_UNAUTHORIZED_ACCESS', 'AVAILABLE'),
+    (6, 'Security Team Blue', 'SECURITY_UNAUTHORIZED_ACCESS', 'AVAILABLE'),
+    -- Suspicious package teams (for Suspicious Package -> SECURITY_SUSPICIOUS_PACKAGE)
+    (7, 'Bomb Squad Alpha', 'SECURITY_SUSPICIOUS_PACKAGE', 'AVAILABLE'),
+    (8, 'Bomb Squad Bravo', 'SECURITY_SUSPICIOUS_PACKAGE', 'AVAILABLE'),
+    -- Technical teams (for Technical Failure -> TECHNICAL_EQUIPMENT_FAILURE)
+    (9, 'Technical Support Team 1', 'TECHNICAL_EQUIPMENT_FAILURE', 'AVAILABLE'),
+    (10, 'Technical Support Team 2', 'TECHNICAL_EQUIPMENT_FAILURE', 'AVAILABLE'),
+    -- Miscellaneous teams (for Other -> OTHER_MISCELLANEOUS)
+    (11, 'General Response Team', 'OTHER_MISCELLANEOUS', 'AVAILABLE'),
+    (12, 'Support Services Team', 'OTHER_MISCELLANEOUS', 'AVAILABLE');
 
 -- 6. IncidentTeamMember
 INSERT INTO incident_team_member (id, radio_id, team_id) VALUES

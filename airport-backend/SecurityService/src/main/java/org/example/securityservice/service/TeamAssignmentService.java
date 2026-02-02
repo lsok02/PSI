@@ -68,4 +68,16 @@ public class TeamAssignmentService {
             log.warn("Failed to auto-assign critical incident: {}", e.getMessage());
         }
     }
+
+    /**
+     * Releases a team back to AVAILABLE status when an incident is closed or
+     * resolved.
+     */
+    public void releaseTeam(IncidentTeam team) {
+        if (team != null && team.getStatus() == TeamStatus.BUSY) {
+            team.setStatus(TeamStatus.AVAILABLE);
+            teamRepository.save(team);
+            log.info("Team {} released and now AVAILABLE", team.getTeamName());
+        }
+    }
 }

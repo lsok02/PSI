@@ -159,9 +159,27 @@ export function useAssignTeam() {
             securityApi.assignTeam(incidentId, teamId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['incidents'] });
+            queryClient.invalidateQueries({ queryKey: ['teams'] });
         },
         onError: (error) => {
             console.error('Failed to assign team:', error);
+        },
+    });
+}
+
+// Hook to update incident status (close/resolve)
+export function useUpdateIncidentStatus() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ incidentId, status, notes }: { incidentId: number; status: string; notes?: string }) =>
+            securityApi.updateIncidentStatus(incidentId, status, notes),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['incidents'] });
+            queryClient.invalidateQueries({ queryKey: ['teams'] });
+        },
+        onError: (error) => {
+            console.error('Failed to update incident status:', error);
         },
     });
 }

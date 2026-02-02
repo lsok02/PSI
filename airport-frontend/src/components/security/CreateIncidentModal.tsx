@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X, Loader2 } from 'lucide-react';
-import { useCreateIncident, useTeams } from '@/hooks';
+import { useCreateIncident, useTeams, useAssignTeam } from '@/hooks';
 import type { IncidentType, IncidentPriority } from '@/types';
 
 interface CreateIncidentModalProps {
@@ -43,6 +43,7 @@ const priorityToBackend: Record<string, IncidentPriority> = {
 
 export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateIncidentModalProps) {
     const createIncidentMutation = useCreateIncident();
+    const assignTeamMutation = useAssignTeam();
 
     // Form state
     const [incidentType, setIncidentType] = useState('Fire Alarm');
@@ -88,13 +89,14 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
             return;
         }
 
+        const teamIdToAssign = assignedTeam ? parseInt(assignedTeam) : null;
+
         const requestData = {
             type: typeToBackend[incidentType] || 'OTHER',
             priority: priorityToBackend[priority] || 'NORMAL',
             locationId: 1, // Default location - would need to resolve from location name
             description,
             status: 'NEW' as const,
-            assignedTeamId: assignedTeam ? parseInt(assignedTeam) : undefined,
             sensorEventId: alertData?.sensorEventId,
         };
 
@@ -102,18 +104,25 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
         console.log('alertData:', alertData);
 
         createIncidentMutation.mutate(requestData, {
-            onSuccess: () => {
-                onOpenChange(false);
+            onSuccess: (newIncident: any) => {
+                // Chain team assignment if a team was selected
+                if (teamIdToAssign && newIncident?.id) {
+                    const incidentId = String(newIncident.id);
+                    const numericId = incidentId.startsWith('INC-')
+                        ? parseInt(incidentId.replace('INC-', ''), 10)
+                        : parseInt(incidentId, 10);
+                    assignTeamMutation.mutate({
+                        incidentId: numericId,
+                        teamId: teamIdToAssign
+                    }, {
+                        onSuccess: () => onOpenChange(false),
+                        onError: () => onOpenChange(false) // Close anyway, incident was created
+                    });
+                } else {
+                    onOpenChange(false);
+                }
             },
         });
-    };
-
-    const handleCreateAndAssign = () => {
-        if (!assignedTeam) {
-            alert('Please select a team to assign');
-            return;
-        }
-        handleCreateIncident();
     };
 
     const isManual = !alertData;
@@ -278,14 +287,6 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
                                 Cancel
                             </Button>
                             <Button
-                                onClick={handleCreateAndAssign}
-                                variant="outline"
-                                className="border-[#0A84FF] text-[#0A84FF] hover:bg-[#0A84FF]/10"
-                                disabled={createIncidentMutation.isPending}
-                            >
-                                Create & Assign
-                            </Button>
-                            <Button
                                 onClick={handleCreateIncident}
                                 className="bg-[#FF3B30] text-white hover:bg-[#FF3B30]/90"
                                 disabled={createIncidentMutation.isPending}
@@ -295,6 +296,8 @@ export function CreateIncidentModal({ open, onOpenChange, alertData }: CreateInc
                                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                                         Creating...
                                     </>
+                                ) : assignedTeam ? (
+                                    'Create & Dispatch'
                                 ) : (
                                     'Create Incident'
                                 )}
