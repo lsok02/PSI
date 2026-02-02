@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, Plane, Wrench, LogOut, User, Loader2 } from 'lucide-react';
+import { Shield, Plane, Wrench, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context';
 import { useIncidents, useSensorEvents, useRawSensorEvents } from '@/hooks';
@@ -11,7 +11,6 @@ import {
     IncidentDetails,
     CreateIncidentModal
 } from '@/components/security';
-import { BackendStatus } from '@/components/BackendStatus';
 
 // Main Security Dashboard Page
 
@@ -140,10 +139,6 @@ export function SecurityDashboardPage() {
         setCreateModalOpen(true);
     };
 
-    const handleDismissAlert = (alertId: string) => {
-        console.log('Dismissing alert:', alertId);
-    };
-
     return (
         <div className="h-screen bg-slate-950 text-slate-100 flex flex-col overflow-hidden">
             {/* Navigation Header */}
@@ -221,7 +216,6 @@ export function SecurityDashboardPage() {
                         <AlertsPanel
                             alerts={alerts}
                             onCreateIncident={handleCreateIncident}
-                            onDismissAlert={handleDismissAlert}
                         />
                         {selectedIncident && (
                             <IncidentDetails incident={selectedIncident} />

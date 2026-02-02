@@ -6,10 +6,9 @@ import type { Alert } from '@/types';
 interface AlertsPanelProps {
     alerts: Alert[];
     onCreateIncident: (alertId: string) => void;
-    onDismissAlert: (alertId: string) => void;
 }
 
-export function AlertsPanel({ alerts, onCreateIncident, onDismissAlert }: AlertsPanelProps) {
+export function AlertsPanel({ alerts, onCreateIncident }: AlertsPanelProps) {
     return (
         <Card className="bg-slate-900 border-slate-800 shrink-0">
             <div className="p-4 border-b border-red-900 bg-red-950/20">
@@ -33,23 +32,13 @@ export function AlertsPanel({ alerts, onCreateIncident, onDismissAlert }: Alerts
                             </div>
                         </div>
 
-                        <div className="flex gap-2">
-                            <Button
-                                onClick={() => onCreateIncident(alert.id)}
-                                size="sm"
-                                className="flex-1 bg-red-600 hover:bg-red-700 text-white"
-                            >
-                                Create Incident
-                            </Button>
-                            <Button
-                                onClick={() => onDismissAlert(alert.id)}
-                                size="sm"
-                                variant="outline"
-                                className="flex-1 border-slate-700 text-slate-300 hover:bg-slate-800"
-                            >
-                                Dismiss
-                            </Button>
-                        </div>
+                        <Button
+                            onClick={() => onCreateIncident(alert.id)}
+                            size="sm"
+                            className="w-full bg-red-600 hover:bg-red-700 text-white"
+                        >
+                            Create Incident
+                        </Button>
                     </div>
                 ))}
             </div>
