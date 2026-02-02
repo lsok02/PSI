@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, Plane, LogOut, User, Loader2 } from 'lucide-react';
+import { Shield, Plane, Wrench, LogOut, User, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context';
 import { useIncidents, useSensorEvents, useRawSensorEvents } from '@/hooks';
@@ -164,6 +164,13 @@ export function SecurityDashboardPage() {
                         >
                             <Plane className="w-4 h-4" />
                             Flights
+                        </Link>
+                        <Link
+                            to="/ground-ops"
+                            className="flex items-center gap-2 px-4 py-2 rounded-md text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
+                        >
+                            <Wrench className="w-4 h-4" />
+                            Zasoby
                         </Link>
                         <div className="h-6 w-px bg-slate-700" />
                         <div className="flex items-center gap-2 text-slate-400 text-sm">

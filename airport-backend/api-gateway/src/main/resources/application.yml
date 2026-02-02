@@ -37,6 +37,12 @@ spring:
           predicates:
             - Path=/api/sensor-events/**
 
+        # Ground Operations Service
+        - id: ground-ops
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/groundops/**
+
 jwt:
   secret: airport-gateway-super-secret-key-2024-with-32-chars!
 

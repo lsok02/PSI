@@ -116,13 +116,19 @@ public class IncidentController {
     public ResponseEntity<IncidentResponseDTO> createIncident(
              @RequestBody IncidentDTO incidentDTO,
              @RequestHeader(value = "token", required = false) String token) {
-        String username = authServiceClient.validateTokenAndGetUsername(token);
-        Employee employee = employeeService.getEmployeeByUsername(username);
+        Long employeeId = null;
+        if (token != null && !token.isBlank()) {
+            String username = authServiceClient.validateTokenAndGetUsername(token);
+            Employee employee = employeeService.getEmployeeByUsername(username);
+            if (employee != null) {
+                employeeId = employee.getId();
+            }
+        }
 
-        log.info("Received request to create incident by user ID: {}", employee.getId());
+        log.info("Received request to create incident by user ID: {}", employeeId);
 
         try {
-            IncidentResponseDTO createdIncident = incidentService.createIncident(incidentDTO, employee.getId());
+            IncidentResponseDTO createdIncident = incidentService.createIncident(incidentDTO, employeeId);
             log.info("Incident created successfully: {}", createdIncident.getReportNumber());
 
             String terminalName = createdIncident.getLocation().getName();
@@ -154,12 +160,18 @@ public class IncidentController {
             @RequestBody IncidentDTO incidentDTO,
             @PathVariable Long alarmId,
             @RequestHeader(value = "token", required = false) String token) {
-        String username = authServiceClient.validateTokenAndGetUsername(token);
-        Employee employee = employeeService.getEmployeeByUsername(username);
-        log.info("Received request to create incident by user ID: {}", employee.getId());
+        Long employeeId = null;
+        if (token != null && !token.isBlank()) {
+            String username = authServiceClient.validateTokenAndGetUsername(token);
+            Employee employee = employeeService.getEmployeeByUsername(username);
+            if (employee != null) {
+                employeeId = employee.getId();
+            }
+        }
+        log.info("Received request to create incident by user ID: {}", employeeId);
 
         try {
-            IncidentResponseDTO createdIncident = incidentService.createIncident(incidentDTO, employee.getId());
+            IncidentResponseDTO createdIncident = incidentService.createIncident(incidentDTO, employeeId);
 
             log.info("Incident created successfully: {}", createdIncident.getReportNumber());
 

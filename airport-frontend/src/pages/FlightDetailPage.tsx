@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Shield, Plane, ArrowLeft, LogOut, User } from 'lucide-react';
+import { Shield, Plane, Wrench, ArrowLeft, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FlightEditForm } from '@/components/flights';
 import { useAuth } from '@/context';
@@ -82,6 +82,13 @@ export function FlightDetailPage() {
                         >
                             <Plane className="w-4 h-4" />
                             Flights
+                        </Link>
+                        <Link
+                            to="/ground-ops"
+                            className="flex items-center gap-2 px-4 py-2 rounded-md text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
+                        >
+                            <Wrench className="w-4 h-4" />
+                            Zasoby
                         </Link>
                         <div className="h-6 w-px bg-slate-700" />
                         <div className="flex items-center gap-2 text-slate-400 text-sm">
