@@ -158,6 +158,8 @@ export const securityApi = {
 // Sensor Events API (through gateway)
 import type { SensorEventDTO } from '@/types';
 
+import type { GroundResource, FailureReportRequest, FailureReportResponse } from '@/types';
+
 export const sensorEventApi = {
     getUnassigned: () =>
         api.get<SensorEventDTO[]>('/api/sensor-events/unassigned').then(res => res.data),
@@ -169,7 +171,10 @@ export const sensorEventApi = {
 
 // Ground Operations Service API (through gateway)
 export const groundOpsApi = {
-    // getTeams: () => api.get<ResponseTeam[]>('/api/groundops/teams').then(res => res.data),
+    getResources: () => api.get<GroundResource[]>('/api/groundops/resources').then(res => res.data),
+    getFailures: () => api.get<FailureReportResponse[]>('/api/groundops/failures').then(res => res.data),
+    createFailure: (data: FailureReportRequest) =>
+        api.post<FailureReportResponse>('/api/groundops/failures', data).then(res => res.data),
 };
 
 // Export the main API client for advanced usage

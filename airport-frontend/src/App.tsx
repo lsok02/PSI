@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/context';
-import { SecurityDashboardPage, FlightsPage, FlightDetailPage, LoginPage } from '@/pages';
+import { SecurityDashboardPage, FlightsPage, FlightDetailPage, LoginPage, GroundOpsPage } from '@/pages';
 import { Loader2 } from 'lucide-react';
 
 // Protected route wrapper
@@ -50,6 +50,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <FlightDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ground-ops"
+        element={
+          <ProtectedRoute>
+            <GroundOpsPage />
           </ProtectedRoute>
         }
       />

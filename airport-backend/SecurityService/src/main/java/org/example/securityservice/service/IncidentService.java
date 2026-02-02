@@ -12,21 +12,26 @@ import org.example.securityservice.model.entity.Employee;
 import org.example.securityservice.model.entity.SecurityManager;
 import org.example.securityservice.model.entity.Incident;
 import org.example.securityservice.model.entity.IncidentTeam;
+import org.example.securityservice.model.entity.Location;
 import org.example.securityservice.model.enumeration.IncidentPriority;
 import org.example.securityservice.model.enumeration.IncidentStatus;
 import org.example.securityservice.model.enumeration.IncidentType;
 import org.example.securityservice.model.enumeration.ReportingSource;
 import org.example.securityservice.repository.DispatcherRepository;
 import org.example.securityservice.repository.IncidentRepository;
+import org.example.securityservice.repository.LocationRepository;
 import org.example.securityservice.validator.IncidentValidator;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +46,12 @@ public class IncidentService {
     private final IncidentNotificationService notificationService;
     private final TeamAssignmentService teamAssignmentService;
     private final SensorEventService sensorEventService;
+    private final LocationRepository locationRepository;
+
+    private static final Pattern FAILURE_LOCATION_PATTERN =
+            Pattern.compile("Location:\\s*(.+?)\\.\\s*Details:", Pattern.CASE_INSENSITIVE);
+    private static final Pattern FAILURE_DETAILS_PATTERN =
+            Pattern.compile("Details:\\s*(.+)$", Pattern.CASE_INSENSITIVE);
 
     @Transactional
     public IncidentResponseDTO createIncident(IncidentDTO incidentDTO, Long currentUserId) {
@@ -77,6 +88,19 @@ public class IncidentService {
 
         if (incidentDTO.getLocationId() != null) {
             incident.setLocation(validator.validateLocationExists(incidentDTO.getLocationId()));
+        }
+
+        FailureMetadata failureMetadata = extractFailureMetadata(incidentDTO.getDescription());
+        if (failureMetadata != null) {
+            if (failureMetadata.locationName() != null) {
+                Location override = resolveLocationByName(failureMetadata.locationName());
+                if (override != null) {
+                    incident.setLocation(override);
+                }
+            }
+            if (failureMetadata.details() != null) {
+                incident.setDescription(failureMetadata.details());
+            }
         }
 
         Incident savedIncident = incidentRepository.save(incident);
@@ -237,6 +261,54 @@ public class IncidentService {
                 return priority;
         }
     }
+
+    private FailureMetadata extractFailureMetadata(String description) {
+        if (description == null || !description.contains("Equipment failure reported")) {
+            return null;
+        }
+
+        String location = null;
+        String details = null;
+
+        Matcher locationMatcher = FAILURE_LOCATION_PATTERN.matcher(description);
+        if (locationMatcher.find()) {
+            location = locationMatcher.group(1).trim();
+        }
+
+        Matcher detailsMatcher = FAILURE_DETAILS_PATTERN.matcher(description);
+        if (detailsMatcher.find()) {
+            details = detailsMatcher.group(1).trim();
+        }
+
+        if (location == null && details == null) {
+            return null;
+        }
+
+        return new FailureMetadata(location, details);
+    }
+
+    private Location resolveLocationByName(String rawLocation) {
+        if (rawLocation == null || rawLocation.isBlank()) {
+            return null;
+        }
+
+        return locationRepository.findLocationByName(rawLocation)
+                .orElseGet(() -> {
+                    String normalized = rawLocation.toLowerCase();
+                    return locationRepository.findAll()
+                            .stream()
+                            .filter((Location location) -> location.getName() != null)
+                            .filter((Location location) -> {
+                                String name = location.getName().toLowerCase();
+                                return normalized.contains(name) || name.contains(normalized);
+                            })
+                            .sorted(Comparator.comparingInt((Location location) -> location.getName().length()).reversed())
+                            .findFirst()
+                            .orElse(null);
+                });
+    }
+
+    private record FailureMetadata(String locationName, String details) {}
 
     private Dispatcher getDispatcherForIncident(Employee user) {
         if (user instanceof Dispatcher) {

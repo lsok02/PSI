@@ -103,6 +103,54 @@ export interface ResponseTeam {
     coordinates: { x: number; y: number };
 }
 
+// Ground Operations / Resources Types
+export type ResourceStatus = 'AVAILABLE' | 'IN_USE' | 'IN_SERVICE' | 'OUT_OF_ORDER';
+export type ResourceType = 'VEHICLE' | 'SPECIALIZED_EQUIPMENT';
+
+export interface GroundResource {
+    id: number;
+    name: string;
+    status: ResourceStatus;
+    resourceType: ResourceType;
+    details?: string | null;
+    nextMaintenanceDate?: string | null;
+}
+
+export type FailureType =
+    | 'ELECTRICAL'
+    | 'MECHANICAL'
+    | 'HYDRAULIC'
+    | 'SOFTWARE'
+    | 'COMMUNICATION'
+    | 'POWER_OUTAGE'
+    | 'WATER_LEAKAGE'
+    | 'OTHER';
+
+export type FailureUrgency = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
+export type FailureStatus = 'REPORTED';
+
+export interface FailureReportRequest {
+    resourceId: number;
+    failureType: FailureType;
+    description: string;
+    urgency: FailureUrgency;
+    location: string;
+    securityLocationId?: number;
+}
+
+export interface FailureReportResponse {
+    id: number;
+    resourceId: number;
+    resourceName: string;
+    failureType: FailureType;
+    description: string;
+    urgency: FailureUrgency;
+    location: string;
+    status: FailureStatus;
+    reportedAt: string;
+    securityIncidentId?: number | null;
+}
+
 // Flight Management Types
 export type FlightStatus = 'PLANNED' | 'DELAYED' | 'CANCELLED' | 'DEPARTED' | 'LANDED';
 
