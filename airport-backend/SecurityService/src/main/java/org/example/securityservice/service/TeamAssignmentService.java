@@ -9,9 +9,8 @@ import org.example.securityservice.model.enumeration.IncidentStatus;
 import org.example.securityservice.model.enumeration.TeamStatus;
 import org.example.securityservice.repository.IncidentRepository;
 import org.example.securityservice.repository.IncidentTeamRepository;
+import org.example.securityservice.validator.TeamAssignmentValidator;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,52 +19,27 @@ public class TeamAssignmentService {
 
     private final IncidentTeamRepository teamRepository;
     private final IncidentRepository incidentRepository;
+    private final TeamAssignmentValidator teamValidator;
 
     public IncidentTeam validateAndAssignTeam(Incident incident, Long teamId) {
         IncidentTeam team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new BusinessRuleViolationException("Team not found"));
+                .orElseThrow(() -> new BusinessRuleViolationException("Team not found with ID: " + teamId));
 
-        validateTeamQualification(team, incident);
-        validateTeamAvailability(team);
+        teamValidator.validateTeamCanBeAssigned(team, incident);
+        teamValidator.validateIncidentCanBeAssigned(incident);
 
         assignTeamToIncident(incident, team);
         return team;
     }
 
-    private void validateTeamQualification(IncidentTeam team, Incident incident) {
-        if (!team.getSpecialization().equals(incident.getType())) {
-            throw new BusinessRuleViolationException(
-                    "Team specialization (" + team.getSpecialization() + ") " +
-                            "does not match incident type (" + incident.getType() + ")");
-        }
-    }
-
-    private void validateTeamAvailability(IncidentTeam team) {
-        if (team.getStatus() != TeamStatus.AVAILABLE) {
-            throw new BusinessRuleViolationException("Team is not available. Current status: " + team.getStatus());
-        }
-    }
-
-    private void assignTeamToIncident(Incident incident, IncidentTeam team) {
+    public void assignTeamToIncident(Incident incident, IncidentTeam team) {
         incident.setAssignedTeam(team);
         incident.setStatus(IncidentStatus.ASSIGNED);
         team.setStatus(TeamStatus.BUSY);
+
         teamRepository.save(team);
-    }
+        incidentRepository.save(incident);
 
-    public void autoAssignCriticalIncident(Incident incident) {
-        try {
-            List<IncidentTeam> availableTeams = teamRepository.findByStatusAndSpecialization(
-                    TeamStatus.AVAILABLE, incident.getType().toString());
-
-            if (!availableTeams.isEmpty()) {
-                IncidentTeam team = availableTeams.get(0);
-                assignTeamToIncident(incident, team);
-                log.info("Auto-assigned critical incident {} to team {}",
-                        incident.getReportNumber(), team.getTeamName());
-            }
-        } catch (Exception e) {
-            log.warn("Failed to auto-assign critical incident: {}", e.getMessage());
-        }
+        log.info("Team {} assigned to incident {}", team.getTeamName(), incident.getReportNumber());
     }
 }

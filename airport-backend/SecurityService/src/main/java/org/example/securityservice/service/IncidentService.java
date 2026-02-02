@@ -7,13 +7,11 @@ import org.example.securityservice.exception.BusinessRuleViolationException;
 import org.example.securityservice.model.dto.IncidentDTO;
 import org.example.securityservice.model.dto.IncidentResponseDTO;
 import org.example.securityservice.model.dto.StatusChangeDTO;
-import org.example.securityservice.model.dto.TeamAssignmentDTO;
 import org.example.securityservice.model.entity.Dispatcher;
 import org.example.securityservice.model.entity.Employee;
 import org.example.securityservice.model.entity.SecurityManager;
 import org.example.securityservice.model.entity.Incident;
 import org.example.securityservice.model.entity.IncidentTeam;
-import org.example.securityservice.model.entity.IncidentTeamMember;
 import org.example.securityservice.model.enumeration.IncidentPriority;
 import org.example.securityservice.model.enumeration.IncidentStatus;
 import org.example.securityservice.model.enumeration.IncidentType;
@@ -26,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,7 +40,6 @@ public class IncidentService {
     private final IncidentPermissionService permissionService;
     private final IncidentNotificationService notificationService;
     private final TeamAssignmentService teamAssignmentService;
-    private final FlightIntegrationService flightIntegrationService;
     private final SensorEventService sensorEventService;
 
     @Transactional
@@ -87,13 +83,7 @@ public class IncidentService {
         updateDispatcherIncidents(dispatcher, savedIncident);
 
         notificationService.createInitialLog(savedIncident, currentUser, incidentDTO.getDescription());
-//        notificationService.logIncidentCreation(savedIncident, currentUser);
 
-//        if (savedIncident.getPriority() == IncidentPriority.CRITICAL) {
-//            flightIntegrationService.checkAffectedFlights(savedIncident);
-//        }
-
-        // Link sensor event to this incident if provided
         log.info("SensorEventId from DTO: {}", incidentDTO.getSensorEventId());
         if (incidentDTO.getSensorEventId() != null) {
             sensorEventService.addIncidentForAlarm(incidentDTO.getSensorEventId(),
@@ -121,9 +111,6 @@ public class IncidentService {
         Incident updatedIncident = incidentRepository.save(incident);
 
         notificationService.createTeamAssignmentLog(updatedIncident, currentUser, team);
-//        notificationService.logTeamAssignment(updatedIncident, team, currentUser);
-        notificationService.sendTeamAssignmentNotification(team, updatedIncident);
-        notificationService.checkForEscalation(updatedIncident);
 
         log.info("Team {} assigned to incident {}", team.getTeamName(), updatedIncident.getReportNumber());
         return permissionService.toResponseDtoWithPermissions(updatedIncident);
@@ -145,12 +132,6 @@ public class IncidentService {
         Incident updatedIncident = incidentRepository.save(incident);
 
         notificationService.createStatusChangeLog(updatedIncident, currentUser, oldStatus, statusChangeDTO);
-        notificationService.logStatusChange(updatedIncident, oldStatus, statusChangeDTO.getNewStatus(), currentUser);
-
-        // if (updatedIncident.getPriority() == IncidentPriority.CRITICAL ||
-        // updatedIncident.getPriority() == IncidentPriority.HIGH) {
-        // notificationService.sendStatusUpdateNotification(updatedIncident);
-        // }
 
         log.info("Incident {} status updated from {} to {}",
                 updatedIncident.getReportNumber(), oldStatus, statusChangeDTO.getNewStatus());
@@ -181,33 +162,6 @@ public class IncidentService {
     public IncidentResponseDTO getIncidentById(Long id, Long userId) {
         Incident incident = validator.validateAndGetIncident(id);
         return permissionService.toResponseDtoWithPermissions(incident);
-    }
-
-    @Transactional
-    public IncidentResponseDTO updateIncident(Long incidentId, IncidentDTO incidentDTO, Long currentUserId) {
-        log.info("Updating incident {} by user {}", incidentId, currentUserId);
-
-        Incident existingIncident = validator.validateAndGetIncident(incidentId);
-        Employee currentUser = validator.validateAndGetUser(currentUserId);
-
-        if (incidentDTO.getDescription() != null) {
-            existingIncident.setDescription(incidentDTO.getDescription());
-        }
-
-        if (incidentDTO.getPriority() != null &&
-                (currentUser instanceof Dispatcher || currentUser instanceof SecurityManager)) {
-            existingIncident.setPriority(incidentDTO.getPriority());
-        }
-
-        if (incidentDTO.getLocationId() != null) {
-            existingIncident.setLocation(validator.validateLocationExists(incidentDTO.getLocationId()));
-        }
-
-        Incident updatedIncident = incidentRepository.save(existingIncident);
-        notificationService.createUpdateLog(updatedIncident, currentUser);
-
-        log.info("Incident {} updated by user {}", incidentId, currentUserId);
-        return permissionService.toResponseDtoWithPermissions(updatedIncident);
     }
 
     private Dispatcher getDispatcherForIncident(Employee user) {
