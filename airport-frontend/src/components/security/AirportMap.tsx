@@ -1,15 +1,14 @@
-import { Ambulance, ShieldAlert, Flame, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import type { Incident, ResponseTeam } from '@/types';
+import type { Incident } from '@/types';
 
 interface AirportMapProps {
     incidents: Incident[];
-    responseTeams: ResponseTeam[];
     selectedIncidentId: string;
     onIncidentSelect: (incidentId: string) => void;
 }
 
-export function AirportMap({ incidents, responseTeams, selectedIncidentId, onIncidentSelect }: AirportMapProps) {
+export function AirportMap({ incidents, selectedIncidentId, onIncidentSelect }: AirportMapProps) {
     const getIncidentColor = (priority: string) => {
         switch (priority) {
             case 'Critical':
@@ -20,19 +19,6 @@ export function AirportMap({ incidents, responseTeams, selectedIncidentId, onInc
                 return 'bg-yellow-500 border-yellow-400 shadow-yellow-500/50';
             default:
                 return 'bg-blue-500 border-blue-400 shadow-blue-500/50';
-        }
-    };
-
-    const getTeamIcon = (type: string) => {
-        switch (type) {
-            case 'medical':
-                return <Ambulance className="w-3 h-3" />;
-            case 'fire':
-                return <Flame className="w-3 h-3" />;
-            case 'security':
-                return <ShieldAlert className="w-3 h-3" />;
-            default:
-                return <MapPin className="w-3 h-3" />;
         }
     };
 
@@ -99,32 +85,14 @@ export function AirportMap({ incidents, responseTeams, selectedIncidentId, onInc
                                     <MapPin className="w-4 h-4 text-white" />
                                 </div>
                                 {selectedIncidentId === incident.id && (
-                                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-950 border border-slate-700 px-2 py-1 rounded text-xs whitespace-nowrap">
-                                        {incident.id}
+                                    <div className="absolute -top-14 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-700 p-2 rounded shadow-2xl text-[10px] whitespace-nowrap z-30 pointer-events-none">
+                                        <div className="font-bold text-blue-400">{incident.id}</div>
+                                        <div className="text-slate-100">{incident.type}</div>
+                                        <div className="text-slate-400">{incident.location}</div>
                                     </div>
                                 )}
                             </div>
                             <div className={`absolute inset-0 ${getIncidentColor(incident.priority)} rounded-full animate-ping opacity-75`}></div>
-                        </div>
-                    ))}
-
-                    {/* Response Team Markers */}
-                    {responseTeams.map((team) => (
-                        <div
-                            key={team.id}
-                            className="absolute z-10"
-                            style={{
-                                left: `${team.coordinates.x}%`,
-                                top: `${team.coordinates.y}%`,
-                                transform: 'translate(-50%, -50%)'
-                            }}
-                        >
-                            <div className="relative bg-blue-600 text-white w-8 h-8 rounded-md border-2 border-blue-400 shadow-lg flex items-center justify-center">
-                                {getTeamIcon(team.type)}
-                                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-slate-950 border border-slate-700 px-1.5 py-0.5 rounded text-xs whitespace-nowrap">
-                                    {team.name}
-                                </div>
-                            </div>
                         </div>
                     ))}
                 </div>
@@ -142,12 +110,6 @@ export function AirportMap({ incidents, responseTeams, selectedIncidentId, onInc
                     <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                         <span>Medium</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded bg-blue-600 flex items-center justify-center">
-                            <Ambulance className="w-2.5 h-2.5 text-white" />
-                        </div>
-                        <span>Response Team</span>
                     </div>
                 </div>
             </div>

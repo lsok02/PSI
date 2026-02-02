@@ -1,11 +1,26 @@
-import { Clock, Users, MapPin, AlertTriangle, ArrowUpCircle, CheckCircle } from 'lucide-react';
+import { Clock, Users, MapPin, AlertTriangle, ArrowUpCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useState, useEffect } from 'react';
-import { useEscalateIncident } from '@/hooks/useIncidents';
-import type { Incident } from '@/types';
+import { useEscalateIncident, useTeams, useAssignTeam } from '@/hooks/useIncidents';
+import type { Incident, IncidentType } from '@/types';
+
+// Map UI display values to backend enum values for team specialization
+const typeToBackend: Record<string, IncidentType> = {
+    'Fire Alarm': 'FIRE_STRUCTURAL',
+    'Medical Emergency': 'MEDICAL_EMERGENCY',
+    'Security Threat': 'SECURITY_UNAUTHORIZED_ACCESS',
+    'Unauthorized Access': 'SECURITY_UNAUTHORIZED_ACCESS',
+    'Suspicious Package': 'SECURITY_SUSPICIOUS_PACKAGE',
+    'Technical Issue': 'TECHNICAL_EQUIPMENT_FAILURE',
+    'Equipment Failure': 'TECHNICAL_EQUIPMENT_FAILURE',
+    'First Aid': 'MEDICAL_FIRST_AID',
+    'Other': 'OTHER_MISCELLANEOUS',
+};
 
 interface IncidentDetailsProps {
     incident: Incident;
@@ -13,26 +28,46 @@ interface IncidentDetailsProps {
 
 export function IncidentDetails({ incident }: IncidentDetailsProps) {
     const [isConfirming, setIsConfirming] = useState(false);
-    const escalateMutation = useEscalateIncident();
+    const [selectedTeamId, setSelectedTeamId] = useState<string>('');
 
-    // Reset confirmation state when incident changes
+    const escalateMutation = useEscalateIncident();
+    const assignTeamMutation = useAssignTeam();
+
+    // Fetch teams based on incident type
+    const backendType = typeToBackend[incident.type] || 'OTHER_MISCELLANEOUS';
+    const { data: teams = [], isLoading: isLoadingTeams } = useTeams(backendType);
+
+    // Reset state when incident changes
     useEffect(() => {
         setIsConfirming(false);
+        setSelectedTeamId('');
     }, [incident.id]);
 
     const handleEscalate = () => {
         if (!isConfirming) {
             setIsConfirming(true);
-            // Auto-reset after 3 seconds
             setTimeout(() => setIsConfirming(false), 3000);
             return;
         }
 
-        // Extract numeric ID from "INC-XXXX"
         const numericId = parseInt(incident.id.replace('INC-', ''), 10);
         escalateMutation.mutate(numericId, {
             onSuccess: () => {
                 setIsConfirming(false);
+            }
+        });
+    };
+
+    const handleAssignTeam = () => {
+        if (!selectedTeamId) return;
+
+        const numericId = parseInt(incident.id.replace('INC-', ''), 10);
+        assignTeamMutation.mutate({
+            incidentId: numericId,
+            teamId: parseInt(selectedTeamId)
+        }, {
+            onSuccess: () => {
+                setSelectedTeamId('');
             }
         });
     };
@@ -49,6 +84,8 @@ export function IncidentDetails({ incident }: IncidentDetailsProps) {
                 return 'bg-blue-950 text-blue-300 border-blue-800';
         }
     };
+
+    const isAssigned = incident.assignedTeam !== 'Unassigned';
 
     return (
         <Card className="bg-slate-900 border-slate-800 shrink-0">
@@ -88,7 +125,9 @@ export function IncidentDetails({ incident }: IncidentDetailsProps) {
                         <Users className="w-4 h-4 text-blue-400 mt-0.5" />
                         <div className="flex-1">
                             <p className="text-slate-400 text-xs">Assigned Team</p>
-                            <p className="text-slate-200">{incident.assignedTeam}</p>
+                            <p className={`font-medium ${isAssigned ? 'text-green-400' : 'text-slate-500 italic'}`}>
+                                {incident.assignedTeam}
+                            </p>
                         </div>
                     </div>
 
@@ -123,10 +162,57 @@ export function IncidentDetails({ incident }: IncidentDetailsProps) {
                 <Separator className="bg-slate-800" />
 
                 {/* Action Buttons */}
-                <div className="space-y-2">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                        <Users className="w-4 h-4 mr-2" />
-                        Assign Team
+                <div className="space-y-3">
+                    {!isAssigned && (
+                        <div className="space-y-2">
+                            <Label className="text-slate-400 text-[10px] uppercase tracking-wider">Direct Dispatch</Label>
+                            <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
+                                <SelectTrigger className="bg-slate-950 border-slate-700 text-slate-300">
+                                    <SelectValue placeholder={isLoadingTeams ? "Loading teams..." : "Choose team to dispatch..."} />
+                                </SelectTrigger>
+                                <SelectContent className="bg-slate-900 border-slate-700">
+                                    {teams.length > 0 ? (
+                                        teams.map((team: any) => (
+                                            <SelectItem
+                                                key={team.id}
+                                                value={team.id.toString()}
+                                                className="text-slate-200 focus:bg-slate-800 focus:text-white"
+                                            >
+                                                {team.teamName} ({team.status.toLowerCase().replace('_', ' ')})
+                                            </SelectItem>
+                                        ))
+                                    ) : (
+                                        <div className="p-2 text-xs text-slate-500">No teams available for this type</div>
+                                    )}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+
+                    <Button
+                        className={`w-full transition-all duration-200 ${isAssigned
+                            ? 'bg-slate-800 text-slate-500 border-slate-700 cursor-not-allowed'
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                            }`}
+                        disabled={isAssigned || !selectedTeamId || assignTeamMutation.isPending}
+                        onClick={handleAssignTeam}
+                    >
+                        {assignTeamMutation.isPending ? (
+                            <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Dispatching...
+                            </>
+                        ) : isAssigned ? (
+                            <>
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                Team Assigned
+                            </>
+                        ) : (
+                            <>
+                                <Users className="w-4 h-4 mr-2" />
+                                {selectedTeamId ? 'Confirm Assignment' : 'Assign Team'}
+                            </>
+                        )}
                     </Button>
                     <Button
                         variant={isConfirming ? "destructive" : "outline"}

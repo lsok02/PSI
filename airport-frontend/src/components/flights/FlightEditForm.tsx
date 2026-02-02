@@ -13,16 +13,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Plane, Clock, MapPin, AlertTriangle, Save, X } from 'lucide-react';
+import { Plane, Clock, MapPin, AlertTriangle, Save, X, Loader2 } from 'lucide-react';
 import type { Flight, FlightStatus } from '@/types';
+import { useAvailableStatuses } from '@/hooks/useFlights';
 
 interface FlightEditFormProps {
     flight: Flight;
     onSave: (updatedFlight: Flight) => void;
     onCancel: () => void;
 }
-
-const FLIGHT_STATUSES: FlightStatus[] = ['PLANNED', 'DELAYED', 'CANCELLED', 'DEPARTED', 'LANDED'];
 
 const getStatusColor = (status: FlightStatus) => {
     switch (status) {
@@ -42,6 +41,17 @@ const getStatusColor = (status: FlightStatus) => {
 
 export function FlightEditForm({ flight, onSave, onCancel }: FlightEditFormProps) {
     const [editedFlight, setEditedFlight] = useState<Flight>(flight);
+
+    // Fetch available statuses for transition
+    const { data: statusData, isLoading: isLoadingStatuses } = useAvailableStatuses(flight.id);
+
+    // Backend returns { allowedNextStatuses: [...], ... } - extract the array
+    const availableStatuses: FlightStatus[] = Array.isArray(statusData?.allowedNextStatuses)
+        ? statusData.allowedNextStatuses
+        : [];
+
+    // Combine current status with available transitions to ensure the current one is always visible
+    const displayedStatuses = Array.from(new Set([flight.status, ...availableStatuses])) as FlightStatus[];
 
     const handleStatusChange = (status: FlightStatus) => {
         setEditedFlight({ ...editedFlight, status });
@@ -130,13 +140,16 @@ export function FlightEditForm({ flight, onSave, onCancel }: FlightEditFormProps
                     <div className="space-y-6">
                         {/* Status Selection */}
                         <div className="space-y-2">
-                            <Label className="text-slate-300">Flight Status</Label>
+                            <div className="flex items-center justify-between">
+                                <Label className="text-slate-300">Flight Status</Label>
+                                {isLoadingStatuses && <Loader2 className="w-3 h-3 animate-spin text-slate-500" />}
+                            </div>
                             <Select value={editedFlight.status} onValueChange={handleStatusChange}>
                                 <SelectTrigger className="bg-slate-950 border-slate-700 text-slate-100">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-slate-900 border-slate-700">
-                                    {FLIGHT_STATUSES.map((status) => (
+                                    {displayedStatuses.map((status) => (
                                         <SelectItem
                                             key={status}
                                             value={status}
@@ -146,11 +159,15 @@ export function FlightEditForm({ flight, onSave, onCancel }: FlightEditFormProps
                                                 <Badge variant="outline" className={`${getStatusColor(status)} text-xs`}>
                                                     {status}
                                                 </Badge>
+                                                {status === flight.status && <span className="text-[10px] text-slate-500 font-normal ml-auto">(Current)</span>}
                                             </div>
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
+                            {!isLoadingStatuses && availableStatuses.length === 0 && (
+                                <p className="text-[10px] text-slate-500 italic">No further status transitions available for this flight.</p>
+                            )}
                         </div>
 
                         {/* Delay Info (shown when DELAYED) */}

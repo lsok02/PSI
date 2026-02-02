@@ -12,15 +12,8 @@ import {
     CreateIncidentModal
 } from '@/components/security';
 import { BackendStatus } from '@/components/BackendStatus';
-import type { ResponseTeam } from '@/types';
 
-// Mock data for teams (until backend service for teams is available)
-const mockResponseTeams: ResponseTeam[] = [
-    { id: 'team-1', name: 'Medic-1', type: 'medical', coordinates: { x: 65, y: 35 } },
-    { id: 'team-2', name: 'Fire-2', type: 'fire', coordinates: { x: 30, y: 65 } },
-    { id: 'team-3', name: 'Security-3', type: 'security', coordinates: { x: 45, y: 50 } },
-    { id: 'team-4', name: 'Security-1', type: 'security', coordinates: { x: 80, y: 70 } }
-];
+// Main Security Dashboard Page
 
 export function SecurityDashboardPage() {
     const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(null);
@@ -34,7 +27,6 @@ export function SecurityDashboardPage() {
         suggestedLocation?: string;
         sensorEventId?: number;
     } | undefined>(undefined);
-    const [responseTeams] = useState(mockResponseTeams);
     const { logout, username } = useAuth();
     const navigate = useNavigate();
 
@@ -66,10 +58,15 @@ export function SecurityDashboardPage() {
     // Raw sensor events for getting full data when creating incident
     const { data: rawSensorEvents = [] } = useRawSensorEvents();
 
-    // Select first incident by default when loaded
+    // Select first incident by default when loaded or if current selection is filtered out
     useEffect(() => {
-        if (!selectedIncidentId && incidents.length > 0) {
-            setSelectedIncidentId(incidents[0].id);
+        if (incidents.length > 0) {
+            const currentStillExists = incidents.some(inc => inc.id === selectedIncidentId);
+            if (!selectedIncidentId || !currentStillExists) {
+                setSelectedIncidentId(incidents[0].id);
+            }
+        } else {
+            setSelectedIncidentId(null);
         }
     }, [incidents, selectedIncidentId]);
 
@@ -207,7 +204,6 @@ export function SecurityDashboardPage() {
                     <div className="col-span-6 min-h-0">
                         <AirportMap
                             incidents={incidents}
-                            responseTeams={responseTeams}
                             selectedIncidentId={selectedIncidentId ?? ''}
                             onIncidentSelect={handleIncidentSelect}
                         />
