@@ -148,6 +148,7 @@ export interface FailureReportResponse {
     location: string;
     status: FailureStatus;
     reportedAt: string;
+    reportedBy?: string | null;
     securityIncidentId?: number | null;
 }
 

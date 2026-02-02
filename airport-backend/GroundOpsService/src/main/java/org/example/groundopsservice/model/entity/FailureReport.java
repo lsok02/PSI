@@ -41,5 +41,7 @@ public class FailureReport {
     @Enumerated(EnumType.STRING)
     private FailureStatus status;
 
+    private String reportedBy;
+
     private Long securityIncidentId;
 }
